@@ -1,0 +1,670 @@
+# 103 value-chain activities, names verbatim from cpg_value_chain_design.md §4 (DECISIONS: keep all, N1).
+# Which activity consumes/produces/requires/depends on what is NOT stated in the source; those edges are
+# drafted (edge_defaults below) and await owner review. SUPPORTED_BY_EVIDENCE edges are source-backed.
+class: ValueChainActivity
+defaults:
+  source_system: curated_reference
+  lane: curated
+  extraction_confidence: 1.0
+  reviewed: false
+  drafted_beyond_source: false
+edge_defaults:
+  TRIGGERED_BY:   {drafted_beyond_source: true}
+  CONSUMES:       {drafted_beyond_source: true}
+  PRODUCES:       {drafted_beyond_source: true}
+  REQUIRES:       {drafted_beyond_source: true}
+  DEPENDS_ON:     {drafted_beyond_source: true}
+
+groups:
+  # ------------------------------------------------------------------ Stage 1
+  - defaults:
+      source_reference: "docs/source/cpg_value_chain_design.md#stage-1-consumer-and-market-insight"
+      edges: {SUPPORTED_BY_EVIDENCE: ["SourceEvidence:design_s01"]}
+    rows:
+      - id: "ValueChainActivity:s01_monitor_trends"
+        name: Monitor consumer and category trends
+        sequence: 1
+        edges:
+          TRIGGERED_BY: ["BusinessEvent:market_signal_detected", "BusinessEvent:consumption_feedback_received"]
+          CONSUMES: ["Input:search_social_trends", "Input:consumer_research", "Input:retail_audit_data"]
+          PRODUCES: ["Output:s01_consumer_insight", "Output:s01_demand_signal"]
+      - id: "ValueChainActivity:s01_analyze_shopper_behaviour"
+        name: Analyze shopper and household behaviour
+        sequence: 2
+        edges:
+          CONSUMES: ["Input:household_panel_data", "Input:consumer_research", "Input:complaints_feedback"]
+          PRODUCES: ["Output:s01_consumer_insight", "Output:s01_target_segment"]
+      - id: "ValueChainActivity:s01_identify_need_states"
+        name: Identify need states and consumption occasions
+        sequence: 3
+        edges:
+          CONSUMES: ["Input:consumer_research"]
+          PRODUCES: ["Output:s01_need_state"]
+      - id: "ValueChainActivity:s01_analyze_competition"
+        name: Analyze competitive products and claims
+        sequence: 4
+        edges:
+          CONSUMES: ["Input:competitor_intelligence", "Input:retail_audit_data"]
+          PRODUCES: ["Output:s01_consumer_insight"]
+      - id: "ValueChainActivity:s01_identify_geo_variation"
+        name: Identify geographic and micro-market variation
+        sequence: 5
+        edges:
+          CONSUMES: ["Input:sales_distribution_data", "Input:retail_audit_data"]
+          PRODUCES: ["Output:s01_demand_signal"]
+      - id: "ValueChainActivity:s01_estimate_category_opportunity"
+        name: Estimate category opportunity
+        sequence: 6
+        edges:
+          CONSUMES: ["Input:retail_audit_data", "Input:household_panel_data", "Input:sales_distribution_data"]
+          PRODUCES: ["Output:s01_category_growth_hypothesis"]
+          DEPENDS_ON: ["ValueChainActivity:s01_monitor_trends"]
+      - id: "ValueChainActivity:s01_create_opportunity_hypotheses"
+        name: Create opportunity hypotheses
+        sequence: 7
+        edges:
+          PRODUCES: ["Output:s01_opportunity_area", "Output:s01_target_segment"]
+          REQUIRES: ["Decision:pursue_opportunity"]
+          DEPENDS_ON: ["ValueChainActivity:s01_estimate_category_opportunity", "ValueChainActivity:s01_identify_need_states"]
+
+  # ------------------------------------------------------------------ Stage 2
+  - defaults:
+      source_reference: "docs/source/cpg_value_chain_design.md#stage-2-portfolio-and-category-strategy"
+      edges: {SUPPORTED_BY_EVIDENCE: ["SourceEvidence:design_s02"]}
+    rows:
+      - id: "ValueChainActivity:s02_define_category_strategy"
+        name: Define category strategy
+        sequence: 1
+        edges:
+          TRIGGERED_BY: ["BusinessEvent:category_opportunity_identified"]
+          PRODUCES: ["Output:s02_category_strategy"]
+      - id: "ValueChainActivity:s02_set_brand_role"
+        name: Set brand role
+        sequence: 2
+        edges:
+          PRODUCES: ["Output:s02_brand_strategy", "Output:s02_portfolio_role"]
+          REQUIRES: ["Decision:brand_role"]
+      - id: "ValueChainActivity:s02_identify_portfolio_gaps"
+        name: Identify portfolio gaps
+        sequence: 3
+      - id: "ValueChainActivity:s02_rationalize_portfolio"
+        name: Rationalize product portfolio
+        sequence: 4
+        aliases: [portfolio rationalisation, SKU rationalization]
+        edges:
+          PRODUCES: ["Output:s02_portfolio_role"]
+          REQUIRES: ["Decision:launch_or_renovate"]
+      - id: "ValueChainActivity:s02_set_innovation_priorities"
+        name: Set innovation priorities
+        sequence: 5
+        edges:
+          PRODUCES: ["Output:s02_innovation_brief"]
+          DEPENDS_ON: ["ValueChainActivity:s02_identify_portfolio_gaps"]
+      - id: "ValueChainActivity:s02_define_price_pack_architecture"
+        name: Define price-pack architecture
+        sequence: 6
+        aliases: [PPA, price pack architecture]
+        edges:
+          PRODUCES: ["Output:s02_price_pack_architecture"]
+      - id: "ValueChainActivity:s02_allocate_category_investment"
+        name: Allocate category investment
+        sequence: 7
+        edges:
+          PRODUCES: ["Output:s02_investment_envelope"]
+      - id: "ValueChainActivity:s02_determine_launch_priorities"
+        name: Determine launch or renovation priorities
+        sequence: 8
+        edges:
+          PRODUCES: ["Output:s02_innovation_brief"]
+          REQUIRES: ["Decision:launch_or_renovate"]
+
+  # ------------------------------------------------------------------ Stage 3
+  - defaults:
+      source_reference: "docs/source/cpg_value_chain_design.md#stage-3-product-innovation-and-formulation"
+      edges: {SUPPORTED_BY_EVIDENCE: ["SourceEvidence:design_s03"]}
+    rows:
+      - id: "ValueChainActivity:s03_create_product_concept"
+        name: Create product concept
+        sequence: 1
+        edges:
+          TRIGGERED_BY: ["BusinessEvent:innovation_brief_issued"]
+          PRODUCES: ["Output:s03_approved_product_concept"]
+      - id: "ValueChainActivity:s03_develop_formulation"
+        name: Develop formulation or recipe
+        sequence: 2
+        edges:
+          TRIGGERED_BY: ["BusinessEvent:product_concept_approved"]
+          PRODUCES: ["Output:s03_formulation", "Output:s03_recipe"]
+          DEPENDS_ON: ["ValueChainActivity:s03_create_product_concept"]
+      - id: "ValueChainActivity:s03_select_ingredient_alternatives"
+        name: Select ingredient alternatives
+        sequence: 3
+        edges:
+          PRODUCES: ["Output:s03_ingredient_specification"]
+          REQUIRES: ["Decision:ingredient_selection"]
+      - id: "ValueChainActivity:s03_conduct_lab_trials"
+        name: Conduct laboratory trials
+        sequence: 4
+      - id: "ValueChainActivity:s03_test_product_performance"
+        name: Test product performance
+        sequence: 5
+      - id: "ValueChainActivity:s03_validate_sensory"
+        name: Validate sensory attributes
+        sequence: 6
+        edges:
+          CONSUMES: ["Input:consumer_research"]
+      - id: "ValueChainActivity:s03_define_product_claims"
+        name: Define product claims
+        sequence: 7
+        edges:
+          PRODUCES: ["Output:s03_product_claim"]
+      - id: "ValueChainActivity:s03_stability_shelf_life_tests"
+        name: Conduct stability and shelf-life tests
+        sequence: 8
+        edges:
+          PRODUCES: ["Output:s03_shelf_life_definition"]
+      - id: "ValueChainActivity:s03_regulatory_review"
+        name: Complete regulatory review
+        sequence: 9
+        edges:
+          CONSUMES: ["Input:regulatory_requirements"]
+      - id: "ValueChainActivity:s03_approve_product_specification"
+        name: Approve product specification
+        sequence: 10
+        edges:
+          PRODUCES: ["Output:s03_product_specification", "Output:s03_launch_ready_sku_specification"]
+          REQUIRES: ["Decision:approve_product_specification"]
+          DEPENDS_ON: ["ValueChainActivity:s03_regulatory_review", "ValueChainActivity:s03_stability_shelf_life_tests"]
+
+  # ------------------------------------------------------------------ Stage 4
+  - defaults:
+      source_reference: "docs/source/cpg_value_chain_design.md#stage-4-ingredient-and-packaging-sourcing"
+      edges: {SUPPORTED_BY_EVIDENCE: ["SourceEvidence:design_s04"]}
+    rows:
+      - id: "ValueChainActivity:s04_translate_material_requirements"
+        name: Translate formulation into material requirements
+        sequence: 1
+        edges:
+          TRIGGERED_BY: ["BusinessEvent:formulation_approved"]
+          PRODUCES: ["Output:s04_material_requirement"]
+      - id: "ValueChainActivity:s04_qualify_suppliers"
+        name: Identify and qualify suppliers
+        sequence: 2
+        edges:
+          TRIGGERED_BY: ["BusinessEvent:material_requirement_released"]
+          PRODUCES: ["Output:s04_approved_supplier"]
+      - id: "ValueChainActivity:s04_conduct_sourcing_event"
+        name: Conduct sourcing event
+        sequence: 3
+        edges:
+          TRIGGERED_BY: ["BusinessEvent:material_requirement_released"]
+          REQUIRES: ["Decision:sourcing_decision"]
+      - id: "ValueChainActivity:s04_negotiate_contract"
+        name: Negotiate contract and commercial terms
+        sequence: 4
+        edges:
+          TRIGGERED_BY: ["BusinessEvent:sourcing_decision_made"]
+          PRODUCES: ["Output:s04_ingredient_contract", "Output:s04_packaging_contract"]
+      - id: "ValueChainActivity:s04_assess_supplier_capacity"
+        name: Assess supplier capacity
+        sequence: 5
+        edges:
+          PRODUCES: ["Output:s04_supplier_risk_assessment"]
+      - id: "ValueChainActivity:s04_evaluate_commodity_exposure"
+        name: Evaluate commodity exposure
+        sequence: 6
+        edges:
+          CONSUMES: ["Input:commodity_market_prices"]
+          PRODUCES: ["Output:s04_commodity_forecast"]
+      - id: "ValueChainActivity:s04_approve_ingredients_packaging"
+        name: Approve ingredients and packaging
+        sequence: 7
+      - id: "ValueChainActivity:s04_place_purchase_order"
+        name: Place purchase order
+        sequence: 8
+        aliases: [PO placement]
+        edges:
+          PRODUCES: ["Output:s04_purchase_order"]
+          DEPENDS_ON: ["ValueChainActivity:s04_negotiate_contract", "ValueChainActivity:s04_approve_ingredients_packaging"]
+      - id: "ValueChainActivity:s04_monitor_supply_risk"
+        name: Monitor inbound supply risk
+        sequence: 9
+        edges:
+          PRODUCES: ["Output:s04_supplier_risk_assessment"]
+
+  # ------------------------------------------------------------------ Stage 5
+  - defaults:
+      source_reference: "docs/source/cpg_value_chain_design.md#stage-5-manufacturing-quality-and-packaging"
+      edges: {SUPPORTED_BY_EVIDENCE: ["SourceEvidence:design_s05"]}
+    rows:
+      - id: "ValueChainActivity:s05_create_production_plan"
+        name: Create production plan
+        sequence: 1
+        edges:
+          TRIGGERED_BY: ["BusinessEvent:replenishment_plan_approved"]
+          CONSUMES: ["Input:production_capacity_data"]
+          REQUIRES: ["Decision:make_or_buy"]
+          DEPENDS_ON: ["ValueChainActivity:s06_supply_plan"]
+      - id: "ValueChainActivity:s05_issue_production_order"
+        name: Issue production order
+        sequence: 2
+        edges:
+          TRIGGERED_BY: ["BusinessEvent:production_plan_released"]
+          DEPENDS_ON: ["ValueChainActivity:s05_create_production_plan"]
+      - id: "ValueChainActivity:s05_receive_release_materials"
+        name: Receive and release materials
+        sequence: 3
+      - id: "ValueChainActivity:s05_batch_formulate"
+        name: Batch or formulate product
+        sequence: 4
+        edges:
+          PRODUCES: ["Output:s05_production_batch"]
+      - id: "ValueChainActivity:s05_process_fill_form"
+        name: Process, fill or form product
+        sequence: 5
+        edges:
+          PRODUCES: ["Output:s05_production_batch"]
+      - id: "ValueChainActivity:s05_in_process_quality_checks"
+        name: Perform in-process quality checks
+        sequence: 6
+        edges:
+          PRODUCES: ["Output:s05_quality_result"]
+      - id: "ValueChainActivity:s05_package_label"
+        name: Package and label
+        sequence: 7
+        edges:
+          PRODUCES: ["Output:s05_finished_sku"]
+      - id: "ValueChainActivity:s05_finished_product_testing"
+        name: Conduct finished-product testing
+        sequence: 8
+        edges:
+          TRIGGERED_BY: ["BusinessEvent:batch_produced"]
+          PRODUCES: ["Output:s05_quality_result"]
+      - id: "ValueChainActivity:s05_release_quarantine_batch"
+        name: Release or quarantine batch
+        sequence: 9
+        aliases: [batch release]
+        edges:
+          PRODUCES: ["Output:s05_released_batch", "Output:s05_scrap_rework"]
+          REQUIRES: ["Decision:batch_release"]
+          DEPENDS_ON: ["ValueChainActivity:s05_finished_product_testing"]
+      - id: "ValueChainActivity:s05_record_yield_loss_downtime"
+        name: Record yield, loss and downtime
+        sequence: 10
+        edges:
+          PRODUCES: ["Output:s05_manufacturing_variance", "Output:s05_scrap_rework"]
+
+  # ------------------------------------------------------------------ Stage 6
+  - defaults:
+      source_reference: "docs/source/cpg_value_chain_design.md#stage-6-demand-supply-and-inventory-planning"
+      edges: {SUPPORTED_BY_EVIDENCE: ["SourceEvidence:design_s06"]}
+    rows:
+      - id: "ValueChainActivity:s06_baseline_forecast"
+        name: Generate baseline forecast
+        sequence: 1
+        edges:
+          TRIGGERED_BY: ["BusinessEvent:demand_planning_cycle_started"]
+          CONSUMES: ["Input:sales_distribution_data"]
+          PRODUCES: ["Output:s06_demand_forecast"]
+      - id: "ValueChainActivity:s06_promotion_event_uplift"
+        name: Add promotion and event uplift
+        sequence: 2
+        edges:
+          PRODUCES: ["Output:s06_demand_forecast"]
+          DEPENDS_ON: ["ValueChainActivity:s08_plan_promotion"]
+      - id: "ValueChainActivity:s06_consensus_forecast"
+        name: Create consensus forecast
+        sequence: 3
+        aliases: [consensus demand forecast, consensus demand planning]
+        edges:
+          PRODUCES: ["Output:s06_consensus_demand"]
+          DEPENDS_ON: ["ValueChainActivity:s06_baseline_forecast", "ValueChainActivity:s06_promotion_event_uplift"]
+      - id: "ValueChainActivity:s06_supply_plan"
+        name: Develop supply plan
+        sequence: 4
+        edges:
+          PRODUCES: ["Output:s06_supply_plan"]
+          DEPENDS_ON: [{to: "ValueChainActivity:s06_consensus_forecast", dependency_basis: consensus demand}]
+      - id: "ValueChainActivity:s06_capacity_planning"
+        name: Conduct capacity planning
+        sequence: 5
+        edges:
+          CONSUMES: ["Input:production_capacity_data"]
+          PRODUCES: ["Output:s06_production_requirement"]
+          DEPENDS_ON: [{to: "ValueChainActivity:s06_consensus_forecast", dependency_basis: consensus demand}]
+      - id: "ValueChainActivity:s06_material_requirement"
+        name: Calculate material requirement
+        sequence: 6
+        aliases: [MRP]
+        edges:
+          PRODUCES: ["Output:s06_production_requirement"]
+          DEPENDS_ON: [{to: "ValueChainActivity:s06_consensus_forecast", dependency_basis: consensus demand}]
+      - id: "ValueChainActivity:s06_set_inventory_target"
+        name: Set inventory target
+        sequence: 7
+        edges:
+          PRODUCES: ["Output:s06_inventory_target"]
+          DEPENDS_ON: [{to: "ValueChainActivity:s06_consensus_forecast", dependency_basis: consensus demand}]
+      - id: "ValueChainActivity:s06_allocate_constrained_supply"
+        name: Allocate constrained supply
+        sequence: 8
+        edges:
+          PRODUCES: ["Output:s06_allocation_decision", "Output:s06_constrained_forecast"]
+          REQUIRES: ["Decision:constrained_allocation"]
+          DEPENDS_ON: ["ValueChainActivity:s06_supply_plan"]
+      - id: "ValueChainActivity:s06_sop_ibp_review"
+        name: Conduct S&OP or IBP review
+        sequence: 9
+        aliases: [S&OP review, IBP review, sales and operations planning]
+        edges:
+          PRODUCES: ["Output:s06_constrained_forecast"]
+          DEPENDS_ON: [{to: "ValueChainActivity:s06_consensus_forecast", dependency_basis: consensus demand}]
+      - id: "ValueChainActivity:s06_approve_replenishment_plan"
+        name: Approve replenishment plan
+        sequence: 10
+        edges:
+          REQUIRES: ["Decision:approve_replenishment"]
+          DEPENDS_ON: ["ValueChainActivity:s06_sop_ibp_review"]
+
+  # ------------------------------------------------------------------ Stage 7
+  - defaults:
+      source_reference: "docs/source/cpg_value_chain_design.md#stage-7-warehousing-and-distribution"
+      edges: {SUPPORTED_BY_EVIDENCE: ["SourceEvidence:design_s07"]}
+    rows:
+      - id: "ValueChainActivity:s07_receive_finished_goods"
+        name: Receive finished goods
+        sequence: 1
+        edges:
+          TRIGGERED_BY: ["BusinessEvent:finished_sku_released"]
+          PRODUCES: ["Output:s07_inventory_position"]
+      - id: "ValueChainActivity:s07_put_away"
+        name: Put away inventory
+        sequence: 2
+        edges:
+          PRODUCES: ["Output:s07_inventory_position"]
+      - id: "ValueChainActivity:s07_allocate_inventory"
+        name: Allocate inventory
+        sequence: 3
+        edges:
+          TRIGGERED_BY: ["BusinessEvent:customer_order_received"]
+      - id: "ValueChainActivity:s07_pick_pack"
+        name: Pick and pack orders
+        sequence: 4
+        edges:
+          TRIGGERED_BY: ["BusinessEvent:customer_order_received"]
+          PRODUCES: ["Output:s07_fulfilled_order"]
+          DEPENDS_ON: ["ValueChainActivity:s07_allocate_inventory"]
+      - id: "ValueChainActivity:s07_plan_transport"
+        name: Plan transport
+        sequence: 5
+        edges:
+          PRODUCES: ["Output:s07_distribution_cost"]
+      - id: "ValueChainActivity:s07_dispatch_shipment"
+        name: Dispatch shipment
+        sequence: 6
+        edges:
+          PRODUCES: ["Output:s07_shipment"]
+          DEPENDS_ON: ["ValueChainActivity:s07_plan_transport", "ValueChainActivity:s07_pick_pack"]
+      - id: "ValueChainActivity:s07_deliver"
+        name: Deliver to distributor, retailer or fulfilment location
+        sequence: 7
+        edges:
+          PRODUCES: ["Output:s07_delivery"]
+      - id: "ValueChainActivity:s07_confirm_pod"
+        name: Confirm proof of delivery
+        sequence: 8
+        aliases: [POD confirmation]
+        edges:
+          PRODUCES: ["Output:s07_proof_of_delivery"]
+          DEPENDS_ON: ["ValueChainActivity:s07_deliver"]
+      - id: "ValueChainActivity:s07_process_returns"
+        name: Process returns
+        sequence: 9
+        edges:
+          PRODUCES: ["Output:s07_return"]
+      - id: "ValueChainActivity:s07_monitor_freshness_expiry"
+        name: Monitor freshness and expiry
+        sequence: 10
+        edges:
+          TRIGGERED_BY: ["BusinessEvent:inventory_positioned"]
+          PRODUCES: ["Output:s07_inventory_position"]
+
+  # ------------------------------------------------------------------ Stage 8
+  - defaults:
+      source_reference: "docs/source/cpg_value_chain_design.md#stage-8-customer-channel-and-revenue-growth"
+      edges: {SUPPORTED_BY_EVIDENCE: ["SourceEvidence:design_s08"]}
+    rows:
+      - id: "ValueChainActivity:s08_segment_customers"
+        name: Segment customers
+        sequence: 1
+        edges:
+          TRIGGERED_BY: ["BusinessEvent:customer_planning_cycle_started"]
+          PRODUCES: ["Output:s08_channel_strategy"]
+      - id: "ValueChainActivity:s08_design_route_to_market"
+        name: Design route-to-market
+        sequence: 2
+        aliases: [RTM design, route to market]
+        edges:
+          PRODUCES: ["Output:s08_channel_strategy"]
+          REQUIRES: ["Decision:route_to_market"]
+      - id: "ValueChainActivity:s08_set_pricing_terms"
+        name: Set pricing and terms
+        sequence: 3
+        edges:
+          PRODUCES: ["Output:s08_price_condition"]
+      - id: "ValueChainActivity:s08_joint_business_plan"
+        name: Develop joint business plan
+        sequence: 4
+        aliases: [JBP]
+        edges:
+          PRODUCES: ["Output:s08_customer_plan"]
+      - id: "ValueChainActivity:s08_plan_promotion"
+        name: Plan promotion
+        sequence: 5
+        aliases: [promotion planning, trade promotion planning]
+        edges:
+          PRODUCES: ["Output:s08_promotion"]
+          REQUIRES: ["Decision:promotion_mechanic"]
+      - id: "ValueChainActivity:s08_create_trade_scheme"
+        name: Create trade scheme
+        sequence: 6
+        aliases: [trade scheme creation, scheme creation, customer scheme setup]
+        edges:
+          PRODUCES: ["Output:s08_trade_scheme"]
+          REQUIRES: ["Decision:promotion_mechanic"]
+          DEPENDS_ON: ["ValueChainActivity:s08_plan_promotion"]
+      - id: "ValueChainActivity:s08_negotiate_customer_agreement"
+        name: Negotiate customer agreement
+        sequence: 7
+        edges:
+          PRODUCES: ["Output:s08_customer_plan", "Output:s08_price_condition"]
+      - id: "ValueChainActivity:s08_set_sales_target"
+        name: Set sales target
+        sequence: 8
+        edges:
+          PRODUCES: ["Output:s08_sales_target"]
+          DEPENDS_ON: [{to: "ValueChainActivity:s06_consensus_forecast", dependency_basis: consensus demand}]
+      - id: "ValueChainActivity:s08_capture_order"
+        name: Generate or capture order
+        sequence: 9
+        edges:
+          PRODUCES: ["Output:s08_customer_order"]
+      - id: "ValueChainActivity:s08_manage_distributor_performance"
+        name: Manage distributor performance
+        sequence: 10
+
+  # ------------------------------------------------------------------ Stage 9
+  - defaults:
+      source_reference: "docs/source/cpg_value_chain_design.md#stage-9-retail-and-outlet-execution"
+      edges: {SUPPORTED_BY_EVIDENCE: ["SourceEvidence:design_s09"]}
+    rows:
+      - id: "ValueChainActivity:s09_classify_outlet"
+        name: Classify outlet
+        sequence: 1
+        aliases: [outlet classification, outlet segmentation]
+      - id: "ValueChainActivity:s09_plan_sales_beat"
+        name: Plan sales beat
+        sequence: 2
+        aliases: [beat planning, beat optimization]
+        edges:
+          DEPENDS_ON: ["ValueChainActivity:s09_classify_outlet"]
+      - id: "ValueChainActivity:s09_visit_outlet"
+        name: Visit outlet
+        sequence: 3
+        edges:
+          DEPENDS_ON: ["ValueChainActivity:s09_plan_sales_beat"]
+      - id: "ValueChainActivity:s09_capture_order"
+        name: Capture order
+        sequence: 4
+        edges:
+          PRODUCES: ["Output:s09_outlet_order"]
+      - id: "ValueChainActivity:s09_check_inventory"
+        name: Check inventory
+        sequence: 5
+        edges:
+          TRIGGERED_BY: ["BusinessEvent:delivered_to_distributor_retailer"]
+          PRODUCES: ["Output:s09_availability_result"]
+      - id: "ValueChainActivity:s09_check_osa"
+        name: Check on-shelf availability
+        sequence: 6
+        aliases: [OSA check]
+        edges:
+          PRODUCES: ["Output:s09_availability_result", "Output:s09_distribution_measure", "Output:s09_corrective_action"]
+      - id: "ValueChainActivity:s09_execute_assortment"
+        name: Execute assortment
+        sequence: 7
+        edges:
+          PRODUCES: ["Output:s09_distribution_measure"]
+      - id: "ValueChainActivity:s09_verify_planogram_display"
+        name: Verify planogram or display
+        sequence: 8
+        edges:
+          PRODUCES: ["Output:s09_display_compliance", "Output:s09_corrective_action"]
+      - id: "ValueChainActivity:s09_activate_promotion"
+        name: Activate promotion
+        sequence: 9
+        edges:
+          PRODUCES: ["Output:s09_promotion_compliance"]
+          DEPENDS_ON: ["ValueChainActivity:s08_create_trade_scheme"]
+      - id: "ValueChainActivity:s09_track_scheme_compliance"
+        name: Track retailer scheme compliance
+        sequence: 10
+        edges:
+          PRODUCES: ["Output:s09_promotion_compliance"]
+          DEPENDS_ON: ["ValueChainActivity:s09_activate_promotion"]
+      - id: "ValueChainActivity:s09_capture_sell_out"
+        name: Capture sell-out signal
+        sequence: 11
+        edges:
+          PRODUCES: ["Output:s09_sell_out_transaction"]
+
+  # ------------------------------------------------------------------ Stage 10
+  - defaults:
+      source_reference: "docs/source/cpg_value_chain_design.md#stage-10-purchase-consumption-and-feedback"
+      edges: {SUPPORTED_BY_EVIDENCE: ["SourceEvidence:design_s10"]}
+    rows:
+      - id: "ValueChainActivity:s10_discover_product"
+        name: Discover product
+        sequence: 1
+        edges:
+          TRIGGERED_BY: ["BusinessEvent:outlet_availability_achieved"]
+      - id: "ValueChainActivity:s10_evaluate_alternatives"
+        name: Evaluate alternatives
+        sequence: 2
+      - id: "ValueChainActivity:s10_purchase_product"
+        name: Purchase product
+        sequence: 3
+        edges:
+          PRODUCES: ["Output:s10_purchase_event"]
+          DEPENDS_ON: ["ValueChainActivity:s10_evaluate_alternatives"]
+      - id: "ValueChainActivity:s10_consume_use"
+        name: Consume or use product
+        sequence: 4
+        edges:
+          TRIGGERED_BY: ["BusinessEvent:consumer_purchase"]
+          PRODUCES: ["Output:s10_consumption_event"]
+      - id: "ValueChainActivity:s10_provide_feedback"
+        name: Provide feedback
+        sequence: 5
+        edges:
+          PRODUCES: ["Output:s10_satisfaction_signal", "Output:s10_sentiment"]
+      - id: "ValueChainActivity:s10_submit_complaint"
+        name: Submit complaint
+        sequence: 6
+        edges:
+          PRODUCES: ["Output:s10_complaint"]
+      - id: "ValueChainActivity:s10_recommend_review"
+        name: Recommend or review
+        sequence: 7
+        edges:
+          PRODUCES: ["Output:s10_sentiment", "Output:s10_loyalty_indicator"]
+      - id: "ValueChainActivity:s10_repurchase"
+        name: Repurchase
+        sequence: 8
+        aliases: [repeat purchase]
+        edges:
+          PRODUCES: ["Output:s10_loyalty_indicator"]
+      - id: "ValueChainActivity:s10_switch"
+        name: Switch product or brand
+        sequence: 9
+        aliases: [brand switching]
+        edges:
+          PRODUCES: ["Output:s10_switching_signal"]
+
+  # ------------------------------------------------------------------ Stage 11
+  - defaults:
+      source_reference: "docs/source/cpg_value_chain_design.md#stage-11-returns-waste-and-circularity"
+      edges: {SUPPORTED_BY_EVIDENCE: ["SourceEvidence:design_s11"]}
+    rows:
+      - id: "ValueChainActivity:s11_process_return"
+        name: Process consumer or customer return
+        sequence: 1
+        edges:
+          TRIGGERED_BY: ["BusinessEvent:product_return_or_expiry_identified"]
+          PRODUCES: ["Output:s11_return_disposition"]
+          REQUIRES: ["Decision:return_disposition"]
+      - id: "ValueChainActivity:s11_identify_damaged_expired"
+        name: Identify damaged or expired product
+        sequence: 2
+        edges:
+          TRIGGERED_BY: ["BusinessEvent:product_return_or_expiry_identified"]
+      - id: "ValueChainActivity:s11_recall_batch"
+        name: Recall affected batch
+        sequence: 3
+        aliases: [product recall]
+        edges:
+          TRIGGERED_BY: ["BusinessEvent:quality_issue_detected"]
+          PRODUCES: ["Output:s11_product_recall"]
+          REQUIRES: ["Decision:recall"]
+      - id: "ValueChainActivity:s11_dispose_rework"
+        name: Dispose or rework product
+        sequence: 4
+        edges:
+          PRODUCES: ["Output:s11_disposal_event"]
+          REQUIRES: ["Decision:return_disposition"]
+          DEPENDS_ON: ["ValueChainActivity:s11_identify_damaged_expired"]
+      - id: "ValueChainActivity:s11_recover_packaging"
+        name: Recover packaging
+        sequence: 5
+      - id: "ValueChainActivity:s11_recycle_material"
+        name: Recycle material
+        sequence: 6
+        edges:
+          PRODUCES: ["Output:s11_recycled_material"]
+      - id: "ValueChainActivity:s11_measure_waste"
+        name: Measure waste
+        sequence: 7
+        edges:
+          TRIGGERED_BY: ["BusinessEvent:return_disposition_completed"]
+          PRODUCES: ["Output:s11_waste_measure"]
+      - id: "ValueChainActivity:s11_trace_sustainability"
+        name: Trace sustainability impact
+        sequence: 8
+        edges:
+          PRODUCES: ["Output:s11_sustainability_outcome"]
+          DEPENDS_ON: ["ValueChainActivity:s11_measure_waste"]
+      - id: "ValueChainActivity:s11_corrective_action"
+        name: Implement corrective action
+        sequence: 9
+        edges:
+          PRODUCES: ["Output:s11_corrective_action"]

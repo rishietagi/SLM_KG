@@ -1,0 +1,116 @@
+# Decisions required by activities. Four are grounded in the source (activity/output names or spec
+# examples) and cite it via BASED_ON; the rest are drafted and flagged.
+class: Decision
+defaults:
+  source_system: curated_reference
+  lane: curated
+  extraction_confidence: 1.0
+  reviewed: false
+  drafted_beyond_source: true
+  review_note: "Decision framing and options drafted; not stated in the source."
+edge_defaults:
+  SELECTS: {drafted_beyond_source: true}
+rows:
+  # --- grounded in the source -------------------------------------------------------------
+  - id: "Decision:sourcing_decision"
+    name: Sourcing decision
+    decision_question: "Which qualified supplier(s) receive the award, and on what sourcing strategy?"
+    drafted_beyond_source: false
+    review_note: "'sourcing decision' is a step of the §2 value-flow chain; options drafted."
+    source_reference: "docs/source/cpg_value_chain_design.md#2-layer-1-should-be-the-first-build"
+    edges:
+      BASED_ON: ["SourceEvidence:design_l1_hierarchy"]
+      SELECTS: ["DecisionOption:sourcing_single_source", "DecisionOption:sourcing_dual_source"]
+  - id: "Decision:batch_release"
+    name: Batch release decision
+    decision_question: "Is the batch released, quarantined, reworked or scrapped?"
+    drafted_beyond_source: false
+    review_note: "From Stage 5 activity 'Release or quarantine batch' and output 'Scrap or rework'."
+    source_reference: "docs/source/cpg_value_chain_design.md#stage-5-manufacturing-quality-and-packaging"
+    edges:
+      BASED_ON: ["SourceEvidence:design_s05"]
+      SELECTS:
+        - {to: "DecisionOption:batch_release", drafted_beyond_source: false}
+        - {to: "DecisionOption:batch_quarantine", drafted_beyond_source: false}
+        - {to: "DecisionOption:batch_rework", drafted_beyond_source: false}
+        - {to: "DecisionOption:batch_scrap", drafted_beyond_source: false}
+  - id: "Decision:constrained_allocation"
+    name: Constrained allocation decision
+    decision_question: "How is constrained supply allocated across customers and channels?"
+    drafted_beyond_source: false
+    review_note: "From Stage 6 output 'Allocation decision' and 'AllocationDecision PRIORITIZES Customer'; options drafted."
+    source_reference: "docs/source/cpg_value_chain_design.md#stage-6-demand-supply-and-inventory-planning"
+    edges:
+      BASED_ON: ["SourceEvidence:design_s06"]
+      SELECTS: ["DecisionOption:allocate_by_customer_priority", "DecisionOption:allocate_pro_rata"]
+  - id: "Decision:promotion_mechanic"
+    name: Promotion mechanic choice
+    decision_question: "Which commercial mechanic does the promotion or trade scheme use?"
+    drafted_beyond_source: false
+    review_note: "Options are the PromotionMechanic examples in the finance spec."
+    source_reference: "docs/source/finance_extraction_spec.md#g-commercial-finance"
+    edges:
+      BASED_ON: ["SourceEvidence:finance_promotion_mechanic"]
+      SELECTS:
+        - {to: "DecisionOption:mechanic_price_discount", drafted_beyond_source: false}
+        - {to: "DecisionOption:mechanic_rebate", drafted_beyond_source: false}
+        - {to: "DecisionOption:mechanic_bundle", drafted_beyond_source: false}
+        - {to: "DecisionOption:mechanic_free_goods", drafted_beyond_source: false}
+        - {to: "DecisionOption:mechanic_display_allowance", drafted_beyond_source: false}
+        - {to: "DecisionOption:mechanic_volume_incentive", drafted_beyond_source: false}
+
+  # --- drafted ---------------------------------------------------------------------------
+  - id: "Decision:pursue_opportunity"
+    name: Opportunity go / no-go
+    decision_question: "Should the opportunity hypothesis be pursued, monitored or discarded?"
+    source_reference: "docs/source/cpg_value_chain_design.md#stage-1-consumer-and-market-insight"
+    edges: {SELECTS: ["DecisionOption:opportunity_pursue", "DecisionOption:opportunity_monitor", "DecisionOption:opportunity_discard"]}
+  - id: "Decision:brand_role"
+    name: Brand role in category
+    decision_question: "What role does the brand play in the category strategy?"
+    source_reference: "docs/source/cpg_value_chain_design.md#stage-2-portfolio-and-category-strategy"
+    edges: {SELECTS: ["DecisionOption:brand_role_lead", "DecisionOption:brand_role_support"]}
+  - id: "Decision:launch_or_renovate"
+    name: Launch, renovate or delist
+    decision_question: "Should the portfolio gap be addressed by a new launch, a renovation, or by delisting?"
+    source_reference: "docs/source/cpg_value_chain_design.md#stage-2-portfolio-and-category-strategy"
+    edges: {SELECTS: ["DecisionOption:launch_new", "DecisionOption:renovate_existing", "DecisionOption:delist"]}
+  - id: "Decision:ingredient_selection"
+    name: Ingredient selection
+    decision_question: "Which ingredient alternative goes into the formulation?"
+    source_reference: "docs/source/cpg_value_chain_design.md#stage-3-product-innovation-and-formulation"
+    edges: {SELECTS: ["DecisionOption:ingredient_primary", "DecisionOption:ingredient_alternative"]}
+  - id: "Decision:approve_product_specification"
+    name: Product specification approval
+    decision_question: "Is the product specification approved for launch or sent back for revision?"
+    source_reference: "docs/source/cpg_value_chain_design.md#stage-3-product-innovation-and-formulation"
+    edges: {SELECTS: ["DecisionOption:spec_approve", "DecisionOption:spec_revise"]}
+  - id: "Decision:make_or_buy"
+    name: Make or buy
+    decision_question: "Is the SKU produced in an own plant, by a contract manufacturer, or by a co-packer?"
+    review_note: "Options drafted from the Layer 4 list (contract manufacturers, plants and co-packers)."
+    source_reference: "docs/source/cpg_value_chain_design.md#layer-4-ecosystem-and-channel"
+    edges: {SELECTS: ["DecisionOption:make_own_plant", "DecisionOption:buy_contract_manufacturer", "DecisionOption:buy_co_packer"]}
+  - id: "Decision:approve_replenishment"
+    name: Replenishment plan approval
+    decision_question: "Is the replenishment plan approved at S&OP/IBP or revised?"
+    source_reference: "docs/source/cpg_value_chain_design.md#stage-6-demand-supply-and-inventory-planning"
+    edges: {SELECTS: ["DecisionOption:replenishment_approve", "DecisionOption:replenishment_revise"]}
+  - id: "Decision:route_to_market"
+    name: Route-to-market choice
+    decision_question: "Through which channels and partners does the product reach the consumer?"
+    review_note: "Options drafted from the Layer 4 channel list."
+    source_reference: "docs/source/cpg_value_chain_design.md#layer-4-ecosystem-and-channel"
+    edges: {SELECTS: ["DecisionOption:rtm_general_trade", "DecisionOption:rtm_modern_trade", "DecisionOption:rtm_ecommerce", "DecisionOption:rtm_quick_commerce", "DecisionOption:rtm_d2c"]}
+  - id: "Decision:return_disposition"
+    name: Return disposition
+    decision_question: "Is returned or expired product reworked, disposed of or recycled?"
+    source_reference: "docs/source/cpg_value_chain_design.md#stage-11-returns-waste-and-circularity"
+    edges: {SELECTS: ["DecisionOption:disposition_rework", "DecisionOption:disposition_dispose", "DecisionOption:disposition_recycle"]}
+  - id: "Decision:recall"
+    name: Recall decision
+    decision_question: "Does the quality issue require recalling the affected batch?"
+    source_reference: "docs/source/cpg_value_chain_design.md#stage-11-returns-waste-and-circularity"
+    edges:
+      BASED_ON: ["SourceEvidence:design_s11"]
+      SELECTS: ["DecisionOption:recall_yes", "DecisionOption:recall_no"]

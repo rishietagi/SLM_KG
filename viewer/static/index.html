@@ -1,0 +1,671 @@
+<!doctype html>
+<html lang="en" class="h-full">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>CPG Intelligence Graph</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+<script src="https://cdn.tailwindcss.com"></script>
+<script>
+  tailwind.config = {
+    darkMode: 'class',
+    theme: { extend: { fontFamily: { sans: ['Inter', 'system-ui', 'sans-serif'], mono: ['JetBrains Mono', 'monospace'] } } }
+  };
+  try { if ((localStorage.getItem('kg-theme') || 'dark') === 'dark') document.documentElement.classList.add('dark'); } catch (e) { document.documentElement.classList.add('dark'); }
+</script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/cytoscape/3.30.2/cytoscape.min.js"></script>
+<script src="https://unpkg.com/layout-base@2.0.1/layout-base.js"></script>
+<script src="https://unpkg.com/cose-base@2.2.0/cose-base.js"></script>
+<script src="https://unpkg.com/cytoscape-fcose@2.2.0/cytoscape-fcose.js"></script>
+<style>
+  body { font-feature-settings: "cv11", "ss01"; }
+  .scroll-thin::-webkit-scrollbar { width: 6px; height: 6px; }
+  .scroll-thin::-webkit-scrollbar-thumb { background: rgba(148,163,184,.35); border-radius: 9999px; }
+  .chip { transition: all .15s ease; }
+  .chip[data-on="false"] { opacity: .38; filter: grayscale(.6); }
+  .tab[aria-selected="true"] { color: rgb(99 102 241); }
+  .dark .tab[aria-selected="true"] { color: rgb(165 180 252); }
+  .tab[aria-selected="true"]::after { content: ""; position: absolute; left: 12px; right: 12px; bottom: -1px; height: 2px; border-radius: 2px; background: currentColor; }
+  .cy { background-image: radial-gradient(rgba(148,163,184,.18) 1px, transparent 1px); background-size: 22px 22px; }
+  .fade-in { animation: fade .25s ease; }
+  @keyframes fade { from { opacity: 0; transform: translateY(4px); } to { opacity: 1; transform: none; } }
+</style>
+</head>
+<body class="h-full bg-slate-50 text-slate-800 dark:bg-slate-950 dark:text-slate-200 font-sans antialiased">
+<div class="flex h-full flex-col">
+
+  <!-- Header -->
+  <header class="flex flex-wrap items-center gap-x-6 gap-y-2 border-b border-slate-200 bg-white/80 px-5 py-3 backdrop-blur dark:border-slate-800 dark:bg-slate-900/70">
+    <div class="flex items-center gap-3">
+      <div class="grid h-9 w-9 place-items-center rounded-xl bg-gradient-to-br from-indigo-500 via-sky-500 to-emerald-500 shadow-lg shadow-indigo-500/20">
+        <svg viewBox="0 0 24 24" class="h-5 w-5 text-white" fill="none" stroke="currentColor" stroke-width="2"><circle cx="5" cy="12" r="2.5"/><circle cx="19" cy="5" r="2.5"/><circle cx="19" cy="19" r="2.5"/><path d="M7.3 11l9.4-5M7.3 13l9.4 5"/></svg>
+      </div>
+      <div>
+        <h1 class="text-[15px] font-semibold leading-tight tracking-tight">CPG Intelligence Graph</h1>
+        <p class="text-xs text-slate-500 dark:text-slate-400">Value-chain spine · six-layer ontology · Phase 1</p>
+      </div>
+    </div>
+    <nav class="relative flex items-center gap-1 text-sm font-medium text-slate-500 dark:text-slate-400" role="tablist">
+      <button class="tab relative px-3 py-2 hover:text-slate-900 dark:hover:text-white" data-tab="graph" aria-selected="true">Graph</button>
+      <button class="tab relative px-3 py-2 hover:text-slate-900 dark:hover:text-white" data-tab="schema" aria-selected="false">Schema</button>
+      <button class="tab relative px-3 py-2 hover:text-slate-900 dark:hover:text-white" data-tab="report" aria-selected="false">Report</button>
+    </nav>
+    <div id="stats" class="ml-auto flex flex-wrap items-center gap-2 text-xs"></div>
+    <button id="themeBtn" class="rounded-lg border border-slate-200 p-2 text-slate-500 hover:bg-slate-100 dark:border-slate-700 dark:text-slate-400 dark:hover:bg-slate-800" title="Toggle theme">
+      <svg class="h-4 w-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 12.8A9 9 0 1111.2 3a7 7 0 009.8 9.8z"/></svg>
+    </button>
+  </header>
+
+  <div id="error" class="hidden border-b border-rose-300 bg-rose-50 px-5 py-2 text-sm text-rose-700 dark:border-rose-900 dark:bg-rose-950/60 dark:text-rose-300"></div>
+
+  <!-- ============================== GRAPH TAB ============================== -->
+  <main id="tab-graph" class="flex min-h-0 flex-1">
+    <aside class="scroll-thin w-72 shrink-0 overflow-y-auto border-r border-slate-200 bg-white p-4 dark:border-slate-800 dark:bg-slate-900">
+      <div class="relative">
+        <input id="gSearch" placeholder="Search nodes…" class="w-full rounded-lg border border-slate-200 bg-slate-50 py-2 pl-9 pr-3 text-sm outline-none ring-indigo-500/40 placeholder:text-slate-400 focus:ring-2 dark:border-slate-700 dark:bg-slate-800">
+        <svg class="pointer-events-none absolute left-3 top-2.5 h-4 w-4 text-slate-400" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="7"/><path d="M20 20l-3.5-3.5"/></svg>
+        <div id="gResults" class="absolute z-20 mt-1 hidden max-h-72 w-full overflow-y-auto rounded-lg border border-slate-200 bg-white shadow-xl dark:border-slate-700 dark:bg-slate-800 scroll-thin"></div>
+      </div>
+
+      <h3 class="mb-2 mt-5 text-[11px] font-semibold uppercase tracking-wider text-slate-400">Competency questions</h3>
+      <div id="cqList" class="space-y-2"></div>
+
+      <h3 class="mb-2 mt-5 text-[11px] font-semibold uppercase tracking-wider text-slate-400">Node types</h3>
+      <div id="typeChips" class="flex flex-wrap gap-1.5"></div>
+
+      <h3 class="mb-2 mt-5 text-[11px] font-semibold uppercase tracking-wider text-slate-400">Relationships</h3>
+      <div id="relChips" class="flex flex-wrap gap-1.5"></div>
+
+      <h3 class="mb-2 mt-5 text-[11px] font-semibold uppercase tracking-wider text-slate-400">View</h3>
+      <div class="space-y-2 text-sm">
+        <label class="flex items-center justify-between gap-2"><span>Layout</span>
+          <select id="layoutSel" class="rounded-md border border-slate-200 bg-slate-50 px-2 py-1 text-sm dark:border-slate-700 dark:bg-slate-800">
+            <option value="columns">Value-chain columns</option>
+            <option value="force">Force-directed</option>
+          </select>
+        </label>
+        <label class="flex cursor-pointer items-center justify-between gap-2"><span>Mark drafted rows</span><input id="draftToggle" type="checkbox" checked class="h-4 w-4 accent-amber-500"></label>
+        <button id="fitBtn" class="w-full rounded-lg border border-slate-200 px-3 py-1.5 text-sm hover:bg-slate-100 dark:border-slate-700 dark:hover:bg-slate-800">Reset view</button>
+      </div>
+      <p class="mt-5 text-xs leading-relaxed text-slate-400">Click a node to reveal its neighbourhood (including hidden types). Dashed amber = drafted beyond source, awaiting review.</p>
+    </aside>
+
+    <section class="relative min-w-0 flex-1">
+      <div id="cyGraph" class="cy absolute inset-0"></div>
+      <div id="gLegend" class="pointer-events-none absolute bottom-3 left-3 flex flex-wrap gap-2 text-[11px]"></div>
+      <div id="gLoading" class="absolute inset-0 grid place-items-center text-sm text-slate-400">Loading graph…</div>
+    </section>
+
+    <aside id="gPanel" class="scroll-thin w-[420px] shrink-0 overflow-y-auto border-l border-slate-200 bg-white p-5 dark:border-slate-800 dark:bg-slate-900">
+      <div class="text-sm text-slate-400">Select a node, or run a competency question.</div>
+    </aside>
+  </main>
+
+  <!-- ============================== SCHEMA TAB ============================== -->
+  <main id="tab-schema" class="hidden min-h-0 flex-1">
+    <aside class="scroll-thin w-72 shrink-0 overflow-y-auto border-r border-slate-200 bg-white p-4 dark:border-slate-800 dark:bg-slate-900">
+      <input id="sSearch" placeholder="Find class or relationship…" class="w-full rounded-lg border border-slate-200 bg-slate-50 px-3 py-2 text-sm outline-none ring-indigo-500/40 placeholder:text-slate-400 focus:ring-2 dark:border-slate-700 dark:bg-slate-800">
+      <h3 class="mb-2 mt-5 text-[11px] font-semibold uppercase tracking-wider text-slate-400">Scope</h3>
+      <div id="scopeBtns" class="grid grid-cols-3 gap-1 rounded-lg bg-slate-100 p-1 text-xs font-medium dark:bg-slate-800"></div>
+      <h3 class="mb-2 mt-5 text-[11px] font-semibold uppercase tracking-wider text-slate-400">Layers</h3>
+      <div id="layerChips" class="space-y-1.5"></div>
+      <h3 class="mb-2 mt-5 flex items-center justify-between text-[11px] font-semibold uppercase tracking-wider text-slate-400">Relationships <span id="relCount" class="font-normal normal-case tracking-normal"></span></h3>
+      <div id="relList" class="scroll-thin max-h-[40vh] space-y-0.5 overflow-y-auto pr-1 text-[13px]"></div>
+    </aside>
+    <section class="relative min-w-0 flex-1">
+      <div id="cySchema" class="cy absolute inset-0"></div>
+      <div id="sSummary" class="pointer-events-none absolute left-3 top-3 rounded-lg bg-white/80 px-3 py-1.5 text-xs text-slate-500 shadow-sm backdrop-blur dark:bg-slate-900/80 dark:text-slate-400"></div>
+    </section>
+    <aside id="sPanel" class="scroll-thin w-[380px] shrink-0 overflow-y-auto border-l border-slate-200 bg-white p-5 dark:border-slate-800 dark:bg-slate-900">
+      <div class="text-sm text-slate-400">Select a class or relationship.</div>
+    </aside>
+  </main>
+
+  <!-- ============================== REPORT TAB ============================== -->
+  <main id="tab-report" class="scroll-thin hidden min-h-0 flex-1 overflow-y-auto">
+    <div id="report" class="mx-auto max-w-6xl p-6"></div>
+  </main>
+</div>
+
+<script>
+// ------------------------------------------------------------------ constants
+const LAYER = {
+  1: { name: 'Value chain', c: '#6366f1' }, 2: { name: 'Functional processes', c: '#0ea5e9' },
+  3: { name: 'Product and asset', c: '#10b981' }, 4: { name: 'Ecosystem and channel', c: '#f59e0b' },
+  5: { name: 'Performance and risk', c: '#f43f5e' }, 6: { name: 'Consumer and experience', c: '#8b5cf6' },
+};
+const TYPES = {
+  CPGValueChain:      { label: 'Value chain',  c: '#4f46e5', shape: 'star',             size: 46, on: true },
+  ValueChainStage:    { label: 'Stage',        c: '#6366f1', shape: 'round-rectangle',  size: 40, on: true },
+  ValueChainActivity: { label: 'Activity',     c: '#818cf8', shape: 'round-rectangle',  size: 26, on: true },
+  Output:             { label: 'Output',       c: '#10b981', shape: 'ellipse',          size: 18, on: true },
+  Input:              { label: 'Input',        c: '#14b8a6', shape: 'diamond',          size: 20, on: true },
+  BusinessEvent:      { label: 'Event',        c: '#f59e0b', shape: 'triangle',         size: 20, on: true },
+  Decision:           { label: 'Decision',     c: '#f43f5e', shape: 'hexagon',          size: 22, on: true },
+  DecisionOption:     { label: 'Option',       c: '#fb7185', shape: 'ellipse',          size: 12, on: false },
+  SubSector:          { label: 'Sub-sector',   c: '#8b5cf6', shape: 'octagon',          size: 30, on: true },
+  SourceEvidence:     { label: 'Evidence',     c: '#64748b', shape: 'tag',              size: 16, on: false },
+};
+const RELS = {
+  PRECEDES: { c: '#6366f1', on: true }, CONTAINS: { c: '#94a3b8', on: false }, DEPENDS_ON: { c: '#f97316', on: true },
+  BECOMES_INPUT_TO: { c: '#10b981', on: false }, PRODUCES: { c: '#34d399', on: false }, CONSUMES: { c: '#14b8a6', on: false },
+  TRIGGERED_BY: { c: '#f59e0b', on: false }, REQUIRES: { c: '#f43f5e', on: false }, SELECTS: { c: '#fb7185', on: false },
+  VARIES_IN: { c: '#8b5cf6', on: false }, BASED_ON: { c: '#64748b', on: false }, SUPPORTED_BY_EVIDENCE: { c: '#64748b', on: false },
+};
+const CQS = [
+  { n: 1, title: 'Trade scheme creation', sub: 'Which stage, and its neighbours?' },
+  { n: 2, title: 'Stage 3 → Stage 4', sub: 'Outputs that become inputs' },
+  { n: 3, title: 'Consensus forecast', sub: 'Activities that depend on it' },
+  { n: 4, title: 'Stage 5 by sub-sector', sub: 'Food & beverage vs home care' },
+];
+
+const S = { graph: null, schema: null, cyG: null, cyS: null, scope: 'spine', layers: new Set([1,2,3,4,5,6]), report: null };
+const $ = (id) => document.getElementById(id);
+const isDark = () => document.documentElement.classList.contains('dark');
+const esc = (s) => String(s ?? '').replace(/[&<>"']/g, (c) => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c]));
+
+async function api(path) {
+  const r = await fetch(path);
+  if (!r.ok) { const t = await r.text(); throw new Error(`${path}: ${r.status} ${t.slice(0, 200)}`); }
+  return r.json();
+}
+function showError(msg) { const e = $('error'); e.textContent = msg; e.classList.remove('hidden'); }
+
+// ------------------------------------------------------------------ tabs & theme
+document.querySelectorAll('.tab').forEach((b) => b.addEventListener('click', () => switchTab(b.dataset.tab)));
+function switchTab(t) {
+  document.querySelectorAll('.tab').forEach((b) => b.setAttribute('aria-selected', String(b.dataset.tab === t)));
+  ['graph', 'schema', 'report'].forEach((x) => { $(`tab-${x}`).classList.toggle('hidden', x !== t); $(`tab-${x}`).classList.toggle('flex', x === t && x !== 'report'); });
+  if (t === 'schema') { if (!S.cyS) initSchema(); else S.cyS.resize(); }
+  if (t === 'graph' && S.cyG) S.cyG.resize();
+  if (t === 'report') renderReport();
+  try { localStorage.setItem('kg-tab', t); } catch (e) {}
+}
+$('themeBtn').addEventListener('click', () => {
+  document.documentElement.classList.toggle('dark');
+  try { localStorage.setItem('kg-theme', isDark() ? 'dark' : 'light'); } catch (e) {}
+  if (S.cyG) S.cyG.style(graphStyle());
+  if (S.cyS) S.cyS.style(schemaStyle());
+});
+
+// ------------------------------------------------------------------ shared UI bits
+function badge(text, color, extra = '') {
+  return `<span class="inline-flex items-center gap-1 rounded-full px-2 py-0.5 text-[11px] font-medium ${extra}" style="background:${color}1f;color:${color}">${esc(text)}</span>`;
+}
+function chip(label, color, on, onClick, count) {
+  const b = document.createElement('button');
+  b.className = 'chip inline-flex items-center gap-1.5 rounded-full border border-slate-200 bg-white px-2.5 py-1 text-xs font-medium hover:border-slate-300 dark:border-slate-700 dark:bg-slate-800';
+  b.dataset.on = String(on);
+  b.innerHTML = `<span class="h-2 w-2 rounded-full" style="background:${color}"></span>${esc(label)}${count != null ? `<span class="text-slate-400">${count}</span>` : ''}`;
+  b.addEventListener('click', () => { b.dataset.on = String(b.dataset.on !== 'true'); onClick(b.dataset.on === 'true'); });
+  return b;
+}
+function kv(k, v) {
+  return `<div class="grid grid-cols-[120px_1fr] gap-2 py-1.5 text-[13px]"><div class="text-slate-400">${esc(k)}</div><div class="break-words">${v}</div></div>`;
+}
+function fmt(v) {
+  if (Array.isArray(v)) return v.map((x) => `<span class="mr-1 inline-block rounded bg-slate-100 px-1.5 py-0.5 text-xs dark:bg-slate-800">${esc(x)}</span>`).join('');
+  if (typeof v === 'string' && /^[A-Z][A-Za-z]+:[a-z0-9_]+$/.test(v)) return `<a href="#" class="text-indigo-500 hover:underline" data-goto="${esc(v)}">${esc(v.split(':')[1])}</a>`;
+  return esc(v);
+}
+function sourceLink(ref) {
+  if (!ref) return '';
+  const [path, anchor] = ref.split('#');
+  const href = path.startsWith('docs/') ? `/docs-src/${path.slice(5)}` : null;
+  return href ? `<a class="text-indigo-500 hover:underline" target="_blank" href="${href}">${esc(path)}</a>${anchor ? `<span class="text-slate-400"> #${esc(anchor)}</span>` : ''}` : esc(ref);
+}
+
+// ------------------------------------------------------------------ stats header
+async function loadStats() {
+  try {
+    const r = await api('/api/report'); S.report = r;
+    const orph = r.orphans_by_lane.curated || 0;
+    $('stats').innerHTML = [
+      ['Nodes', r.nodes, '#6366f1'], ['Edges', r.edges, '#0ea5e9'],
+      ['Curated orphans', orph, orph ? '#f43f5e' : '#10b981'], ['Awaiting review', r.unreviewed_nodes, '#f59e0b'],
+    ].map(([k, v, c]) => `<span class="inline-flex items-center gap-1.5 rounded-full border border-slate-200 bg-white px-2.5 py-1 dark:border-slate-700 dark:bg-slate-800"><span class="h-1.5 w-1.5 rounded-full" style="background:${c}"></span><span class="text-slate-500 dark:text-slate-400">${k}</span><b class="font-semibold">${v}</b></span>`).join('');
+  } catch (e) { showError(e.message); }
+}
+
+// ================================================================== GRAPH TAB
+function graphStyle() {
+  const dark = isDark();
+  const fg = dark ? '#e2e8f0' : '#1e293b', muted = dark ? '#94a3b8' : '#64748b';
+  const st = [
+    { selector: 'node', style: {
+      'background-color': (n) => TYPES[n.data('cls')]?.c || '#94a3b8', shape: (n) => TYPES[n.data('cls')]?.shape || 'ellipse',
+      width: (n) => TYPES[n.data('cls')]?.size || 16, height: (n) => TYPES[n.data('cls')]?.size || 16,
+      label: 'data(label)', color: fg, 'font-size': 10, 'font-family': 'Inter', 'text-wrap': 'wrap', 'text-max-width': 150,
+      'text-valign': 'bottom', 'text-margin-y': 4, 'min-zoomed-font-size': 7, 'border-width': 0,
+      'text-outline-color': dark ? '#020617' : '#f8fafc', 'text-outline-width': 2 } },
+    { selector: 'node[cls="ValueChainActivity"]', style: { width: 180, height: 30, 'text-valign': 'center', 'text-margin-y': 0, 'text-max-width': 168, 'font-size': 10.5,
+      'background-color': dark ? '#1e1b4b' : '#eef2ff', 'border-width': 1.5, 'border-color': '#818cf8', color: fg, 'text-outline-width': 0 } },
+    { selector: 'node[cls="ValueChainStage"]:parent', style: {
+      shape: 'round-rectangle', 'background-color': dark ? '#312e81' : '#e0e7ff', 'background-opacity': dark ? 0.35 : 0.55,
+      'border-width': 1.5, 'border-color': '#6366f1', 'border-opacity': 0.6, padding: 14, label: 'data(label)',
+      'text-valign': 'top', 'text-halign': 'center', 'text-margin-y': -6, 'font-size': 12.5, 'font-weight': 600, color: dark ? '#c7d2fe' : '#3730a3',
+      'text-max-width': 210, 'text-outline-width': 0 } },
+    { selector: 'node[cls="CPGValueChain"]', style: { 'font-size': 13, 'font-weight': 700 } },
+    { selector: 'edge', style: {
+      width: 1.3, 'curve-style': 'bezier', 'line-color': (e) => RELS[e.data('rel')]?.c || '#94a3b8',
+      'target-arrow-color': (e) => RELS[e.data('rel')]?.c || '#94a3b8', 'target-arrow-shape': 'triangle', 'arrow-scale': 0.8, opacity: 0.75,
+      label: '', 'font-size': 8, color: muted, 'text-rotation': 'autorotate', 'text-background-color': dark ? '#020617' : '#ffffff', 'text-background-opacity': 0.8 } },
+    { selector: 'edge[rel="PRECEDES"]', style: { width: 3.5, 'curve-style': 'straight', opacity: 0.9 } },
+    { selector: 'edge[rel="DEPENDS_ON"]', style: { 'curve-style': 'unbundled-bezier', 'control-point-distances': 40 } },
+    { selector: '.hidden', style: { display: 'none' } },
+    { selector: '.hidden.focus', style: { display: 'element' } },
+    { selector: '.faded', style: { opacity: 0.12, 'text-opacity': 0.15 } },
+    { selector: 'edge.focus', style: { opacity: 1, width: 2.2, label: 'data(rel)' } },
+    { selector: 'node:selected', style: { 'border-width': 3, 'border-color': '#f59e0b', 'overlay-opacity': 0 } },
+    { selector: '.cq', style: { opacity: 1, 'text-opacity': 1 } },
+    { selector: 'node.cq', style: { 'border-width': 3, 'border-color': '#22d3ee' } },
+    { selector: 'edge.cq', style: { width: 3.2, 'line-color': '#22d3ee', 'target-arrow-color': '#22d3ee', label: 'data(rel)', color: '#22d3ee', 'z-index': 99 } },
+  ];
+  if ($('draftToggle').checked) {
+    st.splice(5, 0,
+      { selector: 'node[?drafted][cls!="ValueChainStage"]', style: { 'border-width': 2, 'border-style': 'dashed', 'border-color': '#f59e0b' } },
+      { selector: 'edge[?drafted]', style: { 'line-style': 'dashed', 'line-dash-pattern': [6, 4] } });
+  }
+  return st;
+}
+
+function stageOf(g) {
+  // Assign each node a column (stage number; 0 = root/inputs, 12 = sub-sectors).
+  const byId = Object.fromEntries(g.nodes.map((n) => [n.id, n]));
+  const col = {}, parent = {};
+  g.nodes.forEach((n) => { if (n.cls === 'ValueChainStage') col[n.id] = n.stage_number; if (n.cls === 'CPGValueChain') col[n.id] = 0; if (n.cls === 'SubSector') col[n.id] = 12; });
+  const pick = (rel, from, fn) => g.edges.filter((e) => e.rel === rel).forEach((e) => fn(e, byId[e.source], byId[e.target]));
+  pick('CONTAINS', null, (e, s, t) => { if (s?.cls === 'ValueChainStage' && t?.cls === 'ValueChainActivity') { col[t.id] = s.stage_number; parent[t.id] = s.id; } });
+  pick('PRODUCES', null, (e, s, t) => { if (col[t.id] == null) col[t.id] = col[s.id]; });
+  pick('TRIGGERED_BY', null, (e, s, t) => { if (col[t.id] == null || col[s.id] < col[t.id]) col[t.id] = col[s.id]; });
+  pick('REQUIRES', null, (e, s, t) => { if (col[t.id] == null) col[t.id] = col[s.id]; });
+  pick('CONSUMES', null, (e, s, t) => { if (col[t.id] == null || col[s.id] < col[t.id]) col[t.id] = col[s.id]; });
+  pick('SELECTS', null, (e, s, t) => { col[t.id] = col[s.id]; });
+  pick('SUPPORTED_BY_EVIDENCE', null, (e, s, t) => { if (s.cls === 'ValueChainStage') col[t.id] = s.stage_number; });
+  pick('BASED_ON', null, (e, s, t) => { if (col[t.id] == null) col[t.id] = col[s.id]; });
+  g.nodes.forEach((n) => { if (col[n.id] == null) col[n.id] = 0; });
+  return { col, parent };
+}
+
+function initGraph(g) {
+  const { col, parent } = stageOf(g);
+  const els = [];
+  g.nodes.forEach((n) => {
+    const label = n.cls === 'ValueChainStage' ? `${n.stage_number} · ${n.name}` : n.name;
+    els.push({ group: 'nodes', data: { id: n.id, label, cls: n.cls, col: col[n.id], seq: n.sequence ?? 0, drafted: !!n.drafted, parent: parent[n.id] } });
+  });
+  g.edges.forEach((e) => {
+    if (e.rel === 'CONTAINS' && parent[e.target] === e.source) return; // shown as compound nesting
+    els.push({ group: 'edges', data: { id: e.id, source: e.source, target: e.target, rel: e.rel, drafted: !!e.drafted } });
+  });
+  S.cyG = cytoscape({ container: $('cyGraph'), elements: els, style: graphStyle(), wheelSensitivity: 0.25, minZoom: 0.08, maxZoom: 3 });
+  $('gLoading').remove();
+
+  // chips
+  const counts = {}; g.nodes.forEach((n) => (counts[n.cls] = (counts[n.cls] || 0) + 1));
+  Object.entries(TYPES).forEach(([cls, t]) => { if (!counts[cls]) return; $('typeChips').appendChild(chip(t.label, t.c, t.on, (on) => { t.on = on; applyFilters(true); }, counts[cls])); });
+  const rc = {}; g.edges.forEach((e) => (rc[e.rel] = (rc[e.rel] || 0) + 1));
+  Object.entries(RELS).forEach(([rel, r]) => { if (!rc[rel]) return; $('relChips').appendChild(chip(rel, r.c, r.on, (on) => { r.on = on; applyFilters(false); }, rc[rel])); });
+  $('gLegend').innerHTML = Object.entries(TYPES).filter(([c]) => counts[c]).map(([c, t]) => `<span class="inline-flex items-center gap-1 rounded-full bg-white/85 px-2 py-0.5 shadow-sm dark:bg-slate-900/85"><span class="h-2 w-2 rounded-full" style="background:${t.c}"></span>${t.label}</span>`).join('');
+
+  // CQ cards
+  CQS.forEach((q) => {
+    const b = document.createElement('button');
+    b.className = 'group w-full rounded-xl border border-slate-200 bg-gradient-to-br from-white to-slate-50 p-2.5 text-left hover:border-cyan-400 hover:shadow-md dark:border-slate-700 dark:from-slate-800 dark:to-slate-900';
+    b.innerHTML = `<div class="flex items-center gap-2"><span class="grid h-6 w-6 place-items-center rounded-md bg-cyan-500/15 text-xs font-bold text-cyan-600 dark:text-cyan-300">Q${q.n}</span><span class="text-[13px] font-medium">${q.title}</span></div><div class="mt-0.5 pl-8 text-xs text-slate-400">${q.sub}</div>`;
+    b.addEventListener('click', () => runCQ(q.n));
+    $('cqList').appendChild(b);
+  });
+
+  S.cyG.on('tap', 'node', (ev) => { if (!ev.target.isParent() || ev.target.data('cls') === 'ValueChainStage') focusNode(ev.target.id()); });
+  S.cyG.on('tap', (ev) => { if (ev.target === S.cyG) clearFocus(); });
+  $('layoutSel').addEventListener('change', () => runLayout(true));
+  $('draftToggle').addEventListener('change', () => S.cyG.style(graphStyle()));
+  $('fitBtn').addEventListener('click', () => { clearFocus(); S.cyG.animate({ fit: { eles: S.cyG.elements(':visible'), padding: 40 } }, { duration: 300 }); });
+  setupSearch(g);
+  applyFilters(true, false);
+}
+
+function applyFilters(relayout, animate = true) {
+  const cy = S.cyG;
+  cy.batch(() => {
+    cy.nodes().forEach((n) => n.toggleClass('hidden', !TYPES[n.data('cls')]?.on));
+    cy.edges().forEach((e) => e.toggleClass('hidden', !RELS[e.data('rel')]?.on));
+  });
+  if (relayout) runLayout(animate);
+}
+
+// Value-chain columns, wrapped in two rows (stages 1-6, then 7-11 + sub-sectors) so the overview stays legible.
+// Activities start at the same y in every stage; events/inputs stack above, outputs/decisions below.
+function columnPositions() {
+  const cy = S.cyG, W = 290, ROW_H = 1500, ACT_H = 44, pos = {};
+  const ABOVE = ['BusinessEvent', 'Input'], BELOW = ['Output', 'Decision', 'DecisionOption', 'SourceEvidence'];
+  const cols = {};
+  cy.nodes().filter((n) => !n.hasClass('hidden') || n.hasClass('focus')).forEach((n) => {
+    if (n.data('cls') !== 'ValueChainStage') (cols[n.data('col')] ||= []).push(n);
+  });
+  const byLabel = (a, b) => a.data('label').localeCompare(b.data('label'));
+  Object.entries(cols).forEach(([c, nodes]) => {
+    c = +c;
+    const row = c <= 6 ? 0 : 1, x0 = (row ? c - 6 : c) * W, y0 = row * ROW_H;
+    const of = (cls) => nodes.filter((n) => n.data('cls') === cls);
+    [...of('CPGValueChain'), ...of('SubSector')].sort(byLabel).forEach((n, i) => { pos[n.id()] = { x: x0, y: y0 + 160 + i * 120 }; });
+    of('ValueChainActivity').sort((a, b) => a.data('seq') - b.data('seq')).forEach((n, i) => { pos[n.id()] = { x: x0, y: y0 + i * ACT_H }; });
+    let yUp = y0 - 90;
+    ABOVE.forEach((cls) => {
+      const list = of(cls).sort(byLabel);
+      list.forEach((n, i) => { pos[n.id()] = { x: x0 + (i % 2 ? 60 : -60), y: yUp - Math.floor(i / 2) * 46 }; });
+      if (list.length) yUp -= Math.ceil(list.length / 2) * 46 + 24;
+    });
+    let yDown = y0 + 11 * ACT_H + 70;
+    BELOW.forEach((cls) => {
+      const list = of(cls).sort(byLabel);
+      list.forEach((n, i) => { pos[n.id()] = { x: x0 + (i % 2 ? 60 : -60), y: yDown + Math.floor(i / 2) * 46 }; });
+      if (list.length) yDown += Math.ceil(list.length / 2) * 46 + 30;
+    });
+  });
+  return pos;
+}
+
+function runLayout(animate) {
+  const cy = S.cyG, vis = cy.elements().filter((e) => !e.hasClass('hidden') || e.hasClass('focus'));
+  const mode = $('layoutSel').value;
+  const opts = mode === 'columns'
+    ? { name: 'preset', positions: (n) => columnPositions()[n.id()] || n.position(), fit: true, padding: 40, animate, animationDuration: 350 }
+    : { name: 'fcose', quality: 'proof', animate, animationDuration: 500, nodeRepulsion: 9000, idealEdgeLength: 90, nestingFactor: 0.6, packComponents: true, fit: true, padding: 40 };
+  if (mode === 'columns') { const p = columnPositions(); cy.nodes().forEach((n) => { if (p[n.id()]) n.data('_p', p[n.id()]); }); opts.positions = (n) => n.data('_p') || n.position(); }
+  vis.layout(opts).run();
+}
+
+function clearFocus() {
+  S.cyG.elements().removeClass('focus faded cq');
+  S.cyG.$(':selected').unselect();
+}
+
+async function focusNode(id) {
+  const cy = S.cyG, n = cy.getElementById(id);
+  if (!n.length) return;
+  cy.elements().removeClass('focus faded cq');
+  let hood = n.closedNeighborhood();
+  if (n.data('cls') === 'ValueChainStage') hood = hood.union(n.children()).union(n.children().connectedEdges().filter((e) => !e.hasClass('hidden')));
+  hood.addClass('focus');
+  hood.connectedNodes().addClass('focus');
+  cy.elements().not(hood).not(hood.connectedNodes()).not(hood.parents()).addClass('faded');
+  n.select();
+  if (hood.nodes().some((x) => x.hasClass('hidden')) && $('layoutSel').value === 'columns') runLayout(true);
+  cy.animate({ center: { eles: n }, zoom: Math.max(cy.zoom(), 0.75) }, { duration: 300 });
+  renderNodePanel(id);
+}
+
+async function renderNodePanel(id) {
+  const p = $('gPanel');
+  p.innerHTML = '<div class="text-sm text-slate-400">Loading…</div>';
+  try {
+    const d = await api('/api/node/' + encodeURIComponent(id));
+    const t = TYPES[d.cls] || { c: '#94a3b8', label: d.cls };
+    const pr = d.provenance;
+    const flags = [badge(pr.lane || 'n/a', '#0ea5e9'), pr.reviewed ? badge('reviewed', '#10b981') : badge('awaiting review', '#64748b'),
+      pr.drafted_beyond_source ? badge('drafted beyond source', '#f59e0b') : ''].join(' ');
+    const props = Object.entries(d.properties).filter(([k]) => !['id', 'name'].includes(k));
+    const groups = {};
+    d.neighbors.forEach((nb) => { (groups[`${nb.direction === 'out' ? '→' : '←'} ${nb.rel}`] ||= []).push(nb); });
+    p.innerHTML = `<div class="fade-in">
+      <div class="flex items-center gap-2">${badge(t.label, t.c)}<span class="text-[11px] text-slate-400">layer ${d.class_info.layer}</span></div>
+      <h2 class="mt-2 text-lg font-semibold leading-snug">${esc(d.properties.name)}</h2>
+      <div class="mt-1 font-mono text-[11px] text-slate-400 break-all">${esc(d.id)}</div>
+      <div class="mt-3 flex flex-wrap gap-1.5">${flags}</div>
+      ${pr.review_note ? `<div class="mt-3 rounded-lg border border-amber-300/60 bg-amber-50 px-3 py-2 text-xs text-amber-800 dark:border-amber-500/30 dark:bg-amber-500/10 dark:text-amber-200">${esc(pr.review_note)}</div>` : ''}
+      <div class="mt-4 divide-y divide-slate-100 dark:divide-slate-800">${props.map(([k, v]) => kv(k, fmt(v))).join('')}</div>
+      <h3 class="mb-1 mt-5 text-[11px] font-semibold uppercase tracking-wider text-slate-400">Provenance</h3>
+      <div class="divide-y divide-slate-100 dark:divide-slate-800">${kv('source', sourceLink(pr.source_reference))}${kv('system', esc(pr.source_system))}${kv('confidence', esc(pr.extraction_confidence))}</div>
+      <h3 class="mb-2 mt-5 text-[11px] font-semibold uppercase tracking-wider text-slate-400">Relationships · ${d.neighbors.length}</h3>
+      <div class="space-y-3">${Object.entries(groups).map(([g, list]) => `
+        <div><div class="mb-1 text-xs font-medium" style="color:${RELS[list[0].rel]?.c || '#94a3b8'}">${esc(g)} <span class="text-slate-400">${list.length}</span></div>
+          <div class="space-y-1">${list.map((nb) => `<button data-goto="${esc(nb.id)}" class="flex w-full items-start gap-2 rounded-lg px-2 py-1.5 text-left text-[13px] hover:bg-slate-100 dark:hover:bg-slate-800">
+            <span class="mt-1.5 h-2 w-2 shrink-0 rounded-full" style="background:${TYPES[nb.cls]?.c || '#94a3b8'}"></span>
+            <span class="min-w-0"><span class="block">${esc(nb.name)}</span>${Object.entries(nb.props).filter(([k]) => k !== 'drafted_beyond_source').map(([k, v]) => `<span class="block text-xs text-slate-400"><b class="font-medium">${esc(k)}:</b> ${esc(v)}</span>`).join('')}
+            ${nb.props.drafted_beyond_source ? '<span class="text-[11px] text-amber-500">drafted</span>' : ''}</span></button>`).join('')}</div></div>`).join('')}</div>
+    </div>`;
+  } catch (e) { p.innerHTML = `<div class="text-sm text-rose-500">${esc(e.message)}</div>`; }
+}
+
+document.addEventListener('click', (ev) => {
+  const a = ev.target.closest('[data-goto]');
+  if (!a) return;
+  ev.preventDefault();
+  const id = a.dataset.goto;
+  if ($('tab-graph').classList.contains('hidden')) switchTab('graph');
+  const n = S.cyG?.getElementById(id);
+  if (n && n.length) { n.addClass('focus'); focusNode(id); }
+});
+
+async function runCQ(n) {
+  const p = $('gPanel');
+  p.innerHTML = '<div class="text-sm text-slate-400">Running query…</div>';
+  try {
+    const r = await api('/api/competency/' + n);
+    const cy = S.cyG;
+    cy.elements().removeClass('focus faded cq');
+    const ids = new Set(r.path.flatMap(([a, , b]) => [a, b]));
+    const keys = new Set(r.path.map(([a, rel, b]) => `${a}|${rel}|${b}`));
+    const nodes = cy.nodes().filter((x) => ids.has(x.id()));
+    const edges = cy.edges().filter((e) => keys.has(`${e.data('source')}|${e.data('rel')}|${e.data('target')}`));
+    nodes.addClass('cq focus'); edges.addClass('cq focus'); nodes.parents().addClass('focus');
+    cy.elements().not(nodes).not(edges).not(nodes.parents()).addClass('faded');
+    if ($('layoutSel').value === 'columns') runLayout(false);
+    setTimeout(() => cy.animate({ fit: { eles: nodes, padding: 70 } }, { duration: 400 }), 60);
+    const cols = r.rows.length ? Object.keys(r.rows[0]).filter((k) => !k.endsWith('_id') && k !== 'via') : [];
+    p.innerHTML = `<div class="fade-in">
+      <div class="flex items-center gap-2">${badge('Competency Q' + n, '#06b6d4')}<span class="text-xs text-slate-400">${r.rows.length} rows · ${r.path.length} edges</span></div>
+      <h2 class="mt-2 text-[15px] font-semibold leading-snug">${esc(r.question)}</h2>
+      <div class="mt-4 overflow-x-auto rounded-lg border border-slate-200 dark:border-slate-700">
+        <table class="w-full text-left text-xs"><thead class="bg-slate-50 text-slate-500 dark:bg-slate-800 dark:text-slate-400"><tr>${cols.map((c) => `<th class="px-2.5 py-2 font-medium">${esc(c.replace(/_/g, ' '))}</th>`).join('')}</tr></thead>
+        <tbody class="divide-y divide-slate-100 dark:divide-slate-800">${r.rows.map((row) => `<tr>${cols.map((c) => `<td class="px-2.5 py-2 align-top">${esc(row[c])}</td>`).join('')}</tr>`).join('')}</tbody></table>
+      </div>
+      <h3 class="mb-1 mt-5 text-[11px] font-semibold uppercase tracking-wider text-slate-400">Answer path</h3>
+      <div class="space-y-1 font-mono text-[11px] text-slate-500 dark:text-slate-400">${r.path.map(([a, rel, b]) => `<div><span data-goto="${esc(a)}" class="cursor-pointer hover:text-indigo-500">${esc(a.split(':')[1])}</span> <span style="color:${RELS[rel]?.c}">-[${rel}]→</span> <span data-goto="${esc(b)}" class="cursor-pointer hover:text-indigo-500">${esc(b.split(':')[1])}</span></div>`).join('')}</div>
+    </div>`;
+  } catch (e) { p.innerHTML = `<div class="text-sm text-rose-500">${esc(e.message)}</div>`; }
+}
+
+function setupSearch(g) {
+  const input = $('gSearch'), box = $('gResults');
+  input.addEventListener('input', () => {
+    const q = input.value.trim().toLowerCase();
+    if (q.length < 2) { box.classList.add('hidden'); return; }
+    const hits = g.nodes.filter((n) => (n.name || '').toLowerCase().includes(q) || n.id.toLowerCase().includes(q)).slice(0, 30);
+    box.innerHTML = hits.length ? hits.map((n) => `<button data-goto="${esc(n.id)}" class="flex w-full items-center gap-2 px-3 py-2 text-left text-[13px] hover:bg-slate-100 dark:hover:bg-slate-700"><span class="h-2 w-2 shrink-0 rounded-full" style="background:${TYPES[n.cls]?.c || '#94a3b8'}"></span><span class="truncate">${esc(n.name)}</span><span class="ml-auto shrink-0 text-[11px] text-slate-400">${TYPES[n.cls]?.label || n.cls}</span></button>`).join('') : '<div class="px-3 py-2 text-xs text-slate-400">No matches</div>';
+    box.classList.remove('hidden');
+  });
+  document.addEventListener('click', (ev) => { if (!box.contains(ev.target) && ev.target !== input) box.classList.add('hidden'); });
+}
+
+// ================================================================== SCHEMA TAB
+function schemaStyle() {
+  const dark = isDark(), fg = dark ? '#e2e8f0' : '#1e293b';
+  return [
+    { selector: 'node', style: { 'background-color': (n) => LAYER[n.data('layer')].c, label: 'data(id)', color: fg, 'font-size': 10, 'font-family': 'Inter',
+      width: (n) => 14 + Math.min(30, n.degree() * 1.6), height: (n) => 14 + Math.min(30, n.degree() * 1.6),
+      'text-valign': 'bottom', 'text-margin-y': 3, 'min-zoomed-font-size': 6, 'text-outline-color': dark ? '#020617' : '#f8fafc', 'text-outline-width': 2 } },
+    { selector: 'node[?stub]', style: { 'background-opacity': 0.35, 'border-width': 2, 'border-style': 'dashed', 'border-color': (n) => LAYER[n.data('layer')].c } },
+    { selector: 'node[count > 0]', style: { 'border-width': 3, 'border-color': dark ? '#f8fafc' : '#0f172a', 'border-opacity': 0.5 } },
+    { selector: 'edge', style: { width: 1, 'curve-style': 'bezier', 'line-color': dark ? '#475569' : '#cbd5e1', 'target-arrow-color': dark ? '#475569' : '#cbd5e1',
+      'target-arrow-shape': 'triangle', 'arrow-scale': 0.7, label: 'data(rel)', 'font-size': 7, color: dark ? '#94a3b8' : '#64748b', 'min-zoomed-font-size': 9,
+      'text-rotation': 'autorotate', 'loop-direction': '-45deg', 'loop-sweep': '40deg' } },
+    { selector: 'edge[?hook]', style: { 'line-color': '#a78bfa', 'target-arrow-color': '#a78bfa', width: 1.8 } },
+    { selector: '.faded', style: { opacity: 0.1 } },
+    { selector: '.hl', style: { opacity: 1 } },
+    { selector: 'edge.hl', style: { 'line-color': '#22d3ee', 'target-arrow-color': '#22d3ee', width: 2.4, 'font-size': 9, color: '#22d3ee', 'min-zoomed-font-size': 0, 'z-index': 99 } },
+    { selector: 'node:selected', style: { 'border-width': 3, 'border-color': '#f59e0b', 'border-style': 'solid' } },
+  ];
+}
+
+async function initSchema() {
+  if (!S.schema) {
+    try { S.schema = await api('/api/schema'); } catch (e) { showError(e.message); return; }
+  }
+  const sc = S.schema;
+  // scope buttons
+  [['spine', 'Spine + hooks'], ['finance', 'Finance'], ['all', 'All']].forEach(([k, label]) => {
+    const b = document.createElement('button');
+    b.className = 'rounded-md px-2 py-1.5'; b.textContent = label; b.dataset.k = k;
+    b.addEventListener('click', () => { S.scope = k; drawSchema(); });
+    $('scopeBtns').appendChild(b);
+  });
+  const perLayer = {}; Object.values(sc.classes).forEach((c) => (perLayer[c.layer] = (perLayer[c.layer] || 0) + 1));
+  Object.entries(LAYER).forEach(([l, v]) => {
+    const c = chip(`L${l} · ${v.name}`, v.c, true, (on) => { on ? S.layers.add(+l) : S.layers.delete(+l); drawSchema(); }, perLayer[l] || 0);
+    c.classList.add('w-full', 'justify-start'); $('layerChips').appendChild(c);
+  });
+  $('sSearch').addEventListener('input', () => schemaSearch($('sSearch').value.trim()));
+  drawSchema();
+}
+
+function scopeClasses() {
+  const sc = S.schema, hookTargets = new Set();
+  Object.values(sc.relationships).forEach((r) => { r.pairs.forEach((p) => { if (p.hook_layer) { hookTargets.add(p.from); hookTargets.add(p.to); } }); });
+  return Object.entries(sc.classes).filter(([name, c]) => {
+    if (!S.layers.has(c.layer)) return false;
+    if (S.scope === 'spine') return c.module === 'layer1_value_chain' || c.module === 'hooks' || hookTargets.has(name);
+    if (S.scope === 'finance') return c.module === 'finance';
+    return true;
+  }).map(([n]) => n);
+}
+
+function drawSchema() {
+  const sc = S.schema, keep = new Set(scopeClasses());
+  document.querySelectorAll('#scopeBtns button').forEach((b) => { const on = b.dataset.k === S.scope; b.className = 'rounded-md px-2 py-1.5 ' + (on ? 'bg-white shadow-sm text-indigo-600 dark:bg-slate-700 dark:text-indigo-300' : 'text-slate-500'); });
+  const els = [];
+  keep.forEach((n) => { const c = sc.classes[n]; els.push({ group: 'nodes', data: { id: n, layer: c.layer, stub: c.stub, count: sc.instance_counts[n] || 0 } }); });
+  let i = 0; const relsShown = {};
+  Object.entries(sc.relationships).forEach(([rel, r]) => r.pairs.forEach((p) => {
+    if (keep.has(p.from) && keep.has(p.to)) { els.push({ group: 'edges', data: { id: 's' + i++, source: p.from, target: p.to, rel, hook: !!p.hook_layer } }); relsShown[rel] = (relsShown[rel] || 0) + 1; }
+  }));
+  if (S.cyS) S.cyS.destroy();
+  S.cyS = cytoscape({ container: $('cySchema'), elements: els, style: schemaStyle(), wheelSensitivity: 0.25, minZoom: 0.05 });
+  S.cyS.layout({ name: 'fcose', quality: 'proof', nodeRepulsion: 12000, idealEdgeLength: 110, animate: false, packComponents: true, padding: 30 }).run();
+  S.cyS.on('tap', 'node', (ev) => classPanel(ev.target.id()));
+  S.cyS.on('tap', 'edge', (ev) => relPanel(ev.target.data('rel')));
+  S.cyS.on('tap', (ev) => { if (ev.target === S.cyS) S.cyS.elements().removeClass('faded hl'); });
+  $('sSummary').textContent = `${keep.size} classes · ${els.length - keep.size} relationship pairs shown`;
+  $('relCount').textContent = Object.keys(relsShown).length;
+  $('relList').innerHTML = Object.entries(relsShown).sort().map(([rel, n]) => `<button data-rel="${rel}" class="flex w-full items-center justify-between rounded-md px-2 py-1 font-mono text-[11.5px] hover:bg-slate-100 dark:hover:bg-slate-800"><span class="truncate">${rel}${sc.relationships[rel].hook_layer ? ' <span class="text-violet-400">hook</span>' : ''}</span><span class="text-slate-400">${n}</span></button>`).join('');
+  $('relList').querySelectorAll('[data-rel]').forEach((b) => b.addEventListener('click', () => relPanel(b.dataset.rel)));
+}
+
+function highlightSchema(eles) {
+  S.cyS.elements().removeClass('hl').addClass('faded');
+  eles.removeClass('faded').addClass('hl');
+  S.cyS.animate({ fit: { eles, padding: 60 } }, { duration: 350 });
+}
+
+function schemaSearch(q) {
+  if (!q) { S.cyS.elements().removeClass('faded hl'); return; }
+  const lq = q.toLowerCase();
+  const n = S.cyS.nodes().filter((x) => x.id().toLowerCase().includes(lq));
+  const e = S.cyS.edges().filter((x) => x.data('rel').toLowerCase().includes(lq));
+  if (n.length || e.length) highlightSchema(n.union(e).union(e.connectedNodes()));
+}
+
+function attrTable(attrs) {
+  return `<table class="w-full text-left text-xs"><thead class="text-slate-400"><tr><th class="py-1.5 font-medium">attribute</th><th class="font-medium">type</th><th class="font-medium text-right">req</th></tr></thead>
+    <tbody class="divide-y divide-slate-100 dark:divide-slate-800">${Object.entries(attrs).map(([k, a]) => `<tr><td class="py-1.5 font-mono">${esc(k)}</td>
+    <td>${esc(a.type)}${a.values ? `<div class="text-[10.5px] text-slate-400">${esc(a.values.join(' · '))}</div>` : ''}</td><td class="text-right">${a.required ? '<span class="text-emerald-500">●</span>' : '<span class="text-slate-300 dark:text-slate-600">○</span>'}</td></tr>`).join('')}</tbody></table>`;
+}
+
+function classPanel(name) {
+  const sc = S.schema, c = sc.classes[name];
+  const n = S.cyS.getElementById(name);
+  if (n.length) highlightSchema(n.closedNeighborhood());
+  const out = [], inc = [];
+  Object.entries(sc.relationships).forEach(([rel, r]) => r.pairs.forEach((p) => { if (p.from === name) out.push([rel, p.to, p.hook_layer]); if (p.to === name) inc.push([rel, p.from, p.hook_layer]); }));
+  const relRows = (list, arrow) => list.map(([rel, other, hook]) => `<button data-class="${esc(other)}" class="flex w-full items-center gap-2 rounded-md px-2 py-1 text-left text-xs hover:bg-slate-100 dark:hover:bg-slate-800"><span class="font-mono ${hook ? 'text-violet-500' : 'text-slate-500'}">${arrow} ${esc(rel)}</span><span class="ml-auto inline-flex items-center gap-1"><span class="h-2 w-2 rounded-full" style="background:${LAYER[sc.classes[other].layer].c}"></span>${esc(other)}</span></button>`).join('');
+  $('sPanel').innerHTML = `<div class="fade-in">
+    <div class="flex flex-wrap items-center gap-1.5">${badge('L' + c.layer + ' · ' + LAYER[c.layer].name, LAYER[c.layer].c)}${badge(c.module, '#64748b')}${c.stub ? badge('stub', '#f59e0b') : ''}</div>
+    <h2 class="mt-2 text-lg font-semibold">${esc(name)}</h2>
+    <p class="mt-1 text-[13px] leading-relaxed text-slate-600 dark:text-slate-300">${esc(c.description)}</p>
+    <div class="mt-3 divide-y divide-slate-100 dark:divide-slate-800">
+      ${kv('instances', `<b>${sc.instance_counts[name] || 0}</b>`)}${c.source_key ? kv('spec key', `<span class="font-mono text-xs">${esc(c.source_key)}</span> → id`) : ''}${c.spec_ref ? kv('spec', sourceLink(c.spec_ref)) : ''}
+    </div>
+    <h3 class="mb-1 mt-5 text-[11px] font-semibold uppercase tracking-wider text-slate-400">Attributes</h3>
+    ${Object.keys(c.attributes).length ? attrTable(c.attributes) : '<div class="text-xs text-slate-400">Common attributes only.</div>'}
+    <details class="mt-2"><summary class="cursor-pointer text-xs text-slate-400 hover:text-slate-600">+ ${Object.keys(sc.node_base).length} common provenance &amp; retrieval attributes</summary><div class="mt-2">${attrTable(sc.node_base)}</div></details>
+    <h3 class="mb-1 mt-5 text-[11px] font-semibold uppercase tracking-wider text-slate-400">Outgoing · ${out.length}</h3>${relRows(out, '→') || '<div class="text-xs text-slate-400">none</div>'}
+    <h3 class="mb-1 mt-4 text-[11px] font-semibold uppercase tracking-wider text-slate-400">Incoming · ${inc.length}</h3>${relRows(inc, '←') || '<div class="text-xs text-slate-400">none</div>'}
+  </div>`;
+  $('sPanel').querySelectorAll('[data-class]').forEach((b) => b.addEventListener('click', () => classPanel(b.dataset.class)));
+}
+
+function relPanel(rel) {
+  const r = S.schema.relationships[rel];
+  const e = S.cyS.edges().filter((x) => x.data('rel') === rel);
+  if (e.length) highlightSchema(e.union(e.connectedNodes()));
+  $('sPanel').innerHTML = `<div class="fade-in">
+    <div class="flex flex-wrap gap-1.5">${badge('relationship', '#22d3ee')}${r.hook_layer ? badge('hook → L' + r.hook_layer, '#8b5cf6') : ''}${r.modules.map((m) => badge(m, '#64748b')).join('')}</div>
+    <h2 class="mt-2 font-mono text-base font-semibold">${esc(rel)}</h2>
+    <p class="mt-1 text-[13px] text-slate-600 dark:text-slate-300">${esc(r.description)}</p>
+    <h3 class="mb-1 mt-5 text-[11px] font-semibold uppercase tracking-wider text-slate-400">Allowed pairs · ${r.pairs.length}</h3>
+    <div class="space-y-1">${r.pairs.map((p) => `<div class="rounded-md bg-slate-50 px-2 py-1.5 text-xs dark:bg-slate-800/60"><button data-class="${esc(p.from)}" class="hover:text-indigo-500">${esc(p.from)}</button> <span class="text-slate-400">→</span> <button data-class="${esc(p.to)}" class="hover:text-indigo-500">${esc(p.to)}</button>${p.cardinality ? ` <span class="text-slate-400">(${esc(p.cardinality)})</span>` : ''}${p.hook_layer ? ` <span class="text-violet-400">hook L${p.hook_layer}</span>` : ''}${p.note ? `<div class="mt-0.5 text-[11px] text-slate-400">${esc(p.note)}</div>` : ''}</div>`).join('')}</div>
+    ${Object.keys(r.properties).length ? `<h3 class="mb-1 mt-5 text-[11px] font-semibold uppercase tracking-wider text-slate-400">Edge properties</h3>${attrTable(r.properties)}` : ''}
+  </div>`;
+  $('sPanel').querySelectorAll('[data-class]').forEach((b) => b.addEventListener('click', () => classPanel(b.dataset.class)));
+}
+
+// ================================================================== REPORT TAB
+async function renderReport() {
+  const el = $('report');
+  if (!S.report) { el.innerHTML = '<div class="text-sm text-slate-400">Loading…</div>'; await loadStats(); }
+  const r = S.report; if (!r) return;
+  const curated = r.nodes_by_lane.curated || 0, orph = r.orphans_by_lane.curated || 0;
+  const card = (label, value, sub, color) => `<div class="rounded-2xl border border-slate-200 bg-white p-5 shadow-sm dark:border-slate-800 dark:bg-slate-900">
+    <div class="text-xs font-medium uppercase tracking-wider text-slate-400">${label}</div><div class="mt-2 text-3xl font-semibold tracking-tight" style="color:${color || 'inherit'}">${value}</div><div class="mt-1 text-xs text-slate-400">${sub}</div></div>`;
+  const maxC = Math.max(...Object.values(r.per_class).map((x) => x.nodes));
+  const maxR = Math.max(...Object.values(r.edges_by_rel));
+  el.innerHTML = `<div class="fade-in">
+    <h2 class="text-xl font-semibold tracking-tight">Quality report</h2>
+    <p class="mt-1 text-sm text-slate-500 dark:text-slate-400">Same metrics as <code class="rounded bg-slate-100 px-1 font-mono text-xs dark:bg-slate-800">make report</code>, read live from the database.</p>
+    <div class="mt-6 grid grid-cols-2 gap-4 lg:grid-cols-4">
+      ${card('Curated orphans', orph, `of ${curated} curated nodes · target 0`, orph ? '#f43f5e' : '#10b981')}
+      ${card('Graph size', `${r.nodes}<span class="text-lg text-slate-400"> / ${r.edges}</span>`, 'nodes / edges')}
+      ${card('Awaiting review', r.unreviewed_nodes, 'nodes with reviewed: false', '#f59e0b')}
+      ${card('Drafted beyond source', `${r.drafted_nodes}<span class="text-lg text-slate-400"> / ${r.drafted_edges}</span>`, 'nodes / edges for owner review', '#f59e0b')}
+    </div>
+    <div class="mt-4 grid grid-cols-2 gap-4 lg:grid-cols-4">
+      ${card('Outer layer → activity', `${r.outer[0]} / ${r.outer[1]}`, r.outer[1] ? 'outer-layer nodes with a spine path' : 'no outer-layer instances until Phase 2')}
+      ${card('Extracted orphans', r.orphans_by_lane.extracted || 0, 'target < 5% · Phase 2')}
+      ${card('Rejections', r.rejected, 'staging/rejected')}
+      ${card('Unresolved items', r.unresolved, 'staging/unresolved')}
+    </div>
+    <div class="mt-6 grid gap-4 lg:grid-cols-2">
+      <div class="rounded-2xl border border-slate-200 bg-white p-5 dark:border-slate-800 dark:bg-slate-900">
+        <h3 class="text-sm font-semibold">Nodes by class</h3>
+        <div class="mt-4 space-y-2.5">${Object.entries(r.per_class).sort((a, b) => b[1].nodes - a[1].nodes).map(([c, v]) => `
+          <div class="grid grid-cols-[140px_1fr_90px] items-center gap-3 text-xs"><span class="truncate">${esc(c)}</span>
+          <div class="h-2 rounded-full bg-slate-100 dark:bg-slate-800"><div class="h-2 rounded-full" style="width:${(v.nodes / maxC * 100).toFixed(1)}%;background:${TYPES[c]?.c || '#94a3b8'}"></div></div>
+          <span class="text-right tabular-nums text-slate-500">${v.nodes} · ${v.edges_per_node}/n</span></div>`).join('')}</div>
+      </div>
+      <div class="rounded-2xl border border-slate-200 bg-white p-5 dark:border-slate-800 dark:bg-slate-900">
+        <h3 class="text-sm font-semibold">Edges by relationship</h3>
+        <div class="mt-4 space-y-2.5">${Object.entries(r.edges_by_rel).sort((a, b) => b[1] - a[1]).map(([rel, n]) => `
+          <div class="grid grid-cols-[170px_1fr_40px] items-center gap-3 text-xs"><span class="truncate font-mono text-[11px]">${esc(rel)}</span>
+          <div class="h-2 rounded-full bg-slate-100 dark:bg-slate-800"><div class="h-2 rounded-full" style="width:${(n / maxR * 100).toFixed(1)}%;background:${RELS[rel]?.c || '#94a3b8'}"></div></div>
+          <span class="text-right tabular-nums text-slate-500">${n}</span></div>`).join('')}</div>
+      </div>
+    </div>
+    ${r.orphans.length ? `<div class="mt-6 rounded-2xl border border-rose-300 bg-rose-50 p-5 text-sm dark:border-rose-900 dark:bg-rose-950/40"><b>Orphans</b><ul class="mt-2 list-disc pl-5">${r.orphans.map((o) => `<li>${esc(o)}</li>`).join('')}</ul></div>` : ''}
+  </div>`;
+}
+
+// ------------------------------------------------------------------ boot
+(async function boot() {
+  if (typeof cytoscape === 'undefined') { showError('Could not load Cytoscape from the CDN — check your internet connection.'); return; }
+  if (typeof cytoscapeFcose !== 'undefined') cytoscape.use(cytoscapeFcose);
+  loadStats();
+  try { S.graph = await api('/api/graph'); initGraph(S.graph); } catch (e) { showError(e.message); $('gLoading').textContent = e.message; }
+  let t = 'graph'; try { t = localStorage.getItem('kg-tab') || 'graph'; } catch (e) {}
+  if (t !== 'graph') switchTab(t);
+})();
+</script>
+</body>
+</html>

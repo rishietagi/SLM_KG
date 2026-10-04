@@ -1,0 +1,27 @@
+# Python
+__pycache__/
+*.pyc
+.pytest_cache/
+.venv/
+
+# Real client data — never commit
+data/real/
+data/client/
+*.xlsx
+!docs/source/*.xlsx
+
+# Graph database files
+db/
+*.kuzu
+*.kuzu.wal
+*.lbug
+
+# Build and staging outputs
+build/
+staging/**
+!staging/**/
+!staging/**/.gitkeep
+
+# Editor / OS
+.DS_Store
+.vscode/

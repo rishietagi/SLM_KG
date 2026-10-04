@@ -1,0 +1,12 @@
+class: SubSector
+defaults:
+  source_system: curated_reference
+  lane: curated
+  extraction_confidence: 1.0
+  reviewed: false
+  drafted_beyond_source: false
+  source_reference: "docs/PROJECT_CONTEXT.md#51-core-classes"
+rows:
+  - {id: "SubSector:food_beverage", name: "Food & beverage", aliases: [F&B, food and beverage], gpc_segment: "Food/Beverage/Tobacco"}
+  - {id: "SubSector:personal_care", name: "Personal care", aliases: [beauty and personal care, BPC], gpc_segment: "Beauty/Personal Care/Hygiene"}
+  - {id: "SubSector:home_care", name: "Home care", aliases: [household care, cleaning products], gpc_segment: "Cleaning/Hygiene Products"}

@@ -1,0 +1,24 @@
+# Citations for curated Layer-1 rows. One SourceEvidence node per cited source section.
+class: SourceEvidence
+defaults:
+  source_system: curated_reference
+  lane: curated
+  extraction_confidence: 1.0
+  reviewed: false
+  drafted_beyond_source: false
+  evidence_type: spec
+  document: docs/source/cpg_value_chain_design.md
+rows:
+  - {id: "SourceEvidence:design_l1_hierarchy", name: "Design notes §2 — Layer 1 hierarchy and value flow", section: "2. Layer 1 should be the first build", source_reference: "docs/source/cpg_value_chain_design.md#2-layer-1-should-be-the-first-build"}
+  - {id: "SourceEvidence:design_s01", name: "Design notes §4 — Stage 1", section: "Stage 1: Consumer and market insight", source_reference: "docs/source/cpg_value_chain_design.md#stage-1-consumer-and-market-insight"}
+  - {id: "SourceEvidence:design_s02", name: "Design notes §4 — Stage 2", section: "Stage 2: Portfolio and category strategy", source_reference: "docs/source/cpg_value_chain_design.md#stage-2-portfolio-and-category-strategy"}
+  - {id: "SourceEvidence:design_s03", name: "Design notes §4 — Stage 3", section: "Stage 3: Product innovation and formulation", source_reference: "docs/source/cpg_value_chain_design.md#stage-3-product-innovation-and-formulation"}
+  - {id: "SourceEvidence:design_s04", name: "Design notes §4 — Stage 4", section: "Stage 4: Ingredient and packaging sourcing", source_reference: "docs/source/cpg_value_chain_design.md#stage-4-ingredient-and-packaging-sourcing"}
+  - {id: "SourceEvidence:design_s05", name: "Design notes §4 — Stage 5", section: "Stage 5: Manufacturing, quality and packaging", source_reference: "docs/source/cpg_value_chain_design.md#stage-5-manufacturing-quality-and-packaging"}
+  - {id: "SourceEvidence:design_s06", name: "Design notes §4 — Stage 6", section: "Stage 6: Demand, supply and inventory planning", source_reference: "docs/source/cpg_value_chain_design.md#stage-6-demand-supply-and-inventory-planning"}
+  - {id: "SourceEvidence:design_s07", name: "Design notes §4 — Stage 7", section: "Stage 7: Warehousing and distribution", source_reference: "docs/source/cpg_value_chain_design.md#stage-7-warehousing-and-distribution"}
+  - {id: "SourceEvidence:design_s08", name: "Design notes §4 — Stage 8", section: "Stage 8: Customer, channel and revenue growth", source_reference: "docs/source/cpg_value_chain_design.md#stage-8-customer-channel-and-revenue-growth"}
+  - {id: "SourceEvidence:design_s09", name: "Design notes §4 — Stage 9", section: "Stage 9: Retail and outlet execution", source_reference: "docs/source/cpg_value_chain_design.md#stage-9-retail-and-outlet-execution"}
+  - {id: "SourceEvidence:design_s10", name: "Design notes §4 — Stage 10", section: "Stage 10: Purchase, consumption and feedback", source_reference: "docs/source/cpg_value_chain_design.md#stage-10-purchase-consumption-and-feedback"}
+  - {id: "SourceEvidence:design_s11", name: "Design notes §4 — Stage 11", section: "Stage 11: Returns, waste and circularity", source_reference: "docs/source/cpg_value_chain_design.md#stage-11-returns-waste-and-circularity"}
+  - {id: "SourceEvidence:finance_promotion_mechanic", name: "Finance spec §2G — PromotionMechanic examples", document: docs/source/finance_extraction_spec.md, section: "2. G. COMMERCIAL FINANCE — PromotionMechanic", source_reference: "docs/source/finance_extraction_spec.md#g-commercial-finance"}

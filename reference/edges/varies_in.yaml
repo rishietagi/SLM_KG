@@ -1,0 +1,58 @@
+# Sub-sector variations. NEITHER source document describes how stages differ by sub-sector, so every
+# row is drafted from general CPG practice and needs owner review (DECISIONS N2). Competency Q4 uses these.
+relationship: VARIES_IN
+defaults:
+  source_system: curated_reference
+  lane: curated
+  extraction_confidence: 1.0
+  reviewed: false
+  drafted_beyond_source: true
+  source_reference: "docs/PROJECT_CONTEXT.md#51-core-classes"
+rows:
+  # ---- Stage 5: manufacturing, quality and packaging ------------------------------------------
+  - {from: "ValueChainStage:s05_manufacturing_quality_packaging", to: "SubSector:food_beverage", aspect: process type,
+     variation: "Recipe-based batching with thermal processing (cooking, pasteurisation, baking, retort) before filling; lot traceability back to ingredient lots."}
+  - {from: "ValueChainStage:s05_manufacturing_quality_packaging", to: "SubSector:food_beverage", aspect: hygiene and safety regime,
+     variation: "HACCP food-safety plan with critical control points, allergen segregation and validated cleaning under food-safety regulation."}
+  - {from: "ValueChainStage:s05_manufacturing_quality_packaging", to: "SubSector:food_beverage", aspect: shelf life and release,
+     variation: "Short-to-medium shelf life; microbiological hold-and-release testing before dispatch."}
+  - {from: "ValueChainStage:s05_manufacturing_quality_packaging", to: "SubSector:home_care", aspect: process type,
+     variation: "Chemical blending of liquids, spray-drying or dry-mixing of powders and tableting on continuous high-volume lines."}
+  - {from: "ValueChainStage:s05_manufacturing_quality_packaging", to: "SubSector:home_care", aspect: hygiene and safety regime,
+     variation: "Chemical and worker safety (safety data sheets, hazard classification, flammable and aerosol controls); no food-grade hygiene regime."}
+  - {from: "ValueChainStage:s05_manufacturing_quality_packaging", to: "SubSector:home_care", aspect: shelf life and release,
+     variation: "Long shelf life; release on physicochemical specification (pH, viscosity, active content)."}
+  - {from: "ValueChainStage:s05_manufacturing_quality_packaging", to: "SubSector:personal_care", aspect: process type,
+     variation: "Emulsion and cosmetic batching under cosmetic GMP; preservative-efficacy and stability testing."}
+
+  # ---- Stage 5 activities -------------------------------------------------------------------
+  - {from: "ValueChainActivity:s05_batch_formulate", to: "SubSector:food_beverage", aspect: batching,
+     variation: "Recipe batching with allergen sequencing and changeover cleaning between allergen and non-allergen runs."}
+  - {from: "ValueChainActivity:s05_batch_formulate", to: "SubSector:home_care", aspect: batching,
+     variation: "Chemical mixing with surfactant/active dosing; powders may involve spray-drying towers."}
+  - {from: "ValueChainActivity:s05_in_process_quality_checks", to: "SubSector:food_beverage", aspect: in-process checks,
+     variation: "Critical-control-point monitoring: temperature/time, metal detection, seal integrity."}
+  - {from: "ValueChainActivity:s05_in_process_quality_checks", to: "SubSector:home_care", aspect: in-process checks,
+     variation: "pH, viscosity and active-matter assay; fill-weight and closure checks."}
+  - {from: "ValueChainActivity:s05_package_label", to: "SubSector:food_beverage", aspect: labelling,
+     variation: "Nutrition, ingredient and allergen declarations; best-before/use-by date coding."}
+  - {from: "ValueChainActivity:s05_package_label", to: "SubSector:home_care", aspect: labelling,
+     variation: "Hazard pictograms and precautionary statements; child-resistant closures where required."}
+  - {from: "ValueChainActivity:s05_release_quarantine_batch", to: "SubSector:food_beverage", aspect: release basis,
+     variation: "Positive release after microbiological results; quarantine on any CCP deviation."}
+  - {from: "ValueChainActivity:s05_release_quarantine_batch", to: "SubSector:home_care", aspect: release basis,
+     variation: "Release against chemical specification; microbiological testing mainly for water-based liquids."}
+
+  # ---- Other stages ---------------------------------------------------------------------------
+  - {from: "ValueChainStage:s03_product_innovation_formulation", to: "SubSector:food_beverage", aspect: validation focus,
+     variation: "Sensory validation (taste, texture) and nutrition/health-claim substantiation dominate."}
+  - {from: "ValueChainStage:s03_product_innovation_formulation", to: "SubSector:home_care", aspect: validation focus,
+     variation: "Performance testing (cleaning efficacy, stain removal) and safety/toxicology review dominate."}
+  - {from: "ValueChainStage:s03_product_innovation_formulation", to: "SubSector:personal_care", aspect: validation focus,
+     variation: "Dermatological safety, sensory feel and cosmetic-claim substantiation dominate."}
+  - {from: "ValueChainStage:s07_warehousing_distribution", to: "SubSector:food_beverage", aspect: freshness,
+     variation: "FEFO picking and tight freshness windows; some products need chilled or temperature-controlled logistics."}
+  - {from: "ValueChainStage:s11_returns_waste_circularity", to: "SubSector:food_beverage", aspect: waste profile,
+     variation: "Expiry-driven waste is high; food waste disposal and donation routes apply."}
+  - {from: "ValueChainStage:s11_returns_waste_circularity", to: "SubSector:home_care", aspect: waste profile,
+     variation: "Returned or expired chemical product may be hazardous waste requiring licensed disposal."}

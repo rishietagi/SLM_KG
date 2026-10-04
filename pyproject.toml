@@ -1,0 +1,27 @@
+[project]
+name = "cpg-kg"
+version = "0.1.0"
+description = "Layered CPG knowledge graph grounding a Consumer Markets SLM"
+# CLAUDE.md targets 3.12; the working env (conda `mmsa`) is 3.11 — see DECISIONS D1.
+requires-python = ">=3.11"
+dependencies = [
+    "pydantic>=2.6",
+    "pyyaml>=6.0",
+    "pandas>=2.2",
+    "pyarrow>=15",
+    "kuzu==0.11.3",
+    "fastapi>=0.110",
+    "uvicorn>=0.29",
+]
+
+[project.optional-dependencies]
+ladybug = ["real_ladybug"]
+dev = ["pytest>=8"]
+
+[tool.uv]
+package = false
+
+[tool.pytest.ini_options]
+testpaths = ["tests"]
+pythonpath = ["."]
+addopts = "-q"

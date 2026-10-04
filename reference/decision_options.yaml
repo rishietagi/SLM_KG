@@ -1,0 +1,54 @@
+class: DecisionOption
+defaults:
+  source_system: curated_reference
+  lane: curated
+  extraction_confidence: 1.0
+  reviewed: false
+  drafted_beyond_source: true
+  source_reference: "docs/source/cpg_value_chain_design.md#3-value-chain-ontology"
+rows:
+  - {id: "DecisionOption:sourcing_single_source", name: Single source}
+  - {id: "DecisionOption:sourcing_dual_source", name: Dual source}
+
+  - {id: "DecisionOption:batch_release", name: Release batch, drafted_beyond_source: false, source_reference: "docs/source/cpg_value_chain_design.md#stage-5-manufacturing-quality-and-packaging"}
+  - {id: "DecisionOption:batch_quarantine", name: Quarantine batch, drafted_beyond_source: false, source_reference: "docs/source/cpg_value_chain_design.md#stage-5-manufacturing-quality-and-packaging"}
+  - {id: "DecisionOption:batch_rework", name: Rework batch, drafted_beyond_source: false, source_reference: "docs/source/cpg_value_chain_design.md#stage-5-manufacturing-quality-and-packaging"}
+  - {id: "DecisionOption:batch_scrap", name: Scrap batch, drafted_beyond_source: false, source_reference: "docs/source/cpg_value_chain_design.md#stage-5-manufacturing-quality-and-packaging"}
+
+  - {id: "DecisionOption:allocate_by_customer_priority", name: Allocate by customer priority}
+  - {id: "DecisionOption:allocate_pro_rata", name: Allocate pro rata}
+
+  - {id: "DecisionOption:mechanic_price_discount", name: Price discount, drafted_beyond_source: false, source_reference: "docs/source/finance_extraction_spec.md#g-commercial-finance"}
+  - {id: "DecisionOption:mechanic_rebate", name: Rebate, drafted_beyond_source: false, source_reference: "docs/source/finance_extraction_spec.md#g-commercial-finance"}
+  - {id: "DecisionOption:mechanic_bundle", name: Bundle, drafted_beyond_source: false, source_reference: "docs/source/finance_extraction_spec.md#g-commercial-finance"}
+  - {id: "DecisionOption:mechanic_free_goods", name: Free goods, drafted_beyond_source: false, source_reference: "docs/source/finance_extraction_spec.md#g-commercial-finance"}
+  - {id: "DecisionOption:mechanic_display_allowance", name: Display allowance, drafted_beyond_source: false, source_reference: "docs/source/finance_extraction_spec.md#g-commercial-finance"}
+  - {id: "DecisionOption:mechanic_volume_incentive", name: Volume incentive, drafted_beyond_source: false, source_reference: "docs/source/finance_extraction_spec.md#g-commercial-finance"}
+
+  - {id: "DecisionOption:opportunity_pursue", name: Pursue}
+  - {id: "DecisionOption:opportunity_monitor", name: Monitor}
+  - {id: "DecisionOption:opportunity_discard", name: Discard}
+  - {id: "DecisionOption:brand_role_lead", name: Lead brand}
+  - {id: "DecisionOption:brand_role_support", name: Supporting brand}
+  - {id: "DecisionOption:launch_new", name: Launch new SKU}
+  - {id: "DecisionOption:renovate_existing", name: Renovate existing SKU}
+  - {id: "DecisionOption:delist", name: Delist}
+  - {id: "DecisionOption:ingredient_primary", name: Primary ingredient}
+  - {id: "DecisionOption:ingredient_alternative", name: Alternative ingredient}
+  - {id: "DecisionOption:spec_approve", name: Approve specification}
+  - {id: "DecisionOption:spec_revise", name: Revise specification}
+  - {id: "DecisionOption:make_own_plant", name: Make in own plant}
+  - {id: "DecisionOption:buy_contract_manufacturer", name: Contract manufacturer}
+  - {id: "DecisionOption:buy_co_packer", name: Co-packer}
+  - {id: "DecisionOption:replenishment_approve", name: Approve plan}
+  - {id: "DecisionOption:replenishment_revise", name: Revise plan}
+  - {id: "DecisionOption:rtm_general_trade", name: General trade via distributors}
+  - {id: "DecisionOption:rtm_modern_trade", name: Modern trade chains}
+  - {id: "DecisionOption:rtm_ecommerce", name: E-commerce marketplaces}
+  - {id: "DecisionOption:rtm_quick_commerce", name: Quick-commerce platforms}
+  - {id: "DecisionOption:rtm_d2c", name: D2C channels}
+  - {id: "DecisionOption:disposition_rework", name: Rework}
+  - {id: "DecisionOption:disposition_dispose", name: Dispose}
+  - {id: "DecisionOption:disposition_recycle", name: Recycle}
+  - {id: "DecisionOption:recall_yes", name: Recall batch}
+  - {id: "DecisionOption:recall_no", name: No recall}

@@ -1,0 +1,287 @@
+# The 11 CPG value-chain stages. Names, purposes and activity lists: cpg_value_chain_design.md §4.
+# definition: summarised from the stage's activity list. entry/exit events: drafted from the §2 flow chain
+# (review_note on each row). PRECEDES follows the §2 hierarchy order.
+class: ValueChainStage
+defaults:
+  source_system: curated_reference
+  lane: curated
+  extraction_confidence: 1.0
+  reviewed: false
+  drafted_beyond_source: false
+  review_note: "definition summarised from the activity list; entry_event/exit_event drafted from the §2 flow chain"
+rows:
+  - id: "ValueChainStage:s01_consumer_market_insight"
+    name: Consumer and Market Insight
+    stage_number: 1
+    aliases: [consumer and market insight, market insight]
+    purpose: "Identify changing needs, behaviours, occasions, category shifts and market opportunities."
+    definition: "Sensing consumer, shopper, competitor and geographic signals and turning them into sized opportunity hypotheses."
+    entry_event: "BusinessEvent:market_signal_detected"
+    exit_event: "BusinessEvent:category_opportunity_identified"
+    downstream_stage: "ValueChainStage:s02_portfolio_category_strategy"
+    source_reference: "docs/source/cpg_value_chain_design.md#stage-1-consumer-and-market-insight"
+    edges:
+      PRECEDES: ["ValueChainStage:s02_portfolio_category_strategy"]
+      SUPPORTED_BY_EVIDENCE: ["SourceEvidence:design_s01", "SourceEvidence:design_l1_hierarchy"]
+      CONTAINS:
+        - "ValueChainActivity:s01_monitor_trends"
+        - "ValueChainActivity:s01_analyze_shopper_behaviour"
+        - "ValueChainActivity:s01_identify_need_states"
+        - "ValueChainActivity:s01_analyze_competition"
+        - "ValueChainActivity:s01_identify_geo_variation"
+        - "ValueChainActivity:s01_estimate_category_opportunity"
+        - "ValueChainActivity:s01_create_opportunity_hypotheses"
+
+  - id: "ValueChainStage:s02_portfolio_category_strategy"
+    name: Portfolio and Category Strategy
+    stage_number: 2
+    aliases: [portfolio and category strategy, category strategy]
+    purpose: "Translate market opportunities into portfolio, category, brand and investment choices."
+    definition: "Setting category strategy, brand roles, portfolio scope, innovation priorities, price-pack architecture and investment allocation."
+    entry_event: "BusinessEvent:category_opportunity_identified"
+    exit_event: "BusinessEvent:innovation_brief_issued"
+    upstream_stage: "ValueChainStage:s01_consumer_market_insight"
+    downstream_stage: "ValueChainStage:s03_product_innovation_formulation"
+    source_reference: "docs/source/cpg_value_chain_design.md#stage-2-portfolio-and-category-strategy"
+    edges:
+      PRECEDES: ["ValueChainStage:s03_product_innovation_formulation"]
+      SUPPORTED_BY_EVIDENCE: ["SourceEvidence:design_s02", "SourceEvidence:design_l1_hierarchy"]
+      CONTAINS:
+        - "ValueChainActivity:s02_define_category_strategy"
+        - "ValueChainActivity:s02_set_brand_role"
+        - "ValueChainActivity:s02_identify_portfolio_gaps"
+        - "ValueChainActivity:s02_rationalize_portfolio"
+        - "ValueChainActivity:s02_set_innovation_priorities"
+        - "ValueChainActivity:s02_define_price_pack_architecture"
+        - "ValueChainActivity:s02_allocate_category_investment"
+        - "ValueChainActivity:s02_determine_launch_priorities"
+
+  - id: "ValueChainStage:s03_product_innovation_formulation"
+    name: Product Innovation and Formulation
+    stage_number: 3
+    aliases: [product innovation and formulation, R&D, product development]
+    purpose: "Convert a consumer opportunity into a scalable, compliant product."
+    definition: "Concept creation, formulation or recipe development, trials and testing, claims, shelf-life and regulatory work up to an approved product specification."
+    entry_event: "BusinessEvent:innovation_brief_issued"
+    exit_event: "BusinessEvent:formulation_approved"
+    upstream_stage: "ValueChainStage:s02_portfolio_category_strategy"
+    downstream_stage: "ValueChainStage:s04_ingredient_packaging_sourcing"
+    source_reference: "docs/source/cpg_value_chain_design.md#stage-3-product-innovation-and-formulation"
+    edges:
+      PRECEDES: ["ValueChainStage:s04_ingredient_packaging_sourcing"]
+      SUPPORTED_BY_EVIDENCE: ["SourceEvidence:design_s03", "SourceEvidence:design_l1_hierarchy"]
+      CONTAINS:
+        - "ValueChainActivity:s03_create_product_concept"
+        - "ValueChainActivity:s03_develop_formulation"
+        - "ValueChainActivity:s03_select_ingredient_alternatives"
+        - "ValueChainActivity:s03_conduct_lab_trials"
+        - "ValueChainActivity:s03_test_product_performance"
+        - "ValueChainActivity:s03_validate_sensory"
+        - "ValueChainActivity:s03_define_product_claims"
+        - "ValueChainActivity:s03_stability_shelf_life_tests"
+        - "ValueChainActivity:s03_regulatory_review"
+        - "ValueChainActivity:s03_approve_product_specification"
+
+  - id: "ValueChainStage:s04_ingredient_packaging_sourcing"
+    name: Ingredient and Packaging Sourcing
+    stage_number: 4
+    aliases: [ingredient and packaging sourcing, ingredients and packaging sourcing, procurement]
+    purpose: "Secure qualified materials at the required cost, quality, lead time and risk level."
+    definition: "Turning formulations into material requirements, qualifying suppliers, running sourcing events, contracting, approving materials and placing purchase orders."
+    entry_event: "BusinessEvent:material_requirement_released"
+    exit_event: "BusinessEvent:sourcing_decision_made"
+    upstream_stage: "ValueChainStage:s03_product_innovation_formulation"
+    downstream_stage: "ValueChainStage:s05_manufacturing_quality_packaging"
+    source_reference: "docs/source/cpg_value_chain_design.md#stage-4-ingredient-and-packaging-sourcing"
+    edges:
+      PRECEDES: ["ValueChainStage:s05_manufacturing_quality_packaging"]
+      SUPPORTED_BY_EVIDENCE: ["SourceEvidence:design_s04", "SourceEvidence:design_l1_hierarchy"]
+      CONTAINS:
+        - "ValueChainActivity:s04_translate_material_requirements"
+        - "ValueChainActivity:s04_qualify_suppliers"
+        - "ValueChainActivity:s04_conduct_sourcing_event"
+        - "ValueChainActivity:s04_negotiate_contract"
+        - "ValueChainActivity:s04_assess_supplier_capacity"
+        - "ValueChainActivity:s04_evaluate_commodity_exposure"
+        - "ValueChainActivity:s04_approve_ingredients_packaging"
+        - "ValueChainActivity:s04_place_purchase_order"
+        - "ValueChainActivity:s04_monitor_supply_risk"
+
+  - id: "ValueChainStage:s05_manufacturing_quality_packaging"
+    name: Manufacturing, Quality and Packaging
+    stage_number: 5
+    aliases: [manufacturing quality and packaging, manufacturing, production]
+    purpose: "Convert materials into compliant, saleable packaged goods."
+    definition: "Planning and executing production: material release, batching, processing, in-process and finished-product quality, packaging, labelling, batch release and yield recording."
+    entry_event: "BusinessEvent:production_plan_released"
+    exit_event: "BusinessEvent:finished_sku_released"
+    upstream_stage: "ValueChainStage:s04_ingredient_packaging_sourcing"
+    downstream_stage: "ValueChainStage:s06_demand_supply_inventory_planning"
+    source_reference: "docs/source/cpg_value_chain_design.md#stage-5-manufacturing-quality-and-packaging"
+    edges:
+      PRECEDES: ["ValueChainStage:s06_demand_supply_inventory_planning"]
+      SUPPORTED_BY_EVIDENCE: ["SourceEvidence:design_s05", "SourceEvidence:design_l1_hierarchy"]
+      CONTAINS:
+        - "ValueChainActivity:s05_create_production_plan"
+        - "ValueChainActivity:s05_issue_production_order"
+        - "ValueChainActivity:s05_receive_release_materials"
+        - "ValueChainActivity:s05_batch_formulate"
+        - "ValueChainActivity:s05_process_fill_form"
+        - "ValueChainActivity:s05_in_process_quality_checks"
+        - "ValueChainActivity:s05_package_label"
+        - "ValueChainActivity:s05_finished_product_testing"
+        - "ValueChainActivity:s05_release_quarantine_batch"
+        - "ValueChainActivity:s05_record_yield_loss_downtime"
+
+  - id: "ValueChainStage:s06_demand_supply_inventory_planning"
+    name: Demand, Supply and Inventory Planning
+    stage_number: 6
+    aliases: [demand supply and inventory planning, demand and supply planning, S&OP, IBP]
+    purpose: "Balance expected demand, available capacity, materials and inventory."
+    definition: "Forecasting (baseline, uplift, consensus), supply and capacity planning, material requirements, inventory targets, constrained allocation and S&OP/IBP approval."
+    entry_event: "BusinessEvent:demand_planning_cycle_started"
+    exit_event: "BusinessEvent:replenishment_plan_approved"
+    upstream_stage: "ValueChainStage:s05_manufacturing_quality_packaging"
+    downstream_stage: "ValueChainStage:s07_warehousing_distribution"
+    source_reference: "docs/source/cpg_value_chain_design.md#stage-6-demand-supply-and-inventory-planning"
+    edges:
+      PRECEDES: ["ValueChainStage:s07_warehousing_distribution"]
+      SUPPORTED_BY_EVIDENCE: ["SourceEvidence:design_s06", "SourceEvidence:design_l1_hierarchy"]
+      CONTAINS:
+        - "ValueChainActivity:s06_baseline_forecast"
+        - "ValueChainActivity:s06_promotion_event_uplift"
+        - "ValueChainActivity:s06_consensus_forecast"
+        - "ValueChainActivity:s06_supply_plan"
+        - "ValueChainActivity:s06_capacity_planning"
+        - "ValueChainActivity:s06_material_requirement"
+        - "ValueChainActivity:s06_set_inventory_target"
+        - "ValueChainActivity:s06_allocate_constrained_supply"
+        - "ValueChainActivity:s06_sop_ibp_review"
+        - "ValueChainActivity:s06_approve_replenishment_plan"
+
+  - id: "ValueChainStage:s07_warehousing_distribution"
+    name: Warehousing and Distribution
+    stage_number: 7
+    aliases: [warehousing and distribution, distribution and fulfilment, logistics]
+    purpose: "Position inventory and fulfil customer demand at the required service level and cost."
+    definition: "Receiving, storing, allocating, picking, transporting and delivering finished goods, confirming delivery, handling returns and monitoring freshness."
+    entry_event: "BusinessEvent:finished_sku_released"
+    exit_event: "BusinessEvent:delivered_to_distributor_retailer"
+    upstream_stage: "ValueChainStage:s06_demand_supply_inventory_planning"
+    downstream_stage: "ValueChainStage:s08_customer_channel_revenue_growth"
+    source_reference: "docs/source/cpg_value_chain_design.md#stage-7-warehousing-and-distribution"
+    edges:
+      PRECEDES: ["ValueChainStage:s08_customer_channel_revenue_growth"]
+      SUPPORTED_BY_EVIDENCE: ["SourceEvidence:design_s07", "SourceEvidence:design_l1_hierarchy"]
+      CONTAINS:
+        - "ValueChainActivity:s07_receive_finished_goods"
+        - "ValueChainActivity:s07_put_away"
+        - "ValueChainActivity:s07_allocate_inventory"
+        - "ValueChainActivity:s07_pick_pack"
+        - "ValueChainActivity:s07_plan_transport"
+        - "ValueChainActivity:s07_dispatch_shipment"
+        - "ValueChainActivity:s07_deliver"
+        - "ValueChainActivity:s07_confirm_pod"
+        - "ValueChainActivity:s07_process_returns"
+        - "ValueChainActivity:s07_monitor_freshness_expiry"
+
+  - id: "ValueChainStage:s08_customer_channel_revenue_growth"
+    name: Customer, Channel and Revenue Growth
+    stage_number: 8
+    aliases: [customer channel and revenue growth, "channel, customer and revenue growth management", RGM, revenue growth management]
+    purpose: "Translate the portfolio into volume, revenue and margin through channel and customer choices."
+    definition: "Customer segmentation, route-to-market design, pricing and terms, joint business plans, promotions and trade schemes, agreements, sales targets, order capture and distributor management."
+    entry_event: "BusinessEvent:customer_planning_cycle_started"
+    exit_event: "BusinessEvent:customer_order_received"
+    upstream_stage: "ValueChainStage:s07_warehousing_distribution"
+    downstream_stage: "ValueChainStage:s09_retail_outlet_execution"
+    source_reference: "docs/source/cpg_value_chain_design.md#stage-8-customer-channel-and-revenue-growth"
+    edges:
+      PRECEDES: ["ValueChainStage:s09_retail_outlet_execution"]
+      SUPPORTED_BY_EVIDENCE: ["SourceEvidence:design_s08", "SourceEvidence:design_l1_hierarchy"]
+      CONTAINS:
+        - "ValueChainActivity:s08_segment_customers"
+        - "ValueChainActivity:s08_design_route_to_market"
+        - "ValueChainActivity:s08_set_pricing_terms"
+        - "ValueChainActivity:s08_joint_business_plan"
+        - "ValueChainActivity:s08_plan_promotion"
+        - "ValueChainActivity:s08_create_trade_scheme"
+        - "ValueChainActivity:s08_negotiate_customer_agreement"
+        - "ValueChainActivity:s08_set_sales_target"
+        - "ValueChainActivity:s08_capture_order"
+        - "ValueChainActivity:s08_manage_distributor_performance"
+
+  - id: "ValueChainStage:s09_retail_outlet_execution"
+    name: Retail and Outlet Execution
+    stage_number: 9
+    aliases: [retail and outlet execution, channel and retail execution, outlet execution]
+    purpose: "Convert distribution into availability, visibility and sell-through."
+    definition: "Outlet classification, beat planning and visits, order capture, inventory and on-shelf checks, assortment, planogram and display, promotion activation, scheme compliance and sell-out capture."
+    entry_event: "BusinessEvent:delivered_to_distributor_retailer"
+    exit_event: "BusinessEvent:outlet_availability_achieved"
+    upstream_stage: "ValueChainStage:s08_customer_channel_revenue_growth"
+    downstream_stage: "ValueChainStage:s10_purchase_consumption_feedback"
+    source_reference: "docs/source/cpg_value_chain_design.md#stage-9-retail-and-outlet-execution"
+    edges:
+      PRECEDES: ["ValueChainStage:s10_purchase_consumption_feedback"]
+      SUPPORTED_BY_EVIDENCE: ["SourceEvidence:design_s09", "SourceEvidence:design_l1_hierarchy"]
+      CONTAINS:
+        - "ValueChainActivity:s09_classify_outlet"
+        - "ValueChainActivity:s09_plan_sales_beat"
+        - "ValueChainActivity:s09_visit_outlet"
+        - "ValueChainActivity:s09_capture_order"
+        - "ValueChainActivity:s09_check_inventory"
+        - "ValueChainActivity:s09_check_osa"
+        - "ValueChainActivity:s09_execute_assortment"
+        - "ValueChainActivity:s09_verify_planogram_display"
+        - "ValueChainActivity:s09_activate_promotion"
+        - "ValueChainActivity:s09_track_scheme_compliance"
+        - "ValueChainActivity:s09_capture_sell_out"
+
+  - id: "ValueChainStage:s10_purchase_consumption_feedback"
+    name: Purchase, Consumption and Feedback
+    stage_number: 10
+    aliases: [purchase consumption and feedback, "consumer purchase, consumption and feedback"]
+    purpose: "Understand conversion from product availability to consumer purchase, usage, satisfaction and repeat behaviour."
+    definition: "The consumer path from discovery and evaluation through purchase, consumption, feedback, complaint, recommendation, repurchase or switching."
+    entry_event: "BusinessEvent:outlet_availability_achieved"
+    exit_event: "BusinessEvent:consumption_feedback_received"
+    upstream_stage: "ValueChainStage:s09_retail_outlet_execution"
+    downstream_stage: "ValueChainStage:s11_returns_waste_circularity"
+    source_reference: "docs/source/cpg_value_chain_design.md#stage-10-purchase-consumption-and-feedback"
+    edges:
+      PRECEDES: ["ValueChainStage:s11_returns_waste_circularity"]
+      SUPPORTED_BY_EVIDENCE: ["SourceEvidence:design_s10", "SourceEvidence:design_l1_hierarchy"]
+      CONTAINS:
+        - "ValueChainActivity:s10_discover_product"
+        - "ValueChainActivity:s10_evaluate_alternatives"
+        - "ValueChainActivity:s10_purchase_product"
+        - "ValueChainActivity:s10_consume_use"
+        - "ValueChainActivity:s10_provide_feedback"
+        - "ValueChainActivity:s10_submit_complaint"
+        - "ValueChainActivity:s10_recommend_review"
+        - "ValueChainActivity:s10_repurchase"
+        - "ValueChainActivity:s10_switch"
+
+  - id: "ValueChainStage:s11_returns_waste_circularity"
+    name: Returns, Waste and Circularity
+    stage_number: 11
+    aliases: [returns waste and circularity, circularity, reverse logistics]
+    purpose: "Manage product returns, packaging recovery, expiry, waste and downstream sustainability."
+    definition: "Returns processing, damaged/expired product handling, recalls, disposal or rework, packaging recovery and recycling, waste measurement, sustainability tracing and corrective action."
+    entry_event: "BusinessEvent:product_return_or_expiry_identified"
+    exit_event: "BusinessEvent:return_disposition_completed"
+    upstream_stage: "ValueChainStage:s10_purchase_consumption_feedback"
+    source_reference: "docs/source/cpg_value_chain_design.md#stage-11-returns-waste-and-circularity"
+    edges:
+      SUPPORTED_BY_EVIDENCE: ["SourceEvidence:design_s11", "SourceEvidence:design_l1_hierarchy"]
+      CONTAINS:
+        - "ValueChainActivity:s11_process_return"
+        - "ValueChainActivity:s11_identify_damaged_expired"
+        - "ValueChainActivity:s11_recall_batch"
+        - "ValueChainActivity:s11_dispose_rework"
+        - "ValueChainActivity:s11_recover_packaging"
+        - "ValueChainActivity:s11_recycle_material"
+        - "ValueChainActivity:s11_measure_waste"
+        - "ValueChainActivity:s11_trace_sustainability"
+        - "ValueChainActivity:s11_corrective_action"

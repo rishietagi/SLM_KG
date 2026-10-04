@@ -1,0 +1,65 @@
+module: common
+description: >
+  Shared type vocabulary and the attributes injected into every node table (node_base)
+  and every relationship table (edge_base). Provenance per CLAUDE.md rule 5.
+
+# Ontology attribute type -> graph DDL type.
+# decimal maps to DOUBLE because kuzu 0.11.3 parquet COPY rejects DECIMAL; codegen adds a
+# companion `<attr>_text STRING` holding the amount exactly as stated (DECISIONS D9).
+type_map:
+  string: STRING
+  int64: INT64
+  double: DOUBLE
+  decimal: DOUBLE
+  bool: BOOLEAN
+  date: DATE
+  timestamp: TIMESTAMP
+  string_list: STRING[]
+  enum: STRING
+
+node_base:
+  id:                    {type: string, required: true, description: "Source ID if present, else <EntityType>:<normalized_name>:<organization>:<period>"}
+  name:                  {type: string, required: true}
+  description:           {type: string}
+  aliases:               {type: string_list}
+  source_label:          {type: string, description: "Label as it appears in the source"}
+  source_system:         {type: string, required: true}
+  source_record_id:      {type: string}
+  source_reference:      {type: string, required: true, description: "file/page/sheet/row/section"}
+  extraction_confidence: {type: double, required: true, description: "1.0 for curated rows"}
+  lane:                  {type: enum, required: true, values: [curated, extracted]}
+  reviewed:              {type: bool, required: true}
+  drafted_beyond_source: {type: bool, description: "true when the row is not stated in the cited source and needs owner review"}
+  review_note:           {type: string}
+  valid_from:            {type: date}
+  valid_to:              {type: date}
+  last_updated:          {type: timestamp}
+
+edge_base:
+  source_system:         {type: string, required: true}
+  source_record_id:      {type: string}
+  source_reference:      {type: string, required: true}
+  extraction_confidence: {type: double, required: true}
+  lane:                  {type: enum, required: true, values: [curated, extracted]}
+  reviewed:              {type: bool, required: true}
+  drafted_beyond_source: {type: bool}
+  amount:                {type: decimal}
+  currency:              {type: string}
+  valid_from:            {type: date}
+  valid_to:              {type: date}
+
+# CLAUDE.md rule 4.
+forbidden_relationships: [RELATES_TO, LINKED_TO, IS_A, ASSOCIATED_WITH]
+
+# CLAUDE.md rule 11 / finance spec §5.2 — never auto-merge.
+do_not_merge:
+  - [Customer, Consumer]
+  - [Brand, ProductFamily]
+  - [Category, SKU]
+  - [Channel, Customer]
+  - [CostCentre, ProfitCentre]
+  - [Budget, Forecast]
+  - [TradePromotion, Discount]
+  - [PromotionClaim, Deduction]
+  - [Risk, Issue]
+  - [Control, L3ProcessEndpoint]

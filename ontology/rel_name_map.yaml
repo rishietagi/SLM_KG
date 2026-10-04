@@ -1,0 +1,327 @@
+module: rel_name_map
+description: >
+  Traceability from finance-spec relationship names (camelCase) to canonical UPPER_SNAKE names.
+  One entry per original (subject, relationship, object) triple in the spec. canonical_from /
+  canonical_to are set only when a class was mapped or retargeted. Actions: converted (case only),
+  renamed, mapped (class substituted), retargeted, deferred, dropped.
+
+added:
+  - {canonical: BELONGS_TO_BRAND, from: ProductFamily, to: Brand, note: "Brand hierarchy independent of Category (§6.1)"}
+  - {canonical: PARENT_OF, from: Category, to: Category, note: "Category hierarchy (§6.1)"}
+  - {canonical: BELONGS_TO, from: CostCentre, to: BusinessUnit, note: "Replaces isA ResponsibilityCentre (D16)"}
+  - {canonical: BELONGS_TO, from: ProfitCentre, to: BusinessUnit, note: "Replaces isA ResponsibilityCentre (D16)"}
+
+entries:
+  - {original: contains, from: FinanceDomain, to: ProcessGroup, canonical: CONTAINS, action: converted}
+  - {original: contains, from: ProcessGroup, to: L3ProcessEndpoint, canonical: CONTAINS, action: converted}
+  - {original: triggeredBy, from: L3ProcessEndpoint, to: TriggerEvent, canonical: TRIGGERED_BY, action: converted}
+  - {original: consumes, from: L3ProcessEndpoint, to: Entity, canonical: CONSUMES, canonical_to: SalesOrder, action: mapped, note: "Generic Entity restricted to an explicit allowed list (§6.1)"}
+  - {original: consumes, from: L3ProcessEndpoint, to: Entity, canonical: CONSUMES, canonical_to: SalesInvoice, action: mapped, note: "Generic Entity restricted to an explicit allowed list (§6.1)"}
+  - {original: consumes, from: L3ProcessEndpoint, to: Entity, canonical: CONSUMES, canonical_to: CreditNote, action: mapped, note: "Generic Entity restricted to an explicit allowed list (§6.1)"}
+  - {original: consumes, from: L3ProcessEndpoint, to: Entity, canonical: CONSUMES, canonical_to: DebitNote, action: mapped, note: "Generic Entity restricted to an explicit allowed list (§6.1)"}
+  - {original: consumes, from: L3ProcessEndpoint, to: Entity, canonical: CONSUMES, canonical_to: CustomerReceipt, action: mapped, note: "Generic Entity restricted to an explicit allowed list (§6.1)"}
+  - {original: consumes, from: L3ProcessEndpoint, to: Entity, canonical: CONSUMES, canonical_to: Receivable, action: mapped, note: "Generic Entity restricted to an explicit allowed list (§6.1)"}
+  - {original: consumes, from: L3ProcessEndpoint, to: Entity, canonical: CONSUMES, canonical_to: SupplierInvoice, action: mapped, note: "Generic Entity restricted to an explicit allowed list (§6.1)"}
+  - {original: consumes, from: L3ProcessEndpoint, to: Entity, canonical: CONSUMES, canonical_to: PurchaseOrder, action: mapped, note: "Generic Entity restricted to an explicit allowed list (§6.1)"}
+  - {original: consumes, from: L3ProcessEndpoint, to: Entity, canonical: CONSUMES, canonical_to: GoodsReceipt, action: mapped, note: "Generic Entity restricted to an explicit allowed list (§6.1)"}
+  - {original: consumes, from: L3ProcessEndpoint, to: Entity, canonical: CONSUMES, canonical_to: APDocument, action: mapped, note: "Generic Entity restricted to an explicit allowed list (§6.1)"}
+  - {original: consumes, from: L3ProcessEndpoint, to: Entity, canonical: CONSUMES, canonical_to: SupplierPayment, action: mapped, note: "Generic Entity restricted to an explicit allowed list (§6.1)"}
+  - {original: consumes, from: L3ProcessEndpoint, to: Entity, canonical: CONSUMES, canonical_to: JournalEntry, action: mapped, note: "Generic Entity restricted to an explicit allowed list (§6.1)"}
+  - {original: consumes, from: L3ProcessEndpoint, to: Entity, canonical: CONSUMES, canonical_to: Budget, action: mapped, note: "Generic Entity restricted to an explicit allowed list (§6.1)"}
+  - {original: consumes, from: L3ProcessEndpoint, to: Entity, canonical: CONSUMES, canonical_to: Forecast, action: mapped, note: "Generic Entity restricted to an explicit allowed list (§6.1)"}
+  - {original: consumes, from: L3ProcessEndpoint, to: Entity, canonical: CONSUMES, canonical_to: PromotionAccrual, action: mapped, note: "Generic Entity restricted to an explicit allowed list (§6.1)"}
+  - {original: consumes, from: L3ProcessEndpoint, to: Entity, canonical: CONSUMES, canonical_to: PromotionClaim, action: mapped, note: "Generic Entity restricted to an explicit allowed list (§6.1)"}
+  - {original: consumes, from: L3ProcessEndpoint, to: Entity, canonical: CONSUMES, canonical_to: PromotionSettlement, action: mapped, note: "Generic Entity restricted to an explicit allowed list (§6.1)"}
+  - {original: consumes, from: L3ProcessEndpoint, to: Entity, canonical: CONSUMES, canonical_to: InventoryProvision, action: mapped, note: "Generic Entity restricted to an explicit allowed list (§6.1)"}
+  - {original: consumes, from: L3ProcessEndpoint, to: Entity, canonical: CONSUMES, canonical_to: StandardCost, action: mapped, note: "Generic Entity restricted to an explicit allowed list (§6.1)"}
+  - {original: consumes, from: L3ProcessEndpoint, to: Entity, canonical: CONSUMES, canonical_to: FinancialStatement, action: mapped, note: "Generic Entity restricted to an explicit allowed list (§6.1)"}
+  - {original: consumes, from: L3ProcessEndpoint, to: Entity, canonical: CONSUMES, canonical_to: ManagementReport, action: mapped, note: "Generic Entity restricted to an explicit allowed list (§6.1)"}
+  - {original: consumes, from: L3ProcessEndpoint, to: Entity, canonical: CONSUMES, canonical_to: TaxReturn, action: mapped, note: "Generic Entity restricted to an explicit allowed list (§6.1)"}
+  - {original: consumes, from: L3ProcessEndpoint, to: Entity, canonical: CONSUMES, canonical_to: FixedAsset, action: mapped, note: "Generic Entity restricted to an explicit allowed list (§6.1)"}
+  - {original: consumes, from: L3ProcessEndpoint, to: Entity, canonical: CONSUMES, canonical_to: DepreciationEntry, action: mapped, note: "Generic Entity restricted to an explicit allowed list (§6.1)"}
+  - {original: produces, from: L3ProcessEndpoint, to: ProcessOutput, canonical: PRODUCES, action: converted}
+  - {original: produces, from: L3ProcessEndpoint, to: Entity, canonical: PRODUCES, canonical_to: SalesOrder, action: mapped, note: "Generic Entity restricted to an explicit allowed list (§6.1)"}
+  - {original: produces, from: L3ProcessEndpoint, to: Entity, canonical: PRODUCES, canonical_to: SalesInvoice, action: mapped, note: "Generic Entity restricted to an explicit allowed list (§6.1)"}
+  - {original: produces, from: L3ProcessEndpoint, to: Entity, canonical: PRODUCES, canonical_to: CreditNote, action: mapped, note: "Generic Entity restricted to an explicit allowed list (§6.1)"}
+  - {original: produces, from: L3ProcessEndpoint, to: Entity, canonical: PRODUCES, canonical_to: DebitNote, action: mapped, note: "Generic Entity restricted to an explicit allowed list (§6.1)"}
+  - {original: produces, from: L3ProcessEndpoint, to: Entity, canonical: PRODUCES, canonical_to: CustomerReceipt, action: mapped, note: "Generic Entity restricted to an explicit allowed list (§6.1)"}
+  - {original: produces, from: L3ProcessEndpoint, to: Entity, canonical: PRODUCES, canonical_to: Receivable, action: mapped, note: "Generic Entity restricted to an explicit allowed list (§6.1)"}
+  - {original: produces, from: L3ProcessEndpoint, to: Entity, canonical: PRODUCES, canonical_to: SupplierInvoice, action: mapped, note: "Generic Entity restricted to an explicit allowed list (§6.1)"}
+  - {original: produces, from: L3ProcessEndpoint, to: Entity, canonical: PRODUCES, canonical_to: PurchaseOrder, action: mapped, note: "Generic Entity restricted to an explicit allowed list (§6.1)"}
+  - {original: produces, from: L3ProcessEndpoint, to: Entity, canonical: PRODUCES, canonical_to: GoodsReceipt, action: mapped, note: "Generic Entity restricted to an explicit allowed list (§6.1)"}
+  - {original: produces, from: L3ProcessEndpoint, to: Entity, canonical: PRODUCES, canonical_to: APDocument, action: mapped, note: "Generic Entity restricted to an explicit allowed list (§6.1)"}
+  - {original: produces, from: L3ProcessEndpoint, to: Entity, canonical: PRODUCES, canonical_to: SupplierPayment, action: mapped, note: "Generic Entity restricted to an explicit allowed list (§6.1)"}
+  - {original: produces, from: L3ProcessEndpoint, to: Entity, canonical: PRODUCES, canonical_to: JournalEntry, action: mapped, note: "Generic Entity restricted to an explicit allowed list (§6.1)"}
+  - {original: produces, from: L3ProcessEndpoint, to: Entity, canonical: PRODUCES, canonical_to: Budget, action: mapped, note: "Generic Entity restricted to an explicit allowed list (§6.1)"}
+  - {original: produces, from: L3ProcessEndpoint, to: Entity, canonical: PRODUCES, canonical_to: Forecast, action: mapped, note: "Generic Entity restricted to an explicit allowed list (§6.1)"}
+  - {original: produces, from: L3ProcessEndpoint, to: Entity, canonical: PRODUCES, canonical_to: PromotionAccrual, action: mapped, note: "Generic Entity restricted to an explicit allowed list (§6.1)"}
+  - {original: produces, from: L3ProcessEndpoint, to: Entity, canonical: PRODUCES, canonical_to: PromotionClaim, action: mapped, note: "Generic Entity restricted to an explicit allowed list (§6.1)"}
+  - {original: produces, from: L3ProcessEndpoint, to: Entity, canonical: PRODUCES, canonical_to: PromotionSettlement, action: mapped, note: "Generic Entity restricted to an explicit allowed list (§6.1)"}
+  - {original: produces, from: L3ProcessEndpoint, to: Entity, canonical: PRODUCES, canonical_to: InventoryProvision, action: mapped, note: "Generic Entity restricted to an explicit allowed list (§6.1)"}
+  - {original: produces, from: L3ProcessEndpoint, to: Entity, canonical: PRODUCES, canonical_to: StandardCost, action: mapped, note: "Generic Entity restricted to an explicit allowed list (§6.1)"}
+  - {original: produces, from: L3ProcessEndpoint, to: Entity, canonical: PRODUCES, canonical_to: FinancialStatement, action: mapped, note: "Generic Entity restricted to an explicit allowed list (§6.1)"}
+  - {original: produces, from: L3ProcessEndpoint, to: Entity, canonical: PRODUCES, canonical_to: ManagementReport, action: mapped, note: "Generic Entity restricted to an explicit allowed list (§6.1)"}
+  - {original: produces, from: L3ProcessEndpoint, to: Entity, canonical: PRODUCES, canonical_to: TaxReturn, action: mapped, note: "Generic Entity restricted to an explicit allowed list (§6.1)"}
+  - {original: produces, from: L3ProcessEndpoint, to: Entity, canonical: PRODUCES, canonical_to: FixedAsset, action: mapped, note: "Generic Entity restricted to an explicit allowed list (§6.1)"}
+  - {original: produces, from: L3ProcessEndpoint, to: Entity, canonical: PRODUCES, canonical_to: DepreciationEntry, action: mapped, note: "Generic Entity restricted to an explicit allowed list (§6.1)"}
+  - {original: measuredBy, from: L3ProcessEndpoint, to: KPI, canonical: MEASURED_BY, action: converted}
+  - {original: exposedTo, from: L3ProcessEndpoint, to: Risk, canonical: EXPOSED_TO, action: converted}
+  - {original: controls, from: Control, to: L3ProcessEndpoint, canonical: CONTROLS, action: converted}
+  - {original: supports, from: SourceSystem, to: L3ProcessEndpoint, canonical: SUPPORTS, action: converted}
+  - {original: owns, from: Role, to: L3ProcessEndpoint, canonical: OWNS, action: converted}
+  - {original: performs, from: Role, to: L3ProcessEndpoint, canonical: PERFORMS, action: converted}
+  - {original: contains, from: Organization, to: LegalEntity, canonical: CONTAINS, action: converted}
+  - {original: contains, from: Organization, to: BusinessUnit, canonical: CONTAINS, action: converted}
+  - {original: belongsTo, from: BusinessUnit, to: Organization, canonical: null, action: dropped, note: "Redundant inverse of Organization CONTAINS BusinessUnit (D17)"}
+  - {original: belongsTo, from: ResponsibilityCentre, to: BusinessUnit, canonical: BELONGS_TO, action: converted}
+  - {original: isA, from: CostCentre, to: ResponsibilityCentre, canonical: null, action: dropped, note: "No inheritance in the engine; separate tables, linked via BELONGS_TO BusinessUnit (D16)"}
+  - {original: isA, from: ProfitCentre, to: ResponsibilityCentre, canonical: null, action: dropped, note: "No inheritance in the engine; separate tables, linked via BELONGS_TO BusinessUnit (D16)"}
+  - {original: belongsTo, from: SKU, to: ProductFamily, canonical: BELONGS_TO, action: converted}
+  - {original: belongsTo, from: ProductFamily, to: Category, canonical: BELONGS_TO_CATEGORY, action: renamed, note: "Brand and Category are independent hierarchies (§6.1)"}
+  - {original: belongsTo, from: Category, to: Brand, canonical: null, action: dropped, note: "Wrong for CPG: brands span categories. Replaced by ProductFamily BELONGS_TO_BRAND Brand (§6.1)"}
+  - {original: partOf, from: Geography, to: Geography, canonical: PART_OF, action: converted}
+  - {original: locatedIn, from: Location, to: Geography, canonical: LOCATED_IN, action: converted}
+  - {original: operatesIn, from: Customer, to: Geography, canonical: OPERATES_IN, action: converted}
+  - {original: operatesIn, from: Supplier, to: Geography, canonical: OPERATES_IN, action: converted}
+  - {original: contains, from: ChartOfAccounts, to: FinancialAccount, canonical: CONTAINS, action: converted}
+  - {original: belongsTo, from: FinancialAccount, to: AccountGroup, canonical: BELONGS_TO, action: converted}
+  - {original: governedBy, from: FinancialAccount, to: AccountingPolicy, canonical: GOVERNED_BY, action: converted}
+  - {original: contains, from: JournalEntry, to: JournalLine, canonical: CONTAINS, action: converted}
+  - {original: postsTo, from: JournalLine, to: FinancialAccount, canonical: POSTS_TO, action: converted}
+  - {original: recordedFor, from: JournalLine, to: LegalEntity, canonical: RECORDED_FOR, action: converted}
+  - {original: attributedTo, from: JournalLine, to: BusinessUnit, canonical: ATTRIBUTED_TO, action: converted}
+  - {original: attributedTo, from: JournalLine, to: CostCentre, canonical: ATTRIBUTED_TO, action: converted}
+  - {original: attributedTo, from: JournalLine, to: ProfitCentre, canonical: ATTRIBUTED_TO, action: converted}
+  - {original: occurredDuring, from: JournalLine, to: FiscalPeriod, canonical: OCCURRED_DURING, action: converted}
+  - {original: denominatedIn, from: JournalLine, to: Currency, canonical: DENOMINATED_IN, action: converted}
+  - {original: relatesTo, from: JournalLine, to: SKU, canonical: ATTRIBUTED_TO, action: renamed, note: "No generic relatesTo (§6.1)"}
+  - {original: relatesTo, from: JournalLine, to: Brand, canonical: ATTRIBUTED_TO, action: renamed, note: "No generic relatesTo (§6.1)"}
+  - {original: relatesTo, from: JournalLine, to: Customer, canonical: ATTRIBUTED_TO, action: renamed, note: "No generic relatesTo (§6.1)"}
+  - {original: relatesTo, from: JournalLine, to: Supplier, canonical: ATTRIBUTED_TO, action: renamed, note: "No generic relatesTo (§6.1)"}
+  - {original: relatesTo, from: JournalLine, to: Channel, canonical: ATTRIBUTED_TO, action: renamed, note: "No generic relatesTo (§6.1)"}
+  - {original: relatesTo, from: JournalLine, to: Geography, canonical: ATTRIBUTED_TO, action: renamed, note: "No generic relatesTo (§6.1)"}
+  - {original: originatesIn, from: JournalEntry, to: SourceSystem, canonical: ORIGINATES_IN, action: converted}
+  - {original: heldIn, from: Balance, to: FinancialAccount, canonical: HELD_IN, action: converted}
+  - {original: recordedFor, from: Balance, to: LegalEntity, canonical: RECORDED_FOR, action: converted}
+  - {original: occurredDuring, from: Balance, to: FiscalPeriod, canonical: OCCURRED_DURING, action: converted}
+  - {original: pursues, from: Organization, to: BusinessObjective, canonical: PURSUES, action: converted}
+  - {original: measures, from: FinancialTarget, to: BusinessObjective, canonical: MEASURES, action: converted}
+  - {original: appliesTo, from: FinancialTarget, to: Dimension, canonical: APPLIES_TO, action: converted}
+  - {original: influences, from: ValueDriver, to: KPI, canonical: INFLUENCES, action: converted}
+  - {original: measures, from: KPI, to: BusinessObjective, canonical: MEASURES, action: converted}
+  - {original: ownedBy, from: KPI, to: Role, canonical: OWNED_BY, action: converted}
+  - {original: definedBy, from: KPI, to: Formula, canonical: DEFINED_BY, action: converted}
+  - {original: plans, from: Budget, to: KPI, canonical: PLANS, action: converted}
+  - {original: approvedFor, from: Budget, to: ResponsibilityCentre, canonical: APPROVED_FOR, action: converted}
+  - {original: covers, from: Budget, to: FiscalPeriod, canonical: COVERS, action: converted}
+  - {original: submittedBy, from: BudgetSubmission, to: BusinessUnit, canonical: SUBMITTED_BY, action: converted}
+  - {original: aggregates, from: ConsolidatedBudget, to: BudgetSubmission, canonical: AGGREGATES, action: converted}
+  - {original: uses, from: Forecast, to: PlanningAssumption, canonical: USES, action: converted}
+  - {original: drivenBy, from: Forecast, to: PlanningDriver, canonical: DRIVEN_BY, action: converted}
+  - {original: predicts, from: Forecast, to: KPI, canonical: PREDICTS, action: converted}
+  - {original: modifies, from: Scenario, to: PlanningAssumption, canonical: MODIFIES, action: converted}
+  - {original: predicts, from: Scenario, to: FinancialMetric, canonical: PREDICTS, action: converted}
+  - {original: comparedAgainst, from: ActualResult, to: Budget, canonical: COMPARED_AGAINST, action: converted}
+  - {original: comparedAgainst, from: ActualResult, to: Forecast, canonical: COMPARED_AGAINST, action: converted}
+  - {original: explainsDifferenceBetween, from: Variance, to: ActualResult, canonical: EXPLAINS_DIFFERENCE_BETWEEN, action: converted}
+  - {original: causedBy, from: Variance, to: VarianceDriver, canonical: CAUSED_BY, action: converted}
+  - {original: addresses, from: ManagementAction, to: Variance, canonical: ADDRESSES, action: converted}
+  - {original: ownedBy, from: ManagementAction, to: Role, canonical: OWNED_BY, action: converted}
+  - {original: impacts, from: ManagementAction, to: KPI, canonical: IMPACTS, action: converted}
+  - {original: placedBy, from: SalesOrder, to: Customer, canonical: PLACED_BY, action: converted}
+  - {original: contains, from: SalesOrder, to: SKU, canonical: CONTAINS, action: converted}
+  - {original: fulfilledThrough, from: SalesOrder, to: Channel, canonical: FULFILLED_THROUGH, action: converted}
+  - {original: references, from: SalesInvoice, to: SalesOrder, canonical: REFERENCES, action: converted}
+  - {original: issuedTo, from: SalesInvoice, to: Customer, canonical: ISSUED_TO, action: converted}
+  - {original: contains, from: SalesInvoice, to: InvoiceLine, canonical: CONTAINS, action: converted}
+  - {original: references, from: InvoiceLine, to: SKU, canonical: REFERENCES, action: converted}
+  - {original: occurredDuring, from: SalesInvoice, to: FiscalPeriod, canonical: OCCURRED_DURING, action: converted}
+  - {original: denominatedIn, from: SalesInvoice, to: Currency, canonical: DENOMINATED_IN, action: converted}
+  - {original: reduces, from: CreditNote, to: SalesInvoice, canonical: REDUCES, action: converted}
+  - {original: supportedBy, from: CreditNote, to: Claim, canonical: SUPPORTED_BY, canonical_to: PromotionClaim, action: mapped, note: "Claim -> PromotionClaim (§6.1)"}
+  - {original: settles, from: CustomerReceipt, to: SalesInvoice, canonical: SETTLES, action: converted}
+  - {original: reduces, from: Deduction, to: CustomerReceipt, canonical: REDUCES, action: converted}
+  - {original: relatesTo, from: Deduction, to: SalesInvoice, canonical: TAKEN_AGAINST, action: renamed, note: "No generic relatesTo (D15)"}
+  - {original: relatesTo, from: Dispute, to: Deduction, canonical: CONTESTS, action: renamed, note: "No generic relatesTo (D15)"}
+  - {original: supportedBy, from: Dispute, to: Evidence, canonical: SUPPORTED_BY, action: converted}
+  - {original: has, from: Customer, to: CreditProfile, canonical: HAS, action: converted}
+  - {original: has, from: Customer, to: CreditLimit, canonical: HAS, action: converted}
+  - {original: consumes, from: SalesOrder, to: CreditLimit, canonical: CONSUMES, action: converted}
+  - {original: addresses, from: CollectionCase, to: Receivable, canonical: ADDRESSES, action: converted}
+  - {original: makes, from: Customer, to: PromiseToPay, canonical: MAKES, action: converted}
+  - {original: assessedFor, from: ExpectedCreditLoss, to: Customer, canonical: ASSESSED_FOR, action: converted}
+  - {original: covers, from: Provision, to: Receivable, canonical: COVERS, action: converted}
+  - {original: removes, from: WriteOff, to: Receivable, canonical: REMOVES, action: converted}
+  - {original: funds, from: PromotionBudget, to: TradePromotion, canonical: FUNDS, action: converted}
+  - {original: belongsTo, from: TradePromotion, to: Brand, canonical: BELONGS_TO, action: converted}
+  - {original: appliesTo, from: TradePromotion, to: SKU, canonical: APPLIES_TO, action: converted}
+  - {original: offeredTo, from: TradePromotion, to: Customer, canonical: TARGETS, action: renamed, note: "Same concept as PROJECT_CONTEXT §5.4 Stage 8 'TradePromotion TARGETS Customer' (D14)"}
+  - {original: executedIn, from: TradePromotion, to: Channel, canonical: EXECUTED_IN, action: converted}
+  - {original: operatesIn, from: TradePromotion, to: Geography, canonical: VALID_IN, action: renamed, note: "Same concept as PROJECT_CONTEXT §5.4 Stage 8 'TradePromotion VALID_IN Geography' (D14)"}
+  - {original: uses, from: TradePromotion, to: PromotionMechanic, canonical: USES, action: converted}
+  - {original: governedBy, from: TradePromotion, to: EligibilityRule, canonical: GOVERNED_BY, action: converted}
+  - {original: validDuring, from: TradePromotion, to: FiscalPeriod, canonical: VALID_DURING, action: converted}
+  - {original: createdFor, from: PromotionAccrual, to: TradePromotion, canonical: CREATED_FOR, action: converted}
+  - {original: derivedFrom, from: PromotionAccrual, to: SalesInvoice, canonical: DERIVED_FROM, action: converted}
+  - {original: claimedAgainst, from: PromotionClaim, to: TradePromotion, canonical: CLAIMED_AGAINST, action: converted}
+  - {original: submittedBy, from: PromotionClaim, to: Customer, canonical: SUBMITTED_BY, action: converted}
+  - {original: references, from: PromotionClaim, to: SalesInvoice, canonical: REFERENCES, action: converted}
+  - {original: references, from: PromotionClaim, to: SKU, canonical: REFERENCES, action: converted}
+  - {original: supportedBy, from: PromotionClaim, to: Evidence, canonical: SUPPORTED_BY, action: converted}
+  - {original: settles, from: PromotionSettlement, to: PromotionClaim, canonical: SETTLES, action: converted}
+  - {original: consumes, from: PromotionSettlement, to: PromotionAccrual, canonical: CONSUMES, action: converted}
+  - {original: settles, from: CreditNote, to: PromotionClaim, canonical: SETTLES, action: converted}
+  - {original: reduces, from: TradeSpend, to: Revenue, canonical: REDUCES, action: converted}
+  - {original: evaluates, from: PromotionResult, to: TradePromotion, canonical: EVALUATES, action: converted}
+  - {original: comparedAgainst, from: IncrementalSales, to: BaselineSales, canonical: COMPARED_AGAINST, action: converted}
+  - {original: derivedFrom, from: PromotionResult, to: IncrementalSales, canonical: DERIVED_FROM, action: converted}
+  - {original: derivedFrom, from: PromotionResult, to: TradeSpend, canonical: DERIVED_FROM, action: converted}
+  - {original: appliesTo, from: PriceCondition, to: SKU, canonical: APPLIES_TO, action: converted}
+  - {original: appliesTo, from: PriceCondition, to: Customer, canonical: APPLIES_TO, action: converted}
+  - {original: appliesTo, from: PriceCondition, to: Channel, canonical: APPLIES_TO, action: converted}
+  - {original: appliesTo, from: PriceCondition, to: Geography, canonical: APPLIES_TO, action: converted}
+  - {original: derivedFrom, from: NetPrice, to: ListPrice, canonical: DERIVED_FROM, action: converted}
+  - {original: reduces, from: Discount, to: ListPrice, canonical: REDUCES, action: converted}
+  - {original: explainsDifferenceBetween, from: PVMAnalysis, to: ActualResult, canonical: EXPLAINS_DIFFERENCE_BETWEEN, action: converted}
+  - {original: contains, from: PVMAnalysis, to: PriceVariance, canonical: CONTAINS, canonical_to: VarianceDriver, action: mapped, note: "PriceVariance -> VarianceDriver (§6.1)"}
+  - {original: contains, from: PVMAnalysis, to: VolumeVariance, canonical: CONTAINS, canonical_to: VarianceDriver, action: mapped, note: "VolumeVariance -> VarianceDriver (§6.1)"}
+  - {original: contains, from: PVMAnalysis, to: MixVariance, canonical: CONTAINS, canonical_to: VarianceDriver, action: mapped, note: "MixVariance -> VarianceDriver (§6.1)"}
+  - {original: measuredFor, from: ProductProfitability, to: SKU, canonical: MEASURED_FOR, action: converted}
+  - {original: derivedFrom, from: ProductProfitability, to: Revenue, canonical: DERIVED_FROM, action: converted}
+  - {original: derivedFrom, from: ProductProfitability, to: ProductCost, canonical: DERIVED_FROM, action: converted}
+  - {original: reducedBy, from: ProductProfitability, to: TradeSpend, canonical: REDUCED_BY, action: converted}
+  - {original: measuredFor, from: CustomerProfitability, to: Customer, canonical: MEASURED_FOR, action: converted}
+  - {original: measuredFor, from: ChannelProfitability, to: Channel, canonical: MEASURED_FOR, action: converted}
+  - {original: assigns, from: CostAllocation, to: Cost, canonical: null, action: dropped, note: "Covered by AllocationRule ALLOCATES CostPool / ASSIGNS_TO CostCentre|ProfitCentre (§6.1 confirm 1)"}
+  - {original: triggers, from: MarginException, to: ManagementAction, canonical: TRIGGERS, action: converted}
+  - {original: impacts, from: ManagementAction, to: Margin, canonical: IMPACTS, action: converted}
+  - {original: has, from: SKU, to: BOM, canonical: HAS, action: converted}
+  - {original: has, from: SKU, to: Routing, canonical: HAS, action: converted}
+  - {original: calculatedFor, from: StandardCost, to: SKU, canonical: CALCULATED_FOR, action: converted}
+  - {original: composedOf, from: StandardCost, to: CostComponent, canonical: COMPOSED_OF, action: converted}
+  - {original: calculatedFor, from: ActualCost, to: SKU, canonical: CALCULATED_FOR, action: converted}
+  - {original: derivedFrom, from: ActualCost, to: MaterialConsumption, canonical: DERIVED_FROM, action: converted}
+  - {original: derivedFrom, from: ActualCost, to: ProductionOrder, canonical: DERIVED_FROM, action: converted}
+  - {original: compares, from: CostVariance, to: ActualCost, canonical: COMPARES, canonical_from: Variance, action: mapped, note: "CostVariance -> Variance (§6.1)"}
+  - {original: comparesAgainst, from: CostVariance, to: StandardCost, canonical: COMPARES_AGAINST, canonical_from: Variance, action: mapped, note: "CostVariance -> Variance (§6.1)"}
+  - {original: causedBy, from: CostVariance, to: VarianceDriver, canonical: CAUSED_BY, canonical_from: Variance, action: mapped, note: "CostVariance -> Variance (§6.1)"}
+  - {original: allocates, from: AllocationRule, to: CostPool, canonical: ALLOCATES, action: converted}
+  - {original: uses, from: AllocationRule, to: CostDriver, canonical: USES, action: converted}
+  - {original: assignsTo, from: AllocationRule, to: CostCentre, canonical: ASSIGNS_TO, action: converted}
+  - {original: assignsTo, from: AllocationRule, to: ProfitCentre, canonical: ASSIGNS_TO, action: converted}
+  - {original: represents, from: InventoryBalance, to: InventoryItem, canonical: REPRESENTS, action: converted}
+  - {original: heldAt, from: InventoryBalance, to: Location, canonical: HELD_AT, action: converted}
+  - {original: valuedUsing, from: InventoryBalance, to: ValuationMethod, canonical: VALUED_USING, action: converted}
+  - {original: counts, from: StockCount, to: InventoryItem, canonical: COUNTS, action: converted}
+  - {original: compares, from: Reconciliation, to: StockCount, canonical: COMPARES, action: converted}
+  - {original: compares, from: Reconciliation, to: InventoryBalance, canonical: COMPARES, action: converted}
+  - {original: classifiedIn, from: InventoryItem, to: AgeingBucket, canonical: CLASSIFIED_IN, action: converted}
+  - {original: affects, from: ObsolescenceRisk, to: InventoryItem, canonical: AFFECTS, action: converted}
+  - {original: evaluates, from: NRVAssessment, to: InventoryItem, canonical: EVALUATES, action: converted}
+  - {original: covers, from: InventoryProvision, to: InventoryItem, canonical: COVERS, action: converted}
+  - {original: supportedBy, from: InventoryProvision, to: NRVAssessment, canonical: SUPPORTED_BY, action: converted}
+  - {original: removes, from: InventoryWriteOff, to: InventoryItem, canonical: REMOVES, action: converted}
+  - {original: supportedBy, from: InventoryWriteOff, to: Approval, canonical: SUPPORTED_BY, action: converted}
+  - {original: issuedTo, from: PurchaseOrder, to: Supplier, canonical: ISSUED_TO, action: converted}
+  - {original: contains, from: PurchaseOrder, to: SKU, canonical: CONTAINS, action: converted}
+  - {original: issuedBy, from: SupplierInvoice, to: Supplier, canonical: ISSUED_BY, action: converted}
+  - {original: references, from: SupplierInvoice, to: PurchaseOrder, canonical: REFERENCES, action: converted}
+  - {original: matchedTo, from: SupplierInvoice, to: GoodsReceipt, canonical: MATCHED_TO, action: converted}
+  - {original: createdFrom, from: APDocument, to: SupplierInvoice, canonical: CREATED_FROM, action: converted}
+  - {original: postsTo, from: APDocument, to: FinancialAccount, canonical: POSTS_TO, action: converted}
+  - {original: relatesTo, from: APException, to: SupplierInvoice, canonical: RAISED_ON, action: renamed, note: "No generic relatesTo (D15)"}
+  - {original: closes, from: Resolution, to: APException, canonical: CLOSES, action: converted}
+  - {original: includes, from: PaymentProposal, to: SupplierInvoice, canonical: INCLUDES, action: converted}
+  - {original: governedBy, from: SupplierInvoice, to: PaymentTerm, canonical: GOVERNED_BY, action: converted}
+  - {original: settles, from: SupplierPayment, to: SupplierInvoice, canonical: SETTLES, action: converted}
+  - {original: paidFrom, from: SupplierPayment, to: BankAccount, canonical: PAID_FROM, action: converted}
+  - {original: contains, from: PaymentFile, to: SupplierPayment, canonical: CONTAINS, action: converted}
+  - {original: issuedBy, from: SupplierStatement, to: Supplier, canonical: ISSUED_BY, action: converted}
+  - {original: compares, from: Reconciliation, to: SupplierStatement, canonical: COMPARES, action: converted}
+  - {original: compares, from: Reconciliation, to: APBalance, canonical: COMPARES, action: converted}
+  - {original: aggregates, from: CashPosition, to: BankAccount, canonical: AGGREGATES, action: converted}
+  - {original: recordedFor, from: CashPosition, to: LegalEntity, canonical: RECORDED_FOR, action: converted}
+  - {original: denominatedIn, from: CashPosition, to: Currency, canonical: DENOMINATED_IN, action: converted}
+  - {original: predicts, from: LiquidityForecast, to: CashFlow, canonical: PREDICTS, action: converted}
+  - {original: preparedFor, from: LiquidityForecast, to: LegalEntity, canonical: PREPARED_FOR, action: converted}
+  - {original: funds, from: Loan, to: LegalEntity, canonical: FUNDS, action: converted}
+  - {original: placedWith, from: Investment, to: Counterparty, canonical: PLACED_WITH, action: converted}
+  - {original: arisesFrom, from: FXExposure, to: ForecastTransaction, canonical: ARISES_FROM, action: converted}
+  - {original: denominatedIn, from: FXExposure, to: Currency, canonical: DENOMINATED_IN, action: converted}
+  - {original: mitigates, from: HedgeInstrument, to: FXExposure, canonical: MITIGATES, action: converted}
+  - {original: references, from: HedgeInstrument, to: CurrencyPair, canonical: REFERENCES, action: converted}
+  - {original: contains, from: BankStatement, to: BankTransaction, canonical: CONTAINS, action: converted}
+  - {original: matches, from: Reconciliation, to: BankTransaction, canonical: MATCHES, action: converted}
+  - {original: compares, from: Reconciliation, to: CashGLBalance, canonical: COMPARES, canonical_to: Balance, action: mapped, note: "CashGLBalance -> Balance (§6.1)"}
+  - {original: validIn, from: TaxCode, to: Jurisdiction, canonical: VALID_IN, action: converted}
+  - {original: heldBy, from: TaxRegistration, to: LegalEntity, canonical: HELD_BY, action: converted}
+  - {original: registeredWith, from: TaxRegistration, to: TaxAuthority, canonical: REGISTERED_WITH, action: converted}
+  - {original: derivedFrom, from: TaxTransaction, to: SalesInvoice, canonical: DERIVED_FROM, action: converted}
+  - {original: derivedFrom, from: TaxTransaction, to: SupplierInvoice, canonical: DERIVED_FROM, action: converted}
+  - {original: applies, from: TaxTransaction, to: TaxCode, canonical: APPLIES, action: converted}
+  - {original: summarizes, from: TaxReturn, to: TaxLedger, canonical: SUMMARIZES, action: converted}
+  - {original: filedWith, from: TaxReturn, to: Regulator, canonical: FILED_WITH, action: converted}
+  - {original: covers, from: TaxReturn, to: FiscalPeriod, canonical: COVERS, action: converted}
+  - {original: arisesFrom, from: DeferredTax, to: TemporaryDifference, canonical: ARISES_FROM, action: converted}
+  - {original: postsTo, from: CurrentTax, to: FinancialAccount, canonical: POSTS_TO, action: converted}
+  - {original: governs, from: TransferPricingPolicy, to: IntercompanyTransaction, canonical: GOVERNS, action: converted}
+  - {original: basedOn, from: Charge, to: Benchmark, canonical: BASED_ON, action: converted}
+  - {original: raisedBy, from: TaxCase, to: TaxAuthority, canonical: RAISED_BY, action: converted}
+  - {original: supportedBy, from: TaxPosition, to: Evidence, canonical: SUPPORTED_BY, action: converted}
+  - {original: covers, from: Provision, to: TaxCase, canonical: COVERS, action: converted}
+  - {original: supportedBy, from: CapitalRequest, to: BusinessCase, canonical: SUPPORTED_BY, action: converted}
+  - {original: approvedBy, from: CapitalRequest, to: Role, canonical: APPROVED_BY, action: converted}
+  - {original: evaluates, from: BusinessCase, to: InvestmentOption, canonical: EVALUATES, action: converted}
+  - {original: createdFrom, from: CapitalProject, to: CapitalRequest, canonical: CREATED_FROM, action: converted}
+  - {original: createdFrom, from: FixedAsset, to: CapitalProject, canonical: CREATED_FROM, action: converted}
+  - {original: belongsTo, from: FixedAsset, to: AssetClass, canonical: BELONGS_TO, action: converted}
+  - {original: locatedAt, from: FixedAsset, to: Location, canonical: LOCATED_AT, action: converted}
+  - {original: ownedBy, from: FixedAsset, to: LegalEntity, canonical: OWNED_BY, action: converted}
+  - {original: depreciates, from: DepreciationEntry, to: FixedAsset, canonical: DEPRECIATES, action: converted}
+  - {original: uses, from: DepreciationEntry, to: DepreciationMethod, canonical: USES, action: converted}
+  - {original: has, from: FixedAsset, to: UsefulLife, canonical: HAS, action: converted}
+  - {original: affects, from: ImpairmentIndicator, to: FixedAsset, canonical: AFFECTS, action: converted}
+  - {original: affects, from: ImpairmentIndicator, to: CGU, canonical: AFFECTS, action: converted}
+  - {original: reduces, from: ImpairmentEntry, to: CarryingValue, canonical: IMPAIRS, canonical_to: FixedAsset, action: retargeted, note: "Also renamed reduces -> IMPAIRS (D20). CarryingValue is a property on FixedAsset (§6.1)"}
+  - {original: removes, from: AssetDisposal, to: FixedAsset, canonical: REMOVES, action: converted}
+  - {original: derivedFrom, from: GainLoss, to: Proceeds, canonical: DERIVED_FROM, action: converted}
+  - {original: derivedFrom, from: GainLoss, to: CarryingValue, canonical: DERIVED_FROM, canonical_to: FixedAsset, action: retargeted, note: "CarryingValue is a property on FixedAsset (§6.1)"}
+  - {original: presents, from: Report, to: KPI, canonical: PRESENTS, canonical_from: ManagementReport, action: mapped, note: "Report -> ManagementReport (§6.1)"}
+  - {original: presents, from: ManagementReport, to: ActualResult, canonical: PRESENTS, action: converted}
+  - {original: measuredAcross, from: ActualResult, to: Dimension, canonical: MEASURED_ACROSS, action: converted}
+  - {original: explains, from: Commentary, to: Variance, canonical: EXPLAINS, action: converted}
+  - {original: supportedBy, from: Commentary, to: Evidence, canonical: SUPPORTED_BY, action: converted}
+  - {original: recommends, from: Commentary, to: ManagementAction, canonical: RECOMMENDS, action: converted}
+  - {original: answers, from: Analysis, to: BusinessQuestion, canonical: ANSWERS, action: converted}
+  - {original: uses, from: Analysis, to: FinancialFact, canonical: USES, canonical_to: ActualResult, action: mapped, note: "FinancialFact -> ActualResult (§6.1)"}
+  - {original: supportedBy, from: Recommendation, to: Evidence, canonical: SUPPORTED_BY, action: converted}
+  - {original: affects, from: Risk, to: L3ProcessEndpoint, canonical: AFFECTS, action: converted}
+  - {original: affects, from: Risk, to: FinancialAccount, canonical: AFFECTS, action: converted}
+  - {original: affects, from: Risk, to: FinancialStatement, canonical: AFFECTS, action: converted}
+  - {original: mitigates, from: Control, to: Risk, canonical: MITIGATES, action: converted}
+  - {original: performedBy, from: Control, to: Role, canonical: PERFORMED_BY, action: converted}
+  - {original: produces, from: Control, to: Evidence, canonical: PRODUCES, action: converted}
+  - {original: instanceOf, from: ControlExecution, to: Control, canonical: INSTANCE_OF, action: converted}
+  - {original: produces, from: ControlExecution, to: Evidence, canonical: PRODUCES, action: converted}
+  - {original: evaluates, from: ControlTest, to: Control, canonical: EVALUATES, action: converted}
+  - {original: uses, from: ControlTest, to: Sample, canonical: null, action: deferred, note: "Sample deferred, out of MVP (§6.1)"}
+  - {original: identifiedBy, from: Deficiency, to: ControlTest, canonical: IDENTIFIED_BY, action: converted}
+  - {original: causedBy, from: Deficiency, to: RootCause, canonical: CAUSED_BY, action: converted}
+  - {original: remediates, from: RemediationAction, to: Deficiency, canonical: REMEDIATES, action: converted}
+  - {original: ownedBy, from: RemediationAction, to: Role, canonical: OWNED_BY, action: converted}
+  - {original: validates, from: Retest, to: RemediationAction, canonical: null, action: deferred, note: "Retest deferred, out of MVP (§6.1)"}
+  - {original: asksFor, from: AuditRequest, to: Evidence, canonical: ASKS_FOR, action: converted}
+  - {original: raisedBy, from: Finding, to: Auditor, canonical: RAISED_BY, canonical_to: Organization, action: mapped, note: "Auditor -> Organization (§6.1)"}
+  - {original: addresses, from: ManagementResponse, to: Finding, canonical: ADDRESSES, action: converted}
+  - {original: derivedFrom, from: Report, to: Dataset, canonical: DERIVED_FROM, canonical_from: ManagementReport, action: mapped, note: "Report -> ManagementReport (§6.1)"}
+  - {original: derivedFrom, from: Dataset, to: JournalLine, canonical: DERIVED_FROM, action: converted}
+  - {original: originatesIn, from: Dataset, to: SourceSystem, canonical: ORIGINATES_IN, action: converted}
+  - {original: uses, from: Dashboard, to: Dataset, canonical: USES, action: converted}
+  - {original: uses, from: SemanticModel, to: Dataset, canonical: USES, action: converted}
+  - {original: governs, from: DataPolicy, to: Dataset, canonical: GOVERNS, action: converted}
+  - {original: traces, from: DataLineage, to: Report, canonical: TRACES, canonical_to: ManagementReport, action: mapped, note: "Report -> ManagementReport (§6.1)"}
+  - {original: tracesTo, from: DataLineage, to: SourceSystem, canonical: TRACES_TO, action: converted}
+  - {original: links, from: Mapping, to: Dimension, canonical: null, action: deferred, note: "Mapping deferred, out of MVP (§6.1)"}
+  - {original: validates, from: DataQualityRule, to: DataElement, canonical: VALIDATES, action: converted}
+  - {original: affects, from: Issue, to: Dataset, canonical: AFFECTS, action: converted}
+  - {original: ownedBy, from: Issue, to: Role, canonical: OWNED_BY, action: converted}

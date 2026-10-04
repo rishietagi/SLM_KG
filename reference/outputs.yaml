@@ -1,0 +1,194 @@
+# Stage outputs, verbatim from cpg_value_chain_design.md §4. BECOMES_INPUT_TO hand-offs are not
+# stated in the source and are drafted (edge_defaults); Stage 3 -> 4 links follow the Stage 4
+# relationships 'Formulation REQUIRES Ingredient' and 'SKU REQUIRES PackagingMaterial'.
+class: Output
+defaults:
+  source_system: curated_reference
+  lane: curated
+  extraction_confidence: 1.0
+  reviewed: false
+  drafted_beyond_source: false
+edge_defaults:
+  BECOMES_INPUT_TO: {drafted_beyond_source: true}
+
+groups:
+  - defaults: {source_reference: "docs/source/cpg_value_chain_design.md#stage-1-consumer-and-market-insight"}
+    rows:
+      - {id: "Output:s01_consumer_insight", name: Consumer insight, output_type: information,
+         edges: {BECOMES_INPUT_TO: ["ValueChainActivity:s02_define_category_strategy"]}}
+      - {id: "Output:s01_need_state", name: Need state, output_type: information,
+         edges: {BECOMES_INPUT_TO: ["ValueChainActivity:s03_create_product_concept"]}}
+      - {id: "Output:s01_opportunity_area", name: Opportunity area, output_type: information,
+         edges: {BECOMES_INPUT_TO: ["ValueChainActivity:s02_identify_portfolio_gaps", "ValueChainActivity:s02_set_innovation_priorities"]}}
+      - {id: "Output:s01_category_growth_hypothesis", name: Category growth hypothesis, output_type: information,
+         edges: {BECOMES_INPUT_TO: ["ValueChainActivity:s02_define_category_strategy", "ValueChainActivity:s02_allocate_category_investment"]}}
+      - {id: "Output:s01_target_segment", name: Target segment, output_type: information,
+         edges: {BECOMES_INPUT_TO: ["ValueChainActivity:s02_set_brand_role", "ValueChainActivity:s08_segment_customers"]}}
+      - {id: "Output:s01_demand_signal", name: Demand signal, output_type: data,
+         edges: {BECOMES_INPUT_TO: ["ValueChainActivity:s06_baseline_forecast"]}}
+
+  - defaults: {source_reference: "docs/source/cpg_value_chain_design.md#stage-2-portfolio-and-category-strategy"}
+    rows:
+      - {id: "Output:s02_category_strategy", name: Category strategy, output_type: decision,
+         edges: {BECOMES_INPUT_TO: ["ValueChainActivity:s08_design_route_to_market"]}}
+      - {id: "Output:s02_brand_strategy", name: Brand strategy, output_type: decision,
+         edges: {BECOMES_INPUT_TO: ["ValueChainActivity:s03_define_product_claims"]}}
+      - {id: "Output:s02_portfolio_role", name: Portfolio role, output_type: decision}
+      - {id: "Output:s02_innovation_brief", name: Innovation brief, output_type: document,
+         edges: {BECOMES_INPUT_TO: ["ValueChainActivity:s03_create_product_concept"]}}
+      - {id: "Output:s02_price_pack_architecture", name: Price-pack architecture, output_type: decision, aliases: [PPA],
+         edges: {BECOMES_INPUT_TO: ["ValueChainActivity:s03_approve_product_specification", "ValueChainActivity:s08_set_pricing_terms"]}}
+      - {id: "Output:s02_investment_envelope", name: Investment envelope, output_type: decision,
+         edges: {BECOMES_INPUT_TO: ["ValueChainActivity:s08_plan_promotion"]}}
+
+  - defaults: {source_reference: "docs/source/cpg_value_chain_design.md#stage-3-product-innovation-and-formulation"}
+    rows:
+      - {id: "Output:s03_approved_product_concept", name: Approved product concept, output_type: decision,
+         edges: {BECOMES_INPUT_TO: ["ValueChainActivity:s03_develop_formulation"]}}
+      - {id: "Output:s03_formulation", name: Formulation, output_type: document,
+         edges: {BECOMES_INPUT_TO: ["ValueChainActivity:s04_translate_material_requirements", "ValueChainActivity:s05_batch_formulate"]}}
+      - {id: "Output:s03_recipe", name: Recipe, output_type: document,
+         edges: {BECOMES_INPUT_TO: ["ValueChainActivity:s04_translate_material_requirements"]}}
+      - {id: "Output:s03_ingredient_specification", name: Ingredient specification, output_type: document,
+         edges: {BECOMES_INPUT_TO: ["ValueChainActivity:s04_qualify_suppliers", "ValueChainActivity:s04_approve_ingredients_packaging"]}}
+      - {id: "Output:s03_product_claim", name: Product claim, output_type: information,
+         edges: {BECOMES_INPUT_TO: ["ValueChainActivity:s05_package_label"]}}
+      - {id: "Output:s03_product_specification", name: Product specification, output_type: document,
+         edges: {BECOMES_INPUT_TO: ["ValueChainActivity:s04_approve_ingredients_packaging", "ValueChainActivity:s05_finished_product_testing"]}}
+      - {id: "Output:s03_shelf_life_definition", name: Shelf-life definition, output_type: information,
+         edges: {BECOMES_INPUT_TO: ["ValueChainActivity:s07_monitor_freshness_expiry"]}}
+      - {id: "Output:s03_launch_ready_sku_specification", name: Launch-ready SKU specification, output_type: document,
+         edges: {BECOMES_INPUT_TO: ["ValueChainActivity:s04_translate_material_requirements", "ValueChainActivity:s04_approve_ingredients_packaging"]}}
+
+  - defaults: {source_reference: "docs/source/cpg_value_chain_design.md#stage-4-ingredient-and-packaging-sourcing"}
+    rows:
+      - {id: "Output:s04_approved_supplier", name: Approved supplier, output_type: decision,
+         edges: {BECOMES_INPUT_TO: ["ValueChainActivity:s04_place_purchase_order"]}}
+      - {id: "Output:s04_ingredient_contract", name: Ingredient contract, output_type: document,
+         edges: {BECOMES_INPUT_TO: ["ValueChainActivity:s04_place_purchase_order"]}}
+      - {id: "Output:s04_packaging_contract", name: Packaging contract, output_type: document,
+         edges: {BECOMES_INPUT_TO: ["ValueChainActivity:s04_place_purchase_order"]}}
+      - {id: "Output:s04_purchase_order", name: Purchase order, output_type: document, aliases: [PO],
+         edges: {BECOMES_INPUT_TO: ["ValueChainActivity:s05_receive_release_materials"]}}
+      - {id: "Output:s04_material_requirement", name: Material requirement, output_type: data,
+         edges: {BECOMES_INPUT_TO: ["ValueChainActivity:s04_conduct_sourcing_event"]}}
+      - {id: "Output:s04_supplier_risk_assessment", name: Supplier risk assessment, output_type: information,
+         edges: {BECOMES_INPUT_TO: ["ValueChainActivity:s04_monitor_supply_risk"]}}
+      - {id: "Output:s04_commodity_forecast", name: Commodity forecast, output_type: data,
+         edges: {BECOMES_INPUT_TO: ["ValueChainActivity:s08_set_pricing_terms"]}}
+
+  - defaults: {source_reference: "docs/source/cpg_value_chain_design.md#stage-5-manufacturing-quality-and-packaging"}
+    rows:
+      - {id: "Output:s05_production_batch", name: Production batch, output_type: product,
+         edges: {BECOMES_INPUT_TO: ["ValueChainActivity:s05_in_process_quality_checks"]}}
+      - {id: "Output:s05_finished_sku", name: Finished SKU, output_type: product,
+         edges: {BECOMES_INPUT_TO: ["ValueChainActivity:s07_receive_finished_goods"]}}
+      - {id: "Output:s05_quality_result", name: Quality result, output_type: data,
+         edges: {BECOMES_INPUT_TO: ["ValueChainActivity:s05_release_quarantine_batch"]}}
+      - {id: "Output:s05_released_batch", name: Released batch, output_type: product,
+         edges: {BECOMES_INPUT_TO: ["ValueChainActivity:s07_receive_finished_goods"]}}
+      - {id: "Output:s05_scrap_rework", name: Scrap or rework, output_type: material,
+         edges: {BECOMES_INPUT_TO: ["ValueChainActivity:s11_dispose_rework"]}}
+      - {id: "Output:s05_manufacturing_variance", name: Manufacturing variance, output_type: data,
+         edges: {BECOMES_INPUT_TO: ["ValueChainActivity:s06_sop_ibp_review"]}}
+
+  - defaults: {source_reference: "docs/source/cpg_value_chain_design.md#stage-6-demand-supply-and-inventory-planning"}
+    rows:
+      - {id: "Output:s06_demand_forecast", name: Demand forecast, output_type: data,
+         edges: {BECOMES_INPUT_TO: ["ValueChainActivity:s06_consensus_forecast"]}}
+      - {id: "Output:s06_consensus_demand", name: Consensus demand, output_type: data, aliases: [consensus demand forecast, consensus forecast],
+         edges: {BECOMES_INPUT_TO: ["ValueChainActivity:s06_supply_plan", "ValueChainActivity:s06_capacity_planning", "ValueChainActivity:s08_set_sales_target"]}}
+      - {id: "Output:s06_supply_plan", name: Supply plan, output_type: decision,
+         edges: {BECOMES_INPUT_TO: ["ValueChainActivity:s06_allocate_constrained_supply", "ValueChainActivity:s06_approve_replenishment_plan"]}}
+      - {id: "Output:s06_production_requirement", name: Production requirement, output_type: data,
+         edges: {BECOMES_INPUT_TO: ["ValueChainActivity:s05_create_production_plan"]}}
+      - {id: "Output:s06_inventory_target", name: Inventory target, output_type: decision,
+         edges: {BECOMES_INPUT_TO: ["ValueChainActivity:s07_allocate_inventory"]}}
+      - {id: "Output:s06_allocation_decision", name: Allocation decision, output_type: decision,
+         edges: {BECOMES_INPUT_TO: ["ValueChainActivity:s07_allocate_inventory"]}}
+      - {id: "Output:s06_constrained_forecast", name: Constrained forecast, output_type: data,
+         edges: {BECOMES_INPUT_TO: ["ValueChainActivity:s06_approve_replenishment_plan"]}}
+
+  - defaults: {source_reference: "docs/source/cpg_value_chain_design.md#stage-7-warehousing-and-distribution"}
+    rows:
+      - {id: "Output:s07_inventory_position", name: Inventory position, output_type: data,
+         edges: {BECOMES_INPUT_TO: ["ValueChainActivity:s08_capture_order", "ValueChainActivity:s06_set_inventory_target"]}}
+      - {id: "Output:s07_fulfilled_order", name: Fulfilled order, output_type: event,
+         edges: {BECOMES_INPUT_TO: ["ValueChainActivity:s07_dispatch_shipment"]}}
+      - {id: "Output:s07_shipment", name: Shipment, output_type: product,
+         edges: {BECOMES_INPUT_TO: ["ValueChainActivity:s07_deliver"]}}
+      - {id: "Output:s07_delivery", name: Delivery, output_type: event,
+         edges: {BECOMES_INPUT_TO: ["ValueChainActivity:s07_confirm_pod", "ValueChainActivity:s09_check_inventory"]}}
+      - {id: "Output:s07_proof_of_delivery", name: Proof of delivery, output_type: document, aliases: [POD]}
+      - {id: "Output:s07_return", name: Return, output_type: product,
+         edges: {BECOMES_INPUT_TO: ["ValueChainActivity:s11_process_return"]}}
+      - {id: "Output:s07_distribution_cost", name: Distribution cost, output_type: data,
+         edges: {BECOMES_INPUT_TO: ["ValueChainActivity:s08_design_route_to_market"]}}
+
+  - defaults: {source_reference: "docs/source/cpg_value_chain_design.md#stage-8-customer-channel-and-revenue-growth"}
+    rows:
+      - {id: "Output:s08_channel_strategy", name: Channel strategy, output_type: decision,
+         edges: {BECOMES_INPUT_TO: ["ValueChainActivity:s09_classify_outlet"]}}
+      - {id: "Output:s08_customer_plan", name: Customer plan, output_type: document,
+         edges: {BECOMES_INPUT_TO: ["ValueChainActivity:s08_plan_promotion"]}}
+      - {id: "Output:s08_price_condition", name: Price condition, output_type: decision,
+         edges: {BECOMES_INPUT_TO: ["ValueChainActivity:s09_capture_order"]}}
+      - {id: "Output:s08_promotion", name: Promotion, output_type: decision, aliases: [trade promotion],
+         edges: {BECOMES_INPUT_TO: ["ValueChainActivity:s06_promotion_event_uplift", "ValueChainActivity:s09_activate_promotion"]}}
+      - {id: "Output:s08_trade_scheme", name: Trade scheme, output_type: decision, aliases: [scheme, customer scheme],
+         edges: {BECOMES_INPUT_TO: ["ValueChainActivity:s09_track_scheme_compliance"]}}
+      - {id: "Output:s08_sales_target", name: Sales target, output_type: decision,
+         edges: {BECOMES_INPUT_TO: ["ValueChainActivity:s09_plan_sales_beat"]}}
+      - {id: "Output:s08_customer_order", name: Customer order, output_type: document, aliases: [sales order],
+         edges: {BECOMES_INPUT_TO: ["ValueChainActivity:s07_allocate_inventory", "ValueChainActivity:s07_pick_pack"]}}
+
+  - defaults: {source_reference: "docs/source/cpg_value_chain_design.md#stage-9-retail-and-outlet-execution"}
+    rows:
+      - {id: "Output:s09_outlet_order", name: Outlet order, output_type: document,
+         edges: {BECOMES_INPUT_TO: ["ValueChainActivity:s08_capture_order"]}}
+      - {id: "Output:s09_availability_result", name: Availability result, output_type: data,
+         edges: {BECOMES_INPUT_TO: ["ValueChainActivity:s10_discover_product"]}}
+      - {id: "Output:s09_distribution_measure", name: Distribution measure, output_type: data,
+         edges: {BECOMES_INPUT_TO: ["ValueChainActivity:s08_manage_distributor_performance"]}}
+      - {id: "Output:s09_display_compliance", name: Display compliance, output_type: data,
+         edges: {BECOMES_INPUT_TO: ["ValueChainActivity:s09_track_scheme_compliance"]}}
+      - {id: "Output:s09_promotion_compliance", name: Promotion compliance, output_type: data,
+         edges: {BECOMES_INPUT_TO: ["ValueChainActivity:s08_plan_promotion"]}}
+      - {id: "Output:s09_sell_out_transaction", name: Sell-out transaction, output_type: data, aliases: [sell-out, secondary sales],
+         edges: {BECOMES_INPUT_TO: ["ValueChainActivity:s01_analyze_shopper_behaviour", "ValueChainActivity:s06_baseline_forecast"]}}
+      - {id: "Output:s09_corrective_action", name: Corrective action (outlet execution), output_type: decision,
+         edges: {BECOMES_INPUT_TO: ["ValueChainActivity:s09_visit_outlet"]}}
+
+  - defaults: {source_reference: "docs/source/cpg_value_chain_design.md#stage-10-purchase-consumption-and-feedback"}
+    rows:
+      - {id: "Output:s10_purchase_event", name: Purchase event, output_type: event,
+         edges: {BECOMES_INPUT_TO: ["ValueChainActivity:s10_consume_use"]}}
+      - {id: "Output:s10_consumption_event", name: Consumption event, output_type: event,
+         edges: {BECOMES_INPUT_TO: ["ValueChainActivity:s10_provide_feedback"]}}
+      - {id: "Output:s10_satisfaction_signal", name: Satisfaction signal, output_type: data,
+         edges: {BECOMES_INPUT_TO: ["ValueChainActivity:s01_analyze_shopper_behaviour"]}}
+      - {id: "Output:s10_complaint", name: Complaint, output_type: information,
+         edges: {BECOMES_INPUT_TO: ["ValueChainActivity:s11_recall_batch", "ValueChainActivity:s11_corrective_action"]}}
+      - {id: "Output:s10_sentiment", name: Sentiment, output_type: data,
+         edges: {BECOMES_INPUT_TO: ["ValueChainActivity:s01_monitor_trends"]}}
+      - {id: "Output:s10_loyalty_indicator", name: Loyalty indicator, output_type: data,
+         edges: {BECOMES_INPUT_TO: ["ValueChainActivity:s01_estimate_category_opportunity"]}}
+      - {id: "Output:s10_switching_signal", name: Switching signal, output_type: data,
+         edges: {BECOMES_INPUT_TO: ["ValueChainActivity:s01_analyze_competition"]}}
+
+  - defaults: {source_reference: "docs/source/cpg_value_chain_design.md#stage-11-returns-waste-and-circularity"}
+    rows:
+      - {id: "Output:s11_return_disposition", name: Return disposition, output_type: decision,
+         edges: {BECOMES_INPUT_TO: ["ValueChainActivity:s11_dispose_rework"]}}
+      - {id: "Output:s11_product_recall", name: Product recall, output_type: event,
+         edges: {BECOMES_INPUT_TO: ["ValueChainActivity:s07_process_returns"]}}
+      - {id: "Output:s11_disposal_event", name: Disposal event, output_type: event,
+         edges: {BECOMES_INPUT_TO: ["ValueChainActivity:s11_measure_waste"]}}
+      - {id: "Output:s11_recycled_material", name: Recycled material, output_type: material,
+         edges: {BECOMES_INPUT_TO: ["ValueChainActivity:s04_approve_ingredients_packaging"]}}
+      - {id: "Output:s11_waste_measure", name: Waste measure, output_type: data,
+         edges: {BECOMES_INPUT_TO: ["ValueChainActivity:s11_trace_sustainability"]}}
+      - {id: "Output:s11_sustainability_outcome", name: Sustainability outcome, output_type: information,
+         edges: {BECOMES_INPUT_TO: ["ValueChainActivity:s02_set_innovation_priorities"]}}
+      - {id: "Output:s11_corrective_action", name: Corrective action (returns and quality), output_type: decision,
+         edges: {BECOMES_INPUT_TO: ["ValueChainActivity:s05_in_process_quality_checks"]}}

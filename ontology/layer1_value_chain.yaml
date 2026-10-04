@@ -1,0 +1,215 @@
+module: layer1_value_chain
+description: >
+  Layer 1 — the CPG value-chain spine (PROJECT_CONTEXT §5.1–5.2,
+  docs/source/cpg_value_chain_design.md §3). FOLLOWS is not stored; traverse PRECEDES in reverse.
+
+classes:
+  CPGValueChain:
+    layer: 1
+    description: Root node of the CPG value chain; contains the 11 stages.
+    spec_ref: docs/source/cpg_value_chain_design.md#proposed-layer-1-hierarchy
+    attributes:
+      sector: {type: string, required: true}
+
+  ValueChainStage:
+    layer: 1
+    description: One of the 11 CPG value-chain stages.
+    source_key: stage_id
+    spec_ref: docs/source/cpg_value_chain_design.md#4-cpg-value-chain-stages-in-detail
+    attributes:
+      stage_number:     {type: int64, required: true}
+      definition:       {type: string, required: true}
+      purpose:          {type: string, required: true}
+      entry_event:      {type: string, description: "BusinessEvent id that opens the stage"}
+      exit_event:       {type: string, description: "BusinessEvent id that closes the stage"}
+      upstream_stage:   {type: string, description: "Denormalised from PRECEDES; validator checks consistency"}
+      downstream_stage: {type: string, description: "Denormalised from PRECEDES; validator checks consistency"}
+
+  ValueChainActivity:
+    layer: 1
+    description: A unit of work within a value-chain stage.
+    source_key: activity_id
+    attributes:
+      sequence: {type: int64, required: true, description: "Order within the stage"}
+
+  Input:
+    layer: 1
+    description: Information or material consumed by a value-chain activity.
+    attributes:
+      input_type: {type: enum, values: [data, information, material, decision, document]}
+
+  Output:
+    layer: 1
+    description: Business object, decision or signal produced by a value-chain activity.
+    attributes:
+      output_type: {type: enum, values: [data, information, material, decision, document, product, event]}
+
+  BusinessEvent:
+    layer: 1
+    description: Event that triggers a value-chain activity or marks a stage boundary. Distinct from finance TriggerEvent (L3 process trigger).
+    attributes:
+      event_type: {type: enum, values: [stage_entry, stage_exit, trigger, signal]}
+
+  Decision:
+    layer: 1
+    description: A business choice an activity requires.
+    attributes:
+      decision_question: {type: string, required: true}
+
+  DecisionOption:
+    layer: 1
+    description: An alternative that a Decision can select.
+
+  DecisionRule:
+    layer: 1
+    description: Rule or policy governing how an activity is performed or a decision is taken.
+    attributes:
+      rule_text: {type: string}
+
+  ValueDriver:
+    layer: 1
+    description: Factor influencing financial or business performance (shared with finance spec F).
+    source_key: valueDriverID
+    attributes:
+      driver_type: {type: string, required: true}
+
+  ValueOutcome:
+    layer: 1
+    description: Value created by an activity, measured by KPIs.
+    attributes:
+      outcome_type: {type: string}
+
+  Constraint:
+    layer: 1
+    description: Limitation on how an activity can be performed (capacity, regulation, lead time, cost).
+    attributes:
+      constraint_type: {type: string}
+
+  Role:
+    layer: 1
+    description: Organizational responsibility or Finance role (shared with finance spec B; roleName maps to name).
+    source_key: roleID
+
+  Organization:
+    layer: 1
+    description: Enterprise or institutional unit (shared with finance spec B). Auditors are Organizations with organization_type=auditor.
+    source_key: organizationID
+    attributes:
+      organization_type: {type: string, required: true}
+
+  SourceEvidence:
+    layer: 1
+    description: >
+      Citation to a source document section supporting a curated model element (provenance of the
+      reference model). Distinct from finance Evidence, which supports business assertions such as claims.
+    attributes:
+      document:      {type: string, required: true}
+      section:       {type: string}
+      evidence_type: {type: enum, required: true, values: [spec, source_document, external_reference]}
+
+  SubSector:
+    layer: 1
+    description: CPG sub-sector (food & beverage, personal care, home care) where stage or activity practice differs.
+    attributes:
+      gpc_segment: {type: string, description: "GS1 GPC segment name"}
+
+relationships:
+  CONTAINS:
+    description: Structural containment, parent to child.
+    properties:
+      sequence: {type: int64}
+    pairs:
+      - {from: CPGValueChain,   to: ValueChainStage,    cardinality: "1:N"}
+      - {from: ValueChainStage, to: ValueChainActivity, cardinality: "1:N", note: "each activity belongs to exactly one stage"}
+
+  PRECEDES:
+    description: Stage flow order. FOLLOWS is the reverse traversal and is not stored.
+    pairs:
+      - {from: ValueChainStage, to: ValueChainStage, cardinality: "1:1"}
+
+  VARIES_IN:
+    description: Records how a stage or activity differs in a sub-sector.
+    properties:
+      aspect:    {type: string, required: true, description: "What differs (e.g. hygiene regime, process type)"}
+      variation: {type: string, required: true}
+    pairs:
+      - {from: ValueChainStage,    to: SubSector}
+      - {from: ValueChainActivity, to: SubSector}
+
+  TRIGGERED_BY:
+    description: Event that starts the subject.
+    pairs:
+      - {from: ValueChainActivity, to: BusinessEvent}
+
+  CONSUMES:
+    description: Subject uses the object as an input. Targets are an explicit allowed list (no generic Entity).
+    pairs:
+      - {from: ValueChainActivity, to: Input}
+
+  PRODUCES:
+    description: Subject creates the object. Targets are an explicit allowed list (no generic Entity).
+    pairs:
+      - {from: ValueChainActivity, to: Output}
+
+  REQUIRES:
+    description: Activity requires the decision to be taken.
+    pairs:
+      - {from: ValueChainActivity, to: Decision}
+
+  GOVERNED_BY:
+    description: Subject is governed by the rule or policy.
+    pairs:
+      - {from: ValueChainActivity, to: DecisionRule}
+
+  PERFORMED_BY:
+    description: Role that performs the subject.
+    pairs:
+      - {from: ValueChainActivity, to: Role}
+
+  SUPPORTED_BY:
+    description: Activity is supported by the organization (participant).
+    pairs:
+      - {from: ValueChainActivity, to: Organization}
+
+  INFLUENCES:
+    description: Subject influences the value driver or KPI.
+    pairs:
+      - {from: ValueChainActivity, to: ValueDriver}
+
+  CREATES:
+    description: Activity creates the value outcome.
+    pairs:
+      - {from: ValueChainActivity, to: ValueOutcome}
+
+  CONSTRAINED_BY:
+    description: Activity is limited by the constraint.
+    pairs:
+      - {from: ValueChainActivity, to: Constraint}
+
+  DEPENDS_ON:
+    description: Activity cannot proceed without the object activity's result.
+    properties:
+      dependency_basis: {type: string, description: "What is handed over (e.g. consensus demand)"}
+    pairs:
+      - {from: ValueChainActivity, to: ValueChainActivity}
+
+  SUPPORTED_BY_EVIDENCE:
+    description: Curated element is supported by the cited source section.
+    pairs:
+      - {from: ValueChainActivity, to: SourceEvidence}
+      - {from: ValueChainStage,    to: SourceEvidence, note: "added: design notes §2 lists 'relevant source evidence' per stage (D29)"}
+
+  BECOMES_INPUT_TO:
+    description: An activity output feeds a (usually downstream) activity.
+    pairs:
+      - {from: Output, to: ValueChainActivity}
+
+  SELECTS:
+    description: Decision selects among options.
+    pairs:
+      - {from: Decision, to: DecisionOption}
+
+  BASED_ON:
+    description: Subject is based on the object. BusinessFact maps to SourceEvidence in the curated lane (§6.1, confirm item 4).
+    pairs:
+      - {from: Decision, to: SourceEvidence}

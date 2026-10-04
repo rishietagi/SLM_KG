@@ -1,0 +1,27 @@
+class: CPGValueChain
+defaults:
+  source_system: curated_reference
+  lane: curated
+  extraction_confidence: 1.0
+  reviewed: false
+  drafted_beyond_source: false
+rows:
+  - id: "CPGValueChain:cpg"
+    name: CPG Value Chain
+    aliases: [FMCG value chain, CPG Intelligence Graph spine]
+    sector: CPG / FMCG
+    description: "Market signal to consumption and feedback, in 11 stages."
+    source_reference: "docs/source/cpg_value_chain_design.md#proposed-layer-1-hierarchy"
+    edges:
+      CONTAINS:
+        - {to: "ValueChainStage:s01_consumer_market_insight", sequence: 1}
+        - {to: "ValueChainStage:s02_portfolio_category_strategy", sequence: 2}
+        - {to: "ValueChainStage:s03_product_innovation_formulation", sequence: 3}
+        - {to: "ValueChainStage:s04_ingredient_packaging_sourcing", sequence: 4}
+        - {to: "ValueChainStage:s05_manufacturing_quality_packaging", sequence: 5}
+        - {to: "ValueChainStage:s06_demand_supply_inventory_planning", sequence: 6}
+        - {to: "ValueChainStage:s07_warehousing_distribution", sequence: 7}
+        - {to: "ValueChainStage:s08_customer_channel_revenue_growth", sequence: 8}
+        - {to: "ValueChainStage:s09_retail_outlet_execution", sequence: 9}
+        - {to: "ValueChainStage:s10_purchase_consumption_feedback", sequence: 10}
+        - {to: "ValueChainStage:s11_returns_waste_circularity", sequence: 11}

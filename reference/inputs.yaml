@@ -1,0 +1,37 @@
+# External inputs. Stage 1 inputs are verbatim from the source; stages 2-11 draw mostly on upstream
+# outputs (BECOMES_INPUT_TO in outputs.yaml). Three external inputs are drafted.
+class: Input
+defaults:
+  source_system: curated_reference
+  lane: curated
+  extraction_confidence: 1.0
+  reviewed: false
+  drafted_beyond_source: false
+  source_reference: "docs/source/cpg_value_chain_design.md#stage-1-consumer-and-market-insight"
+rows:
+  - {id: "Input:consumer_research", name: Consumer research, input_type: information}
+  - {id: "Input:household_panel_data", name: Household-panel data, input_type: data, aliases: [household panel]}
+  - {id: "Input:retail_audit_data", name: Retail audit data, input_type: data, aliases: [retail audit]}
+  - {id: "Input:search_social_trends", name: Search and social trends, input_type: data}
+  - {id: "Input:complaints_feedback", name: Complaints and feedback, input_type: information}
+  - {id: "Input:competitor_intelligence", name: Competitor intelligence, input_type: information}
+  - {id: "Input:sales_distribution_data", name: Sales and distribution data, input_type: data}
+
+  - id: "Input:commodity_market_prices"
+    name: Commodity market prices
+    input_type: data
+    drafted_beyond_source: true
+    source_reference: "docs/source/cpg_value_chain_design.md#stage-4-ingredient-and-packaging-sourcing"
+    review_note: "Drafted from Stage 4 relationship 'CommodityPrice AFFECTS IngredientCost'."
+  - id: "Input:regulatory_requirements"
+    name: Regulatory requirements
+    input_type: document
+    drafted_beyond_source: true
+    source_reference: "docs/source/cpg_value_chain_design.md#stage-3-product-innovation-and-formulation"
+    review_note: "Drafted for 'Complete regulatory review'."
+  - id: "Input:production_capacity_data"
+    name: Production capacity data
+    input_type: data
+    drafted_beyond_source: true
+    source_reference: "docs/source/cpg_value_chain_design.md#stage-6-demand-supply-and-inventory-planning"
+    review_note: "Drafted from Stage 6 relationship 'SupplyPlan REQUIRES ProductionCapacity'."

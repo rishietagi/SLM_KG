@@ -1,0 +1,1916 @@
+module: finance
+description: >
+  Finance ontology overlay (Layer 2 process structure + Layer 5 performance/risk), converted from
+  docs/source/finance_extraction_spec.md (kept verbatim). Relationship names are UPPER_SNAKE; every original
+  camelCase name is traceable through rel_name_map.yaml. Fixes from PROJECT_CONTEXT §6.1 applied.
+  Attribute names are snake_case; the spec's ID attribute is recorded as source_key (DB PK is `id`).
+  Classes the spec gives no attributes for carry node_base only until Phase 2 needs more.
+
+classes:
+
+  # --- A. PROCESS STRUCTURE --------------------
+  FinanceDomain:
+    layer: 2
+    description: "Highest-level Finance process domain."
+    source_key: financeDomainID
+    spec_ref: docs/source/finance_extraction_spec.md
+  ProcessGroup:
+    layer: 2
+    description: "L2 grouping of related Finance processes."
+    source_key: processGroupID
+    spec_ref: docs/source/finance_extraction_spec.md
+  L3ProcessEndpoint:
+    layer: 2
+    description: "Executable Finance process beginning with a trigger and producing a defined output."
+    source_key: processEndpointID
+    spec_ref: docs/source/finance_extraction_spec.md
+    attributes:
+      trigger_description: {type: string, required: true}
+      output_description:  {type: string, required: true}
+      status:              {type: string, required: true}
+  TriggerEvent:
+    layer: 2
+    description: "Event or condition that initiates an L3 process."
+    source_key: eventID
+    spec_ref: docs/source/finance_extraction_spec.md
+    attributes:
+      event_date: {type: date}
+  ProcessOutput:
+    layer: 2
+    description: "Business object, decision, record or state produced by an L3 process."
+    source_key: outputID
+    spec_ref: docs/source/finance_extraction_spec.md
+    attributes:
+      output_type: {type: string, required: true}
+      status:      {type: string, required: true}
+
+  # --- B. ORGANIZATION AND RESPONSIBILITY --------------------
+  # Organization: declared once in layer1_value_chain.yaml (shared with Layer 1).
+  LegalEntity:
+    layer: 2
+    description: "Statutory reporting and contracting entity."
+    source_key: legalEntityID
+    spec_ref: docs/source/finance_extraction_spec.md
+    attributes:
+      jurisdiction:       {type: string, required: true}
+      reporting_currency: {type: string, required: true}
+  BusinessUnit:
+    layer: 2
+    description: "Operating division, category business or organizational unit."
+    source_key: businessUnitID
+    spec_ref: docs/source/finance_extraction_spec.md
+  ResponsibilityCentre:
+    layer: 2
+    description: "Organizational unit accountable for financial results."
+    source_key: centreID
+    spec_ref: docs/source/finance_extraction_spec.md
+    attributes:
+      centre_type: {type: string, required: true, description: "cost, profit, revenue, investment"}
+      owner:       {type: string, required: true}
+  CostCentre:
+    layer: 2
+    description: "Responsibility centre accountable primarily for costs."
+    source_key: costCentreID
+    spec_ref: docs/source/finance_extraction_spec.md
+    attributes:
+      hierarchy_level: {type: int64, required: true}
+  ProfitCentre:
+    layer: 2
+    description: "Responsibility centre accountable for profit."
+    source_key: profitCentreID
+    spec_ref: docs/source/finance_extraction_spec.md
+    attributes:
+      hierarchy_level: {type: int64, required: true}
+  # Role: declared once in layer1_value_chain.yaml (shared with Layer 1).
+  Person:
+    layer: 2
+    description: "Named individual explicitly identified in the source."
+    source_key: personID
+    spec_ref: docs/source/finance_extraction_spec.md
+
+  # --- C. PRODUCT, MARKET AND COMMERCIAL DIMENSIONS --------------------
+  Brand:
+    layer: 3
+    description: "Commercially identifiable consumer brand."
+    source_key: brandID
+    spec_ref: docs/source/finance_extraction_spec.md
+    attributes:
+      owner: {type: string}
+  Category:
+    layer: 3
+    description: "Product category in the Consumer Markets hierarchy."
+    source_key: categoryID
+    spec_ref: docs/source/finance_extraction_spec.md
+    attributes:
+      gpc_brick_code: {type: string, description: "GS1 GPC brick (PROJECT_CONTEXT §7)"}
+  ProductFamily:
+    layer: 3
+    description: "Group of related products."
+    source_key: productFamilyID
+    spec_ref: docs/source/finance_extraction_spec.md
+    attributes:
+      gpc_brick_code: {type: string, description: "GS1 GPC brick (PROJECT_CONTEXT §7)"}
+  SKU:
+    layer: 3
+    description: "Stock-keeping unit sold, purchased, manufactured or inventoried."
+    source_key: skuID
+    spec_ref: docs/source/finance_extraction_spec.md
+    attributes:
+      pack_size:       {type: string}
+      unit_of_measure: {type: string}
+  Customer:
+    layer: 4
+    description: "Buying party."
+    source_key: customerID
+    spec_ref: docs/source/finance_extraction_spec.md
+    attributes:
+      customer_type: {type: string, required: true}
+      credit_class:  {type: string}
+  Supplier:
+    layer: 4
+    description: "Party supplying a product or service."
+    source_key: supplierID
+    spec_ref: docs/source/finance_extraction_spec.md
+    attributes:
+      supplier_type: {type: string, required: true}
+  Channel:
+    layer: 4
+    description: "Route-to-market or customer fulfilment channel."
+    source_key: channelID
+    spec_ref: docs/source/finance_extraction_spec.md
+    attributes:
+      channel_type: {type: string, required: true}
+  Geography:
+    layer: 4
+    description: "Country, region, state, city, market or micro-market."
+    source_key: geographyID
+    spec_ref: docs/source/finance_extraction_spec.md
+    attributes:
+      geography_level: {type: string, required: true}
+  Location:
+    layer: 4
+    description: "Physical business, inventory, asset or operating location."
+    source_key: locationID
+    spec_ref: docs/source/finance_extraction_spec.md
+    attributes:
+      location_type: {type: string, required: true}
+
+  # --- D. ACCOUNTING STRUCTURE --------------------
+  ChartOfAccounts:
+    layer: 2
+    description: "Governed hierarchy of financial accounts."
+    source_key: chartID
+    spec_ref: docs/source/finance_extraction_spec.md
+    attributes:
+      version: {type: string}
+  FinancialAccount:
+    layer: 2
+    description: "Individual chart-of-accounts element."
+    source_key: accountID
+    spec_ref: docs/source/finance_extraction_spec.md
+    attributes:
+      account_type:      {type: string, required: true}
+      account_hierarchy: {type: string, required: true}
+  AccountGroup:
+    layer: 2
+    description: "Grouping of accounts for reporting or governance."
+    source_key: accountGroupID
+    spec_ref: docs/source/finance_extraction_spec.md
+    attributes:
+      group_type: {type: string, required: true}
+  GeneralLedger:
+    layer: 2
+    description: "Principal accounting book."
+    source_key: ledgerID
+    spec_ref: docs/source/finance_extraction_spec.md
+    attributes:
+      ledger_type: {type: string, required: true}
+  SubLedger:
+    layer: 2
+    description: "Supporting ledger for a particular transaction class."
+    source_key: subLedgerID
+    spec_ref: docs/source/finance_extraction_spec.md
+    attributes:
+      sub_ledger_type: {type: string, required: true}
+  AccountingPolicy:
+    layer: 2
+    description: "Approved financial-accounting treatment or rule."
+    source_key: policyID
+    spec_ref: docs/source/finance_extraction_spec.md
+    attributes:
+      effective_date: {type: date}
+  AccountingStandard:
+    layer: 2
+    description: "Financial reporting standard explicitly referenced."
+    source_key: standardID
+    spec_ref: docs/source/finance_extraction_spec.md
+    attributes:
+      jurisdiction: {type: string}
+  JournalEntry:
+    layer: 2
+    description: "Balanced accounting document."
+    source_key: journalID
+    spec_ref: docs/source/finance_extraction_spec.md
+    attributes:
+      journal_date: {type: date, required: true}
+      posting_date: {type: date, required: true}
+      status:       {type: string, required: true}
+  JournalLine:
+    layer: 2
+    description: "Individual debit or credit posting."
+    source_key: journalLineID
+    spec_ref: docs/source/finance_extraction_spec.md
+    attributes:
+      amount:                 {type: decimal, required: true}
+      debit_credit_indicator: {type: enum, required: true, values: [debit, credit]}
+      currency:               {type: string, required: true}
+      posting_date:           {type: date, required: true}
+  TrialBalance:
+    layer: 2
+    description: "Account balances used for entity reporting or consolidation."
+    source_key: trialBalanceID
+    spec_ref: docs/source/finance_extraction_spec.md
+    attributes:
+      period:       {type: string, required: true}
+      legal_entity: {type: string, required: true}
+      version:      {type: string, required: true}
+  Balance:
+    layer: 2
+    description: "Financial balance for an account and dimensional context."
+    source_key: balanceID
+    spec_ref: docs/source/finance_extraction_spec.md
+    attributes:
+      amount:       {type: decimal, required: true}
+      currency:     {type: string, required: true}
+      balance_date: {type: date, required: true}
+
+  # --- E. TRANSACTIONS AND DOCUMENTS --------------------
+  SalesOrder:
+    layer: 2
+    description: "Customer order for products or services."
+    source_key: salesOrderID
+    spec_ref: docs/source/finance_extraction_spec.md
+    attributes:
+      order_date: {type: date, required: true}
+      status:     {type: string, required: true}
+  SalesInvoice:
+    layer: 2
+    description: "Customer billing document."
+    source_key: invoiceID
+    spec_ref: docs/source/finance_extraction_spec.md
+    attributes:
+      invoice_date: {type: date, required: true}
+      due_date:     {type: date, required: true}
+      amount:       {type: decimal, required: true}
+      currency:     {type: string, required: true}
+      status:       {type: string, required: true}
+  InvoiceLine:
+    layer: 2
+    description: "Individual product or service line on an invoice."
+    source_key: invoiceLineID
+    spec_ref: docs/source/finance_extraction_spec.md
+    attributes:
+      quantity:    {type: double, required: true}
+      unit_price:  {type: decimal, required: true}
+      line_amount: {type: decimal, required: true}
+  CreditNote:
+    layer: 2
+    description: "Document reducing a customer invoice or receivable."
+    source_key: creditNoteID
+    spec_ref: docs/source/finance_extraction_spec.md
+    attributes:
+      document_date: {type: date, required: true}
+      amount:        {type: decimal, required: true}
+      currency:      {type: string, required: true}
+      reason_code:   {type: string, required: true}
+  DebitNote:
+    layer: 2
+    description: "Document increasing an amount payable or receivable."
+    source_key: debitNoteID
+    spec_ref: docs/source/finance_extraction_spec.md
+    attributes:
+      document_date: {type: date, required: true}
+      amount:        {type: decimal, required: true}
+      currency:      {type: string, required: true}
+      reason_code:   {type: string, required: true}
+  CustomerReceipt:
+    layer: 2
+    description: "Customer payment received."
+    source_key: receiptID
+    spec_ref: docs/source/finance_extraction_spec.md
+    attributes:
+      receipt_date: {type: date, required: true}
+      amount:       {type: decimal, required: true}
+      currency:     {type: string, required: true}
+  Receivable:
+    layer: 2
+    description: "Amount due from a customer."
+    source_key: receivableID
+    spec_ref: docs/source/finance_extraction_spec.md
+    attributes:
+      amount:   {type: decimal, required: true}
+      due_date: {type: date, required: true}
+      status:   {type: string, required: true}
+  SupplierInvoice:
+    layer: 2
+    description: "Supplier billing document."
+    source_key: supplierInvoiceID
+    spec_ref: docs/source/finance_extraction_spec.md
+    attributes:
+      invoice_date: {type: date, required: true}
+      due_date:     {type: date, required: true}
+      amount:       {type: decimal, required: true}
+      currency:     {type: string, required: true}
+      status:       {type: string, required: true}
+  PurchaseOrder:
+    layer: 2
+    description: "Approved order issued to a supplier."
+    source_key: purchaseOrderID
+    spec_ref: docs/source/finance_extraction_spec.md
+    attributes:
+      order_date: {type: date, required: true}
+      amount:     {type: decimal, required: true}
+      currency:   {type: string, required: true}
+      status:     {type: string, required: true}
+  GoodsReceipt:
+    layer: 2
+    description: "Confirmation that ordered goods or services were received."
+    source_key: receiptID
+    spec_ref: docs/source/finance_extraction_spec.md
+    attributes:
+      receipt_date: {type: date, required: true}
+      quantity:     {type: double, required: true}
+      status:       {type: string, required: true}
+  APDocument:
+    layer: 2
+    description: "Accounts-payable accounting document."
+    source_key: apDocumentID
+    spec_ref: docs/source/finance_extraction_spec.md
+    attributes:
+      posting_date: {type: date, required: true}
+      amount:       {type: decimal, required: true}
+      status:       {type: string, required: true}
+  SupplierPayment:
+    layer: 2
+    description: "Payment made to a supplier."
+    source_key: paymentID
+    spec_ref: docs/source/finance_extraction_spec.md
+    attributes:
+      payment_date: {type: date, required: true}
+      amount:       {type: decimal, required: true}
+      currency:     {type: string, required: true}
+      status:       {type: string, required: true}
+  BankTransaction:
+    layer: 2
+    description: "Transaction recorded in a bank account."
+    source_key: bankTransactionID
+    spec_ref: docs/source/finance_extraction_spec.md
+    attributes:
+      document_date:    {type: date, required: true}
+      amount:           {type: decimal, required: true}
+      currency:         {type: string, required: true}
+      transaction_type: {type: string, required: true}
+  BankAccount:
+    layer: 2
+    description: "Financial account held with a bank."
+    source_key: bankAccountID
+    spec_ref: docs/source/finance_extraction_spec.md
+    attributes:
+      bank_name:        {type: string, required: true}
+      account_currency: {type: string, required: true}
+      account_type:     {type: string, required: true}
+  PaymentFile:
+    layer: 2
+    description: "File or instruction transmitted for payment execution."
+    source_key: paymentFileID
+    spec_ref: docs/source/finance_extraction_spec.md
+    attributes:
+      creation_date: {type: date, required: true}
+      payment_count: {type: int64, required: true}
+      total_amount:  {type: decimal, required: true}
+      status:        {type: string, required: true}
+
+  # --- F. PLANNING AND PERFORMANCE --------------------
+  BusinessObjective:
+    layer: 5
+    description: "Intended enterprise or financial outcome."
+    source_key: objectiveID
+    spec_ref: docs/source/finance_extraction_spec.md
+  # ValueDriver: declared once in layer1_value_chain.yaml (shared with Layer 1).
+  FinancialTarget:
+    layer: 5
+    description: "Approved target for a financial measure."
+    source_key: targetID
+    spec_ref: docs/source/finance_extraction_spec.md
+    attributes:
+      metric:       {type: string, required: true}
+      target_value: {type: decimal, required: true}
+      unit:         {type: string, required: true}
+      period:       {type: string, required: true}
+  PlanningCycle:
+    layer: 2
+    description: "Governed planning or forecasting cycle."
+    source_key: planningCycleID
+    spec_ref: docs/source/finance_extraction_spec.md
+    attributes:
+      cycle_type: {type: string, required: true}
+      start_date: {type: date, required: true}
+      end_date:   {type: date, required: true}
+  PlanningAssumption:
+    layer: 2
+    description: "Approved input used in a budget, forecast or scenario."
+    source_key: assumptionID
+    spec_ref: docs/source/finance_extraction_spec.md
+    attributes:
+      value:            {type: string, required: true}
+      unit:             {type: string, required: true}
+      effective_period: {type: string, required: true}
+      version:          {type: string, required: true}
+  PlanningDriver:
+    layer: 2
+    description: "Quantitative or qualitative forecasting driver."
+    source_key: planningDriverID
+    spec_ref: docs/source/finance_extraction_spec.md
+    attributes:
+      value: {type: string, required: true}
+      unit:  {type: string, required: true}
+  Budget:
+    layer: 2
+    description: "Approved financial plan."
+    source_key: budgetID
+    spec_ref: docs/source/finance_extraction_spec.md
+    attributes:
+      version:  {type: string, required: true}
+      scenario: {type: string, required: true}
+      period:   {type: string, required: true}
+      amount:   {type: decimal, required: true}
+      currency: {type: string, required: true}
+  BudgetSubmission:
+    layer: 2
+    description: "Organizational budget submitted for consolidation."
+    source_key: submissionID
+    spec_ref: docs/source/finance_extraction_spec.md
+    attributes:
+      submitting_unit: {type: string, required: true}
+      version:         {type: string, required: true}
+      submission_date: {type: date, required: true}
+      status:          {type: string, required: true}
+  ConsolidatedBudget:
+    layer: 2
+    description: "Aggregated and approved enterprise budget."
+    source_key: consolidatedBudgetID
+    spec_ref: docs/source/finance_extraction_spec.md
+    attributes:
+      version: {type: string, required: true}
+      period:  {type: string, required: true}
+      status:  {type: string, required: true}
+  Forecast:
+    layer: 2
+    description: "Expected future financial result."
+    source_key: forecastID
+    spec_ref: docs/source/finance_extraction_spec.md
+    attributes:
+      version:  {type: string, required: true}
+      scenario: {type: string, required: true}
+      period:   {type: string, required: true}
+      amount:   {type: decimal, required: true}
+      currency: {type: string, required: true}
+  ForecastVersion:
+    layer: 2
+    description: "Identifiable version of a forecast."
+    source_key: forecastVersionID
+    spec_ref: docs/source/finance_extraction_spec.md
+    attributes:
+      creation_date: {type: date, required: true}
+      status:        {type: string, required: true}
+  Scenario:
+    layer: 2
+    description: "Alternative set of planning assumptions."
+    source_key: scenarioID
+    spec_ref: docs/source/finance_extraction_spec.md
+  ActualResult:
+    layer: 5
+    description: "Observed financial or performance result."
+    source_key: resultID
+    spec_ref: docs/source/finance_extraction_spec.md
+    attributes:
+      metric: {type: string, required: true}
+      value:  {type: decimal, required: true}
+      unit:   {type: string, required: true}
+      period: {type: string, required: true}
+  Variance:
+    layer: 5
+    description: "Difference between two comparable financial results."
+    source_key: varianceID
+    spec_ref: docs/source/finance_extraction_spec.md
+    attributes:
+      variance_type:    {type: string, required: true, description: "e.g. budget, forecast, prior_year, cost (CostVariance, §6.1)"}
+      value:            {type: decimal, required: true}
+      unit:             {type: string, required: true}
+      comparison_basis: {type: string, required: true}
+  VarianceDriver:
+    layer: 5
+    description: "Identified factor causing a variance."
+    source_key: driverID
+    spec_ref: docs/source/finance_extraction_spec.md
+    attributes:
+      driver_type: {type: enum, required: true, values: [price, volume, mix, fx, material_cost, freight, timing], description: "Subtypes collapsed into a type property (§6.1)"}
+      value:       {type: decimal, required: true}
+      unit:        {type: string, required: true}
+  ManagementAction:
+    layer: 5
+    description: "Owned intervention addressing a variance, risk or performance issue."
+    source_key: actionID
+    spec_ref: docs/source/finance_extraction_spec.md
+    attributes:
+      owner:            {type: string, required: true}
+      due_date:         {type: date, required: true}
+      status:           {type: string, required: true}
+      expected_benefit: {type: string}
+
+  # --- G. COMMERCIAL FINANCE --------------------
+  ListPrice:
+    layer: 2
+    description: "Published or approved base product price."
+    spec_ref: docs/source/finance_extraction_spec.md
+  NetPrice:
+    layer: 2
+    description: "Price after relevant discounts or commercial adjustments."
+    spec_ref: docs/source/finance_extraction_spec.md
+  PriceCondition:
+    layer: 2
+    description: "Price, discount or commercial term applying to a transaction or scope."
+    source_key: priceConditionID
+    spec_ref: docs/source/finance_extraction_spec.md
+    attributes:
+      condition_type: {type: string, required: true}
+      value:          {type: decimal, required: true}
+      unit:           {type: string, required: true}
+      effective_from: {type: string, required: true}
+      effective_to:   {type: string, required: true}
+  Discount:
+    layer: 2
+    description: "Reduction from list or invoice price."
+    source_key: discountID
+    spec_ref: docs/source/finance_extraction_spec.md
+    attributes:
+      discount_type: {type: string, required: true}
+      value:         {type: decimal, required: true}
+      unit:          {type: string, required: true}
+  TradePromotion:
+    layer: 2
+    description: "Customer- or channel-facing commercial programme intended to influence sales."
+    source_key: promotionID
+    spec_ref: docs/source/finance_extraction_spec.md
+    attributes:
+      promotion_type: {type: string, required: true}
+      start_date:     {type: date, required: true}
+      end_date:       {type: date, required: true}
+      status:         {type: string, required: true}
+  PromotionMechanic:
+    layer: 2
+    description: "Commercial method used by a promotion."
+    spec_ref: docs/source/finance_extraction_spec.md
+    attributes:
+      mechanic_type: {type: string, description: "Spec examples: price discount; rebate; bundle; free goods; display allowance; volume incentive"}
+  PromotionBudget:
+    layer: 2
+    description: "Approved financial envelope for a trade promotion."
+    source_key: promotionBudgetID
+    spec_ref: docs/source/finance_extraction_spec.md
+    attributes:
+      amount:   {type: decimal, required: true}
+      currency: {type: string, required: true}
+      period:   {type: string, required: true}
+  EligibilityRule:
+    layer: 2
+    description: "Rule determining whether a transaction or claim qualifies for a promotion."
+    source_key: eligibilityRuleID
+    spec_ref: docs/source/finance_extraction_spec.md
+    attributes:
+      effective_from: {type: string, required: true}
+      effective_to:   {type: string, required: true}
+  PromotionAccrual:
+    layer: 2
+    description: "Expected promotion or rebate liability."
+    source_key: accrualID
+    spec_ref: docs/source/finance_extraction_spec.md
+    attributes:
+      amount:       {type: decimal, required: true}
+      currency:     {type: string, required: true}
+      posting_date: {type: date, required: true}
+      status:       {type: string, required: true}
+  PromotionClaim:
+    layer: 2
+    description: "Claim submitted against promotion terms."
+    source_key: claimID
+    spec_ref: docs/source/finance_extraction_spec.md
+    attributes:
+      claim_date:      {type: date, required: true}
+      claim_amount:    {type: decimal, required: true}
+      currency:        {type: string, required: true}
+      approved_amount: {type: decimal, required: true}
+      status:          {type: string, required: true}
+  PromotionSettlement:
+    layer: 2
+    description: "Financial settlement of an approved promotion claim."
+    source_key: settlementID
+    spec_ref: docs/source/finance_extraction_spec.md
+    attributes:
+      settlement_date:   {type: date, required: true}
+      amount:            {type: decimal, required: true}
+      currency:          {type: string, required: true}
+      settlement_method: {type: string, required: true}
+  PromotionResult:
+    layer: 5
+    description: "Measured commercial and financial result of a promotion."
+    source_key: promotionResultID
+    spec_ref: docs/source/finance_extraction_spec.md
+    attributes:
+      period:              {type: string, required: true}
+      incremental_volume:  {type: decimal, required: true}
+      incremental_revenue: {type: decimal, required: true}
+      incremental_margin:  {type: decimal, required: true}
+  TradeSpend:
+    layer: 5
+    description: "Discount, rebate, promotion or commercial investment reducing gross-to-net revenue."
+    source_key: tradeSpendID
+    spec_ref: docs/source/finance_extraction_spec.md
+    attributes:
+      spend_type: {type: string, required: true}
+      amount:     {type: decimal, required: true}
+      currency:   {type: string, required: true}
+      period:     {type: string, required: true}
+  BaselineSales:
+    layer: 5
+    description: "Expected sales without the promotion."
+    spec_ref: docs/source/finance_extraction_spec.md
+  IncrementalSales:
+    layer: 5
+    description: "Sales attributable to the promotion above baseline."
+    spec_ref: docs/source/finance_extraction_spec.md
+  PVMAnalysis:
+    layer: 5
+    description: "Analysis decomposing performance into price, volume and mix effects."
+    source_key: analysisID
+    spec_ref: docs/source/finance_extraction_spec.md
+    attributes:
+      period:            {type: string, required: true}
+      comparison_period: {type: string, required: true}
+      price_effect:      {type: decimal, required: true}
+      volume_effect:     {type: decimal, required: true}
+      mix_effect:        {type: decimal, required: true}
+  Revenue:
+    layer: 5
+    description: "Recognized or operational revenue amount."
+    spec_ref: docs/source/finance_extraction_spec.md
+  Margin:
+    layer: 5
+    description: "Profit measure after defined costs or deductions."
+    spec_ref: docs/source/finance_extraction_spec.md
+  ProductProfitability:
+    layer: 5
+    description: "Profitability measured for a SKU, product family or brand."
+    spec_ref: docs/source/finance_extraction_spec.md
+  CustomerProfitability:
+    layer: 5
+    description: "Profitability measured for a customer."
+    spec_ref: docs/source/finance_extraction_spec.md
+  ChannelProfitability:
+    layer: 5
+    description: "Profitability measured for a channel."
+    spec_ref: docs/source/finance_extraction_spec.md
+  MarginException:
+    layer: 5
+    description: "Product/customer/channel combination breaching a margin threshold."
+    spec_ref: docs/source/finance_extraction_spec.md
+
+  # --- H. PRODUCT COST AND INVENTORY --------------------
+  BOM:
+    layer: 2
+    description: "Product bill of material."
+    spec_ref: docs/source/finance_extraction_spec.md
+  Routing:
+    layer: 2
+    description: "Defined production operations for a product."
+    spec_ref: docs/source/finance_extraction_spec.md
+  CostComponent:
+    layer: 2
+    description: "Element of product cost."
+    spec_ref: docs/source/finance_extraction_spec.md
+    attributes:
+      component_type: {type: enum, required: true, values: [material, packaging, conversion, overhead, freight, warranty, return], description: "Subtypes collapsed into a type property (§6.1)"}
+  StandardCost:
+    layer: 2
+    description: "Approved expected cost of producing or acquiring an SKU."
+    spec_ref: docs/source/finance_extraction_spec.md
+  ActualCost:
+    layer: 2
+    description: "Cost actually incurred for an SKU or production activity."
+    spec_ref: docs/source/finance_extraction_spec.md
+  ProductCost:
+    layer: 2
+    description: "Aggregated cost of a product or SKU."
+    spec_ref: docs/source/finance_extraction_spec.md
+  CostPool:
+    layer: 2
+    description: "Group of costs available for allocation."
+    spec_ref: docs/source/finance_extraction_spec.md
+  CostDriver:
+    layer: 2
+    description: "Basis used to allocate a cost pool."
+    spec_ref: docs/source/finance_extraction_spec.md
+  AllocationRule:
+    layer: 2
+    description: "Governed rule assigning costs to receiving objects."
+    spec_ref: docs/source/finance_extraction_spec.md
+  ActivityRate:
+    layer: 2
+    description: "Rate applied to an operational activity."
+    spec_ref: docs/source/finance_extraction_spec.md
+  ProductionOrder:
+    layer: 2
+    description: "Instruction and record for producing an item."
+    spec_ref: docs/source/finance_extraction_spec.md
+  MaterialConsumption:
+    layer: 2
+    description: "Quantity and value of material consumed."
+    spec_ref: docs/source/finance_extraction_spec.md
+  InventoryItem:
+    layer: 2
+    description: "Identifiable inventory object."
+    spec_ref: docs/source/finance_extraction_spec.md
+  InventoryBalance:
+    layer: 2
+    description: "Inventory quantity and value at a point in time."
+    spec_ref: docs/source/finance_extraction_spec.md
+  InventoryMovement:
+    layer: 2
+    description: "Receipt, issue, transfer or adjustment of inventory."
+    spec_ref: docs/source/finance_extraction_spec.md
+  StockCount:
+    layer: 2
+    description: "Physical inventory count."
+    spec_ref: docs/source/finance_extraction_spec.md
+  ValuationMethod:
+    layer: 2
+    description: "Approved inventory valuation method."
+    spec_ref: docs/source/finance_extraction_spec.md
+  AgeingBucket:
+    layer: 2
+    description: "Time-based inventory or receivable classification."
+    spec_ref: docs/source/finance_extraction_spec.md
+  ObsolescenceRisk:
+    layer: 5
+    description: "Risk that stock cannot be sold or used at its carrying value."
+    spec_ref: docs/source/finance_extraction_spec.md
+  NRVAssessment:
+    layer: 2
+    description: "Assessment of net realizable value."
+    spec_ref: docs/source/finance_extraction_spec.md
+  InventoryProvision:
+    layer: 2
+    description: "Provision against inventory loss or reduced value."
+    spec_ref: docs/source/finance_extraction_spec.md
+  InventoryWriteOff:
+    layer: 2
+    description: "Derecognition of inventory value."
+    spec_ref: docs/source/finance_extraction_spec.md
+
+  # --- I. RECEIVABLES, PAYABLES AND WORKING CAPITAL --------------------
+  CreditProfile:
+    layer: 2
+    description: "Customer credit-risk profile."
+    spec_ref: docs/source/finance_extraction_spec.md
+  CreditLimit:
+    layer: 2
+    description: "Approved maximum customer exposure."
+    spec_ref: docs/source/finance_extraction_spec.md
+  Exposure:
+    layer: 5
+    description: "Current or forecast financial exposure."
+    spec_ref: docs/source/finance_extraction_spec.md
+  ExpectedCreditLoss:
+    layer: 5
+    description: "Estimated receivable credit loss."
+    spec_ref: docs/source/finance_extraction_spec.md
+  CollectionCase:
+    layer: 2
+    description: "Managed collection activity for overdue receivables."
+    spec_ref: docs/source/finance_extraction_spec.md
+  PromiseToPay:
+    layer: 2
+    description: "Customer commitment to make payment."
+    spec_ref: docs/source/finance_extraction_spec.md
+  Deduction:
+    layer: 2
+    description: "Amount withheld by a customer from a payment or invoice."
+    spec_ref: docs/source/finance_extraction_spec.md
+  Dispute:
+    layer: 2
+    description: "Contested transaction, claim, invoice or deduction."
+    spec_ref: docs/source/finance_extraction_spec.md
+  WriteOff:
+    layer: 2
+    description: "Derecognition of an uncollectible financial balance."
+    spec_ref: docs/source/finance_extraction_spec.md
+  APException:
+    layer: 2
+    description: "Supplier invoice or payment-processing exception."
+    spec_ref: docs/source/finance_extraction_spec.md
+  PaymentProposal:
+    layer: 2
+    description: "Collection of supplier invoices proposed for payment."
+    spec_ref: docs/source/finance_extraction_spec.md
+  PaymentTerm:
+    layer: 2
+    description: "Agreed rule determining payment due date or discount."
+    spec_ref: docs/source/finance_extraction_spec.md
+  SupplierStatement:
+    layer: 2
+    description: "Supplier-provided record of transactions and balance."
+    spec_ref: docs/source/finance_extraction_spec.md
+  APBalance:
+    layer: 2
+    description: "Amount payable to a supplier."
+    spec_ref: docs/source/finance_extraction_spec.md
+
+  # --- J. TREASURY --------------------
+  CashPosition:
+    layer: 2
+    description: "Consolidated cash available by account, entity and currency."
+    spec_ref: docs/source/finance_extraction_spec.md
+  LiquidityForecast:
+    layer: 2
+    description: "Expected future cash inflows, outflows and balances."
+    spec_ref: docs/source/finance_extraction_spec.md
+  CashFlow:
+    layer: 2
+    description: "Cash inflow or outflow."
+    spec_ref: docs/source/finance_extraction_spec.md
+  Loan:
+    layer: 2
+    description: "Borrowing arrangement."
+    spec_ref: docs/source/finance_extraction_spec.md
+  Investment:
+    layer: 2
+    description: "Placement of surplus funds."
+    spec_ref: docs/source/finance_extraction_spec.md
+  Counterparty:
+    layer: 2
+    description: "External or internal party to a treasury transaction."
+    spec_ref: docs/source/finance_extraction_spec.md
+  InterestRate:
+    layer: 2
+    description: "Rate associated with borrowing or investment."
+    spec_ref: docs/source/finance_extraction_spec.md
+  FXExposure:
+    layer: 5
+    description: "Financial exposure to foreign-currency movements."
+    spec_ref: docs/source/finance_extraction_spec.md
+  HedgeInstrument:
+    layer: 2
+    description: "Instrument used to mitigate financial-market exposure."
+    spec_ref: docs/source/finance_extraction_spec.md
+  CurrencyPair:
+    layer: 2
+    description: "Pair of currencies involved in an FX exposure or hedge."
+    spec_ref: docs/source/finance_extraction_spec.md
+  ForecastTransaction:
+    layer: 2
+    description: "Expected transaction generating treasury exposure."
+    spec_ref: docs/source/finance_extraction_spec.md
+  BankStatement:
+    layer: 2
+    description: "Bank-provided transaction and balance record."
+    spec_ref: docs/source/finance_extraction_spec.md
+  ReconciliationItem:
+    layer: 2
+    description: "Matched or unmatched item in a reconciliation."
+    spec_ref: docs/source/finance_extraction_spec.md
+
+  # --- K. TAX --------------------
+  TaxCode:
+    layer: 2
+    description: "Code determining applicable tax treatment."
+    spec_ref: docs/source/finance_extraction_spec.md
+  TaxRate:
+    layer: 2
+    description: "Applicable percentage or amount of tax."
+    spec_ref: docs/source/finance_extraction_spec.md
+  TaxRegistration:
+    layer: 2
+    description: "Entity registration with a tax authority."
+    spec_ref: docs/source/finance_extraction_spec.md
+  Jurisdiction:
+    layer: 2
+    description: "Legal or tax territory."
+    spec_ref: docs/source/finance_extraction_spec.md
+  TaxTransaction:
+    layer: 2
+    description: "Tax consequence of a commercial or financial transaction."
+    spec_ref: docs/source/finance_extraction_spec.md
+  TaxLedger:
+    layer: 2
+    description: "Ledger of tax-related entries."
+    spec_ref: docs/source/finance_extraction_spec.md
+  TaxReturn:
+    layer: 2
+    description: "Tax filing submitted to an authority."
+    spec_ref: docs/source/finance_extraction_spec.md
+  Filing:
+    layer: 2
+    description: "Submission of a statutory or tax obligation."
+    spec_ref: docs/source/finance_extraction_spec.md
+  Regulator:
+    layer: 2
+    description: "Governmental or regulatory authority."
+    spec_ref: docs/source/finance_extraction_spec.md
+  CurrentTax:
+    layer: 2
+    description: "Current-period income tax liability or asset."
+    spec_ref: docs/source/finance_extraction_spec.md
+  DeferredTax:
+    layer: 2
+    description: "Tax effect of temporary differences."
+    spec_ref: docs/source/finance_extraction_spec.md
+  TemporaryDifference:
+    layer: 2
+    description: "Difference between accounting and tax bases."
+    spec_ref: docs/source/finance_extraction_spec.md
+  TransferPricingPolicy:
+    layer: 2
+    description: "Policy governing intercompany pricing."
+    spec_ref: docs/source/finance_extraction_spec.md
+  Benchmark:
+    layer: 2
+    description: "Comparable data or analysis supporting a transfer-pricing position."
+    spec_ref: docs/source/finance_extraction_spec.md
+  Charge:
+    layer: 2
+    description: "Intercompany or transfer-pricing charge."
+    spec_ref: docs/source/finance_extraction_spec.md
+  TaxCase:
+    layer: 2
+    description: "Tax notice, dispute, assessment or controversy case."
+    spec_ref: docs/source/finance_extraction_spec.md
+  TaxAuthority:
+    layer: 2
+    description: "Authority administering taxation."
+    spec_ref: docs/source/finance_extraction_spec.md
+  TaxPosition:
+    layer: 2
+    description: "Tax treatment adopted or defended by the organization."
+    spec_ref: docs/source/finance_extraction_spec.md
+
+  # --- L. ASSETS AND INVESTMENT --------------------
+  CapitalRequest:
+    layer: 2
+    description: "Request for capital investment."
+    spec_ref: docs/source/finance_extraction_spec.md
+  BusinessCase:
+    layer: 2
+    description: "Economic and strategic justification for an investment."
+    spec_ref: docs/source/finance_extraction_spec.md
+  InvestmentOption:
+    layer: 2
+    description: "Alternative investment choice."
+    spec_ref: docs/source/finance_extraction_spec.md
+  CapitalProject:
+    layer: 2
+    description: "Project producing a capital asset."
+    spec_ref: docs/source/finance_extraction_spec.md
+  FixedAsset:
+    layer: 2
+    description: "Capitalized tangible or intangible asset."
+    spec_ref: docs/source/finance_extraction_spec.md
+    attributes:
+      carrying_value: {type: decimal, description: "CarryingValue modelled as a property (§6.1)"}
+  AssetClass:
+    layer: 2
+    description: "Governed asset-category classification."
+    spec_ref: docs/source/finance_extraction_spec.md
+  AcquisitionCost:
+    layer: 2
+    description: "Cost initially capitalized for an asset."
+    spec_ref: docs/source/finance_extraction_spec.md
+  DepreciationMethod:
+    layer: 2
+    description: "Method used to allocate asset cost."
+    spec_ref: docs/source/finance_extraction_spec.md
+  UsefulLife:
+    layer: 2
+    description: "Period over which an asset is depreciated."
+    spec_ref: docs/source/finance_extraction_spec.md
+  DepreciationEntry:
+    layer: 2
+    description: "Periodic accounting entry for depreciation."
+    spec_ref: docs/source/finance_extraction_spec.md
+  CGU:
+    layer: 2
+    description: "Cash-generating unit."
+    spec_ref: docs/source/finance_extraction_spec.md
+  ImpairmentIndicator:
+    layer: 5
+    description: "Condition indicating possible asset impairment."
+    spec_ref: docs/source/finance_extraction_spec.md
+  RecoverableAmount:
+    layer: 2
+    description: "Amount used in an impairment assessment."
+    spec_ref: docs/source/finance_extraction_spec.md
+  ImpairmentEntry:
+    layer: 2
+    description: "Entry recognizing or reversing impairment."
+    spec_ref: docs/source/finance_extraction_spec.md
+  AssetDisposal:
+    layer: 2
+    description: "Sale, scrapping, retirement or transfer of an asset."
+    spec_ref: docs/source/finance_extraction_spec.md
+  Proceeds:
+    layer: 2
+    description: "Amount received from asset disposal."
+    spec_ref: docs/source/finance_extraction_spec.md
+  GainLoss:
+    layer: 2
+    description: "Difference between disposal proceeds and carrying value."
+    spec_ref: docs/source/finance_extraction_spec.md
+
+  # --- M. REPORTING, RISK, CONTROL AND DATA --------------------
+  KPI:
+    layer: 5
+    description: "Governed performance measure."
+    source_key: kpiID
+    spec_ref: docs/source/finance_extraction_spec.md
+    attributes:
+      business_definition: {type: string, required: true}
+      formula:             {type: string, required: true}
+      unit:                {type: string, required: true}
+      aggregation_method:  {type: string, required: true}
+      reporting_frequency: {type: string, required: true}
+      owner:               {type: string, required: true}
+  FinancialMetric:
+    layer: 5
+    description: "Quantitative financial measure."
+    spec_ref: docs/source/finance_extraction_spec.md
+  MetricDefinition:
+    layer: 5
+    description: "Governed definition of a metric."
+    spec_ref: docs/source/finance_extraction_spec.md
+  Formula:
+    layer: 5
+    description: "Calculation logic for a metric."
+    spec_ref: docs/source/finance_extraction_spec.md
+  Dimension:
+    layer: 2
+    description: "Axis by which a financial result can be analyzed."
+    spec_ref: docs/source/finance_extraction_spec.md
+  FinancialStatement:
+    layer: 2
+    description: "Balance sheet, income statement, cash-flow statement or related statement."
+    spec_ref: docs/source/finance_extraction_spec.md
+  StatementLine:
+    layer: 2
+    description: "Individual financial-statement line."
+    spec_ref: docs/source/finance_extraction_spec.md
+  Disclosure:
+    layer: 2
+    description: "Note or disclosure accompanying financial statements."
+    spec_ref: docs/source/finance_extraction_spec.md
+  ManagementReport:
+    layer: 5
+    description: "Periodic internal financial or performance report."
+    spec_ref: docs/source/finance_extraction_spec.md
+  Commentary:
+    layer: 5
+    description: "Narrative explanation of financial performance."
+    spec_ref: docs/source/finance_extraction_spec.md
+  BusinessQuestion:
+    layer: 5
+    description: "Financial or management question requiring analysis."
+    spec_ref: docs/source/finance_extraction_spec.md
+  Analysis:
+    layer: 5
+    description: "Structured evaluation of facts and drivers."
+    spec_ref: docs/source/finance_extraction_spec.md
+  Recommendation:
+    layer: 5
+    description: "Proposed action supported by analysis."
+    spec_ref: docs/source/finance_extraction_spec.md
+  Risk:
+    layer: 5
+    description: "Uncertain event affecting a Finance objective or process."
+    source_key: riskID
+    spec_ref: docs/source/finance_extraction_spec.md
+    attributes:
+      risk_category: {type: string, required: true}
+      severity:      {type: string, required: true}
+      likelihood:    {type: string, required: true}
+      impact:        {type: string, required: true}
+  Control:
+    layer: 5
+    description: "Preventive or detective activity mitigating a risk."
+    source_key: controlID
+    spec_ref: docs/source/finance_extraction_spec.md
+    attributes:
+      control_type:     {type: string, required: true}
+      frequency:        {type: string, required: true}
+      owner:            {type: string, required: true}
+      automation_level: {type: string, required: true}
+  ControlExecution:
+    layer: 5
+    description: "Performance of a control for a specific period or event."
+    spec_ref: docs/source/finance_extraction_spec.md
+  ControlTest:
+    layer: 5
+    description: "Assessment of control design or operating effectiveness."
+    spec_ref: docs/source/finance_extraction_spec.md
+  Deficiency:
+    layer: 5
+    description: "Identified control weakness."
+    spec_ref: docs/source/finance_extraction_spec.md
+  RootCause:
+    layer: 5
+    description: "Underlying reason for an issue or deficiency."
+    spec_ref: docs/source/finance_extraction_spec.md
+  RemediationAction:
+    layer: 5
+    description: "Action addressing a control deficiency."
+    spec_ref: docs/source/finance_extraction_spec.md
+  Evidence:
+    layer: 2
+    description: "Document or data supporting an assertion, claim, control or decision."
+    spec_ref: docs/source/finance_extraction_spec.md
+  AuditRequest:
+    layer: 5
+    description: "Request for information or evidence from an auditor."
+    spec_ref: docs/source/finance_extraction_spec.md
+  Finding:
+    layer: 5
+    description: "Issue or observation raised through assurance activity."
+    spec_ref: docs/source/finance_extraction_spec.md
+  ManagementResponse:
+    layer: 5
+    description: "Management response to an audit finding."
+    spec_ref: docs/source/finance_extraction_spec.md
+  SourceSystem:
+    layer: 2
+    description: "System from which a node, fact or relationship originates."
+    spec_ref: docs/source/finance_extraction_spec.md
+  Dataset:
+    layer: 2
+    description: "Governed collection of data."
+    spec_ref: docs/source/finance_extraction_spec.md
+  SemanticModel:
+    layer: 2
+    description: "Business-oriented model supporting reporting and analytics."
+    spec_ref: docs/source/finance_extraction_spec.md
+  Dashboard:
+    layer: 5
+    description: "Visual presentation of governed metrics."
+    spec_ref: docs/source/finance_extraction_spec.md
+  DataPolicy:
+    layer: 2
+    description: "Rule governing data use, access or quality."
+    spec_ref: docs/source/finance_extraction_spec.md
+  DataLineage:
+    layer: 2
+    description: "Trace from report or KPI to transformation and source record."
+    spec_ref: docs/source/finance_extraction_spec.md
+  MasterData:
+    layer: 2
+    description: "Governed reusable business data."
+    spec_ref: docs/source/finance_extraction_spec.md
+  ReferenceData:
+    layer: 2
+    description: "Controlled codes, calendars, currencies, units or statuses."
+    spec_ref: docs/source/finance_extraction_spec.md
+  DataQualityRule:
+    layer: 2
+    description: "Rule testing data validity or fitness for use."
+    spec_ref: docs/source/finance_extraction_spec.md
+  DataElement:
+    layer: 2
+    description: "Individual defined data field."
+    spec_ref: docs/source/finance_extraction_spec.md
+  Issue:
+    layer: 5
+    description: "Identified data-quality or processing problem."
+    spec_ref: docs/source/finance_extraction_spec.md
+
+  # --- Declared to resolve referenced-but-undeclared classes (PROJECT_CONTEXT §6.1) ---
+  FiscalPeriod:
+    layer: 2
+    description: "Fiscal reporting period (reference data)."
+    spec_ref: PROJECT_CONTEXT.md §6.1
+    attributes:
+      start_date:  {type: date, required: true}
+      end_date:    {type: date, required: true}
+      fiscal_year: {type: string, required: true}
+  Currency:
+    layer: 2
+    description: "Currency (reference data)."
+    spec_ref: PROJECT_CONTEXT.md §6.1
+    attributes:
+      iso_code: {type: string, required: true}
+  Provision:
+    layer: 2
+    description: "Provision recognised against a receivable, tax case or other exposure."
+    spec_ref: PROJECT_CONTEXT.md §6.1
+    attributes:
+      provision_type: {type: enum, required: true, values: [receivable, tax, other]}
+      amount:         {type: decimal}
+      currency:       {type: string}
+  Reconciliation:
+    layer: 2
+    description: "Comparison of two records or balances to identify differences."
+    spec_ref: PROJECT_CONTEXT.md §6.1
+    attributes:
+      reconciliation_type: {type: enum, required: true, values: [inventory, supplier_statement, bank, cash_gl, other]}
+      status:              {type: string}
+  Approval:
+    layer: 2
+    description: "Recorded approval of a transaction, write-off or request."
+    spec_ref: PROJECT_CONTEXT.md §6.1
+    attributes:
+      approval_date: {type: date}
+      approver:      {type: string}
+      status:        {type: string}
+  Resolution:
+    layer: 2
+    description: "Resolution closing an AP exception."
+    spec_ref: PROJECT_CONTEXT.md §6.1
+    attributes:
+      resolution_date: {type: date}
+      status:          {type: string}
+  IntercompanyTransaction:
+    layer: 2
+    description: "Transaction between two legal entities of the same group (population deferred)."
+    spec_ref: PROJECT_CONTEXT.md §6.1
+    attributes:
+      amount:   {type: decimal}
+      currency: {type: string}
+
+relationships:
+  ADDRESSES:
+    description: "Subject addresses the object (finance spec: addresses)."
+    pairs:
+      - {from: ManagementAction, to: Variance}
+      - {from: CollectionCase, to: Receivable}
+      - {from: ManagementResponse, to: Finding}
+  AFFECTS:
+    description: "Subject affects the object (finance spec: affects)."
+    pairs:
+      - {from: ObsolescenceRisk, to: InventoryItem}
+      - {from: ImpairmentIndicator, to: FixedAsset}
+      - {from: ImpairmentIndicator, to: CGU}
+      - {from: Risk, to: L3ProcessEndpoint}
+      - {from: Risk, to: FinancialAccount}
+      - {from: Risk, to: FinancialStatement}
+      - {from: Issue, to: Dataset}
+  AGGREGATES:
+    description: "Subject aggregates the object (finance spec: aggregates)."
+    pairs:
+      - {from: ConsolidatedBudget, to: BudgetSubmission}
+      - {from: CashPosition, to: BankAccount}
+  ALLOCATES:
+    description: "Subject allocates the object (finance spec: allocates)."
+    pairs:
+      - {from: AllocationRule, to: CostPool}
+  ANSWERS:
+    description: "Subject answers the object (finance spec: answers)."
+    pairs:
+      - {from: Analysis, to: BusinessQuestion}
+  APPLIES:
+    description: "Subject applies the object (finance spec: applies)."
+    pairs:
+      - {from: TaxTransaction, to: TaxCode}
+  APPLIES_TO:
+    description: "Subject applies to the object (finance spec: appliesTo)."
+    pairs:
+      - {from: FinancialTarget, to: Dimension}
+      - {from: TradePromotion, to: SKU}
+      - {from: PriceCondition, to: SKU}
+      - {from: PriceCondition, to: Customer}
+      - {from: PriceCondition, to: Channel}
+      - {from: PriceCondition, to: Geography}
+  APPROVED_BY:
+    description: "Subject approved by the object (finance spec: approvedBy)."
+    pairs:
+      - {from: CapitalRequest, to: Role}
+  APPROVED_FOR:
+    description: "Subject approved for the object (finance spec: approvedFor)."
+    pairs:
+      - {from: Budget, to: ResponsibilityCentre}
+  ARISES_FROM:
+    description: "Subject arises from the object (finance spec: arisesFrom)."
+    pairs:
+      - {from: FXExposure, to: ForecastTransaction}
+      - {from: DeferredTax, to: TemporaryDifference}
+  ASKS_FOR:
+    description: "Subject asks for the object (finance spec: asksFor)."
+    pairs:
+      - {from: AuditRequest, to: Evidence}
+  ASSESSED_FOR:
+    description: "Subject assessed for the object (finance spec: assessedFor)."
+    pairs:
+      - {from: ExpectedCreditLoss, to: Customer}
+  ASSIGNS_TO:
+    description: "Subject assigns to the object (finance spec: assignsTo)."
+    pairs:
+      - {from: AllocationRule, to: CostCentre}
+      - {from: AllocationRule, to: ProfitCentre}
+  ATTRIBUTED_TO:
+    description: "Journal line is attributed to a business dimension."
+    pairs:
+      - {from: JournalLine, to: BusinessUnit}
+      - {from: JournalLine, to: CostCentre}
+      - {from: JournalLine, to: ProfitCentre}
+      - {from: JournalLine, to: SKU}
+      - {from: JournalLine, to: Brand}
+      - {from: JournalLine, to: Customer}
+      - {from: JournalLine, to: Supplier}
+      - {from: JournalLine, to: Channel}
+      - {from: JournalLine, to: Geography}
+  BASED_ON:
+    description: "Subject based on the object (finance spec: basedOn)."
+    pairs:
+      - {from: Charge, to: Benchmark}
+  BELONGS_TO:
+    description: "Subject is a member of the object grouping or hierarchy level."
+    pairs:
+      - {from: ResponsibilityCentre, to: BusinessUnit}
+      - {from: SKU, to: ProductFamily}
+      - {from: FinancialAccount, to: AccountGroup}
+      - {from: TradePromotion, to: Brand}
+      - {from: FixedAsset, to: AssetClass}
+      - {from: CostCentre, to: BusinessUnit}
+      - {from: ProfitCentre, to: BusinessUnit}
+  BELONGS_TO_BRAND:
+    description: "Product family belongs to a brand (brand hierarchy, independent of category)."
+    pairs:
+      - {from: ProductFamily, to: Brand}
+  BELONGS_TO_CATEGORY:
+    description: "Product family belongs to a category (category hierarchy)."
+    pairs:
+      - {from: ProductFamily, to: Category}
+  CALCULATED_FOR:
+    description: "Subject calculated for the object (finance spec: calculatedFor)."
+    pairs:
+      - {from: StandardCost, to: SKU}
+      - {from: ActualCost, to: SKU}
+  CAUSED_BY:
+    description: "Subject caused by the object (finance spec: causedBy)."
+    pairs:
+      - {from: Variance, to: VarianceDriver}
+      - {from: Deficiency, to: RootCause}
+  CLAIMED_AGAINST:
+    description: "Subject claimed against the object (finance spec: claimedAgainst)."
+    pairs:
+      - {from: PromotionClaim, to: TradePromotion}
+  CLASSIFIED_IN:
+    description: "Subject classified in the object (finance spec: classifiedIn)."
+    pairs:
+      - {from: InventoryItem, to: AgeingBucket}
+  CLOSES:
+    description: "Subject closes the object (finance spec: closes)."
+    pairs:
+      - {from: Resolution, to: APException}
+  COMPARED_AGAINST:
+    description: "Subject compared against the object (finance spec: comparedAgainst)."
+    pairs:
+      - {from: ActualResult, to: Budget}
+      - {from: ActualResult, to: Forecast}
+      - {from: IncrementalSales, to: BaselineSales}
+  COMPARES:
+    description: "Subject compares the object (finance spec: compares)."
+    pairs:
+      - {from: Variance, to: ActualCost}
+      - {from: Reconciliation, to: StockCount}
+      - {from: Reconciliation, to: InventoryBalance}
+      - {from: Reconciliation, to: SupplierStatement}
+      - {from: Reconciliation, to: APBalance}
+      - {from: Reconciliation, to: Balance}
+  COMPARES_AGAINST:
+    description: "Subject compares against the object (finance spec: comparesAgainst)."
+    pairs:
+      - {from: Variance, to: StandardCost}
+  COMPOSED_OF:
+    description: "Subject composed of the object (finance spec: composedOf)."
+    pairs:
+      - {from: StandardCost, to: CostComponent}
+  CONSUMES:
+    description: "Subject uses the object as an input. Targets are an explicit allowed list (no generic Entity)."
+    pairs:
+      - {from: L3ProcessEndpoint, to: SalesOrder}
+      - {from: L3ProcessEndpoint, to: SalesInvoice}
+      - {from: L3ProcessEndpoint, to: CreditNote}
+      - {from: L3ProcessEndpoint, to: DebitNote}
+      - {from: L3ProcessEndpoint, to: CustomerReceipt}
+      - {from: L3ProcessEndpoint, to: Receivable}
+      - {from: L3ProcessEndpoint, to: SupplierInvoice}
+      - {from: L3ProcessEndpoint, to: PurchaseOrder}
+      - {from: L3ProcessEndpoint, to: GoodsReceipt}
+      - {from: L3ProcessEndpoint, to: APDocument}
+      - {from: L3ProcessEndpoint, to: SupplierPayment}
+      - {from: L3ProcessEndpoint, to: JournalEntry}
+      - {from: L3ProcessEndpoint, to: Budget}
+      - {from: L3ProcessEndpoint, to: Forecast}
+      - {from: L3ProcessEndpoint, to: PromotionAccrual}
+      - {from: L3ProcessEndpoint, to: PromotionClaim}
+      - {from: L3ProcessEndpoint, to: PromotionSettlement}
+      - {from: L3ProcessEndpoint, to: InventoryProvision}
+      - {from: L3ProcessEndpoint, to: StandardCost}
+      - {from: L3ProcessEndpoint, to: FinancialStatement}
+      - {from: L3ProcessEndpoint, to: ManagementReport}
+      - {from: L3ProcessEndpoint, to: TaxReturn}
+      - {from: L3ProcessEndpoint, to: FixedAsset}
+      - {from: L3ProcessEndpoint, to: DepreciationEntry}
+      - {from: SalesOrder, to: CreditLimit}
+      - {from: PromotionSettlement, to: PromotionAccrual}
+  CONTAINS:
+    description: "Structural containment, parent to child."
+    pairs:
+      - {from: FinanceDomain, to: ProcessGroup}
+      - {from: ProcessGroup, to: L3ProcessEndpoint}
+      - {from: Organization, to: LegalEntity}
+      - {from: Organization, to: BusinessUnit}
+      - {from: ChartOfAccounts, to: FinancialAccount}
+      - {from: JournalEntry, to: JournalLine}
+      - {from: SalesOrder, to: SKU}
+      - {from: SalesInvoice, to: InvoiceLine}
+      - {from: PVMAnalysis, to: VarianceDriver}
+      - {from: PurchaseOrder, to: SKU}
+      - {from: PaymentFile, to: SupplierPayment}
+      - {from: BankStatement, to: BankTransaction}
+  CONTESTS:
+    description: "Dispute contests a deduction."
+    pairs:
+      - {from: Dispute, to: Deduction}
+  CONTROLS:
+    description: "Subject controls the object (finance spec: controls)."
+    pairs:
+      - {from: Control, to: L3ProcessEndpoint}
+  COUNTS:
+    description: "Subject counts the object (finance spec: counts)."
+    pairs:
+      - {from: StockCount, to: InventoryItem}
+  COVERS:
+    description: "Subject covers the object (finance spec: covers)."
+    pairs:
+      - {from: Budget, to: FiscalPeriod}
+      - {from: Provision, to: Receivable}
+      - {from: InventoryProvision, to: InventoryItem}
+      - {from: TaxReturn, to: FiscalPeriod}
+      - {from: Provision, to: TaxCase}
+  CREATED_FOR:
+    description: "Subject created for the object (finance spec: createdFor)."
+    pairs:
+      - {from: PromotionAccrual, to: TradePromotion}
+  CREATED_FROM:
+    description: "Subject created from the object (finance spec: createdFrom)."
+    pairs:
+      - {from: APDocument, to: SupplierInvoice}
+      - {from: CapitalProject, to: CapitalRequest}
+      - {from: FixedAsset, to: CapitalProject}
+  DEFINED_BY:
+    description: "Subject defined by the object (finance spec: definedBy)."
+    pairs:
+      - {from: KPI, to: Formula}
+  DENOMINATED_IN:
+    description: "Subject denominated in the object (finance spec: denominatedIn)."
+    pairs:
+      - {from: JournalLine, to: Currency}
+      - {from: SalesInvoice, to: Currency}
+      - {from: CashPosition, to: Currency}
+      - {from: FXExposure, to: Currency}
+  DEPRECIATES:
+    description: "Subject depreciates the object (finance spec: depreciates)."
+    pairs:
+      - {from: DepreciationEntry, to: FixedAsset}
+  DERIVED_FROM:
+    description: "Subject derived from the object (finance spec: derivedFrom)."
+    pairs:
+      - {from: PromotionAccrual, to: SalesInvoice}
+      - {from: PromotionResult, to: IncrementalSales}
+      - {from: PromotionResult, to: TradeSpend}
+      - {from: NetPrice, to: ListPrice}
+      - {from: ProductProfitability, to: Revenue}
+      - {from: ProductProfitability, to: ProductCost}
+      - {from: ActualCost, to: MaterialConsumption}
+      - {from: ActualCost, to: ProductionOrder}
+      - {from: TaxTransaction, to: SalesInvoice}
+      - {from: TaxTransaction, to: SupplierInvoice}
+      - {from: GainLoss, to: Proceeds}
+      - {from: GainLoss, to: FixedAsset}
+      - {from: ManagementReport, to: Dataset}
+      - {from: Dataset, to: JournalLine}
+  DRIVEN_BY:
+    description: "Subject driven by the object (finance spec: drivenBy)."
+    pairs:
+      - {from: Forecast, to: PlanningDriver}
+  EVALUATES:
+    description: "Subject evaluates the object (finance spec: evaluates)."
+    pairs:
+      - {from: PromotionResult, to: TradePromotion}
+      - {from: NRVAssessment, to: InventoryItem}
+      - {from: BusinessCase, to: InvestmentOption}
+      - {from: ControlTest, to: Control}
+  EXECUTED_IN:
+    description: "Subject executed in the object (finance spec: executedIn)."
+    pairs:
+      - {from: TradePromotion, to: Channel}
+  EXPLAINS:
+    description: "Subject explains the object (finance spec: explains)."
+    pairs:
+      - {from: Commentary, to: Variance}
+  EXPLAINS_DIFFERENCE_BETWEEN:
+    description: "Subject explains difference between the object (finance spec: explainsDifferenceBetween)."
+    pairs:
+      - {from: Variance, to: ActualResult}
+      - {from: PVMAnalysis, to: ActualResult}
+  EXPOSED_TO:
+    description: "Subject exposed to the object (finance spec: exposedTo)."
+    pairs:
+      - {from: L3ProcessEndpoint, to: Risk}
+  FILED_WITH:
+    description: "Subject filed with the object (finance spec: filedWith)."
+    pairs:
+      - {from: TaxReturn, to: Regulator}
+  FULFILLED_THROUGH:
+    description: "Subject fulfilled through the object (finance spec: fulfilledThrough)."
+    pairs:
+      - {from: SalesOrder, to: Channel}
+  FUNDS:
+    description: "Subject funds the object (finance spec: funds)."
+    pairs:
+      - {from: PromotionBudget, to: TradePromotion}
+      - {from: Loan, to: LegalEntity}
+  GOVERNED_BY:
+    description: "Subject governed by the object (finance spec: governedBy)."
+    pairs:
+      - {from: FinancialAccount, to: AccountingPolicy}
+      - {from: TradePromotion, to: EligibilityRule}
+      - {from: SupplierInvoice, to: PaymentTerm}
+  GOVERNS:
+    description: "Subject governs the object (finance spec: governs)."
+    pairs:
+      - {from: TransferPricingPolicy, to: IntercompanyTransaction}
+      - {from: DataPolicy, to: Dataset}
+  HAS:
+    description: "Subject has the object (finance spec: has)."
+    pairs:
+      - {from: Customer, to: CreditProfile}
+      - {from: Customer, to: CreditLimit}
+      - {from: SKU, to: BOM}
+      - {from: SKU, to: Routing}
+      - {from: FixedAsset, to: UsefulLife}
+  HELD_AT:
+    description: "Subject held at the object (finance spec: heldAt)."
+    pairs:
+      - {from: InventoryBalance, to: Location}
+  HELD_BY:
+    description: "Subject held by the object (finance spec: heldBy)."
+    pairs:
+      - {from: TaxRegistration, to: LegalEntity}
+  HELD_IN:
+    description: "Subject held in the object (finance spec: heldIn)."
+    pairs:
+      - {from: Balance, to: FinancialAccount}
+  IDENTIFIED_BY:
+    description: "Subject identified by the object (finance spec: identifiedBy)."
+    pairs:
+      - {from: Deficiency, to: ControlTest}
+  IMPACTS:
+    description: "Subject impacts the object (finance spec: impacts)."
+    pairs:
+      - {from: ManagementAction, to: KPI}
+      - {from: ManagementAction, to: Margin}
+  IMPAIRS:
+    description: "Impairment entry reduces the carrying value of a fixed asset."
+    pairs:
+      - {from: ImpairmentEntry, to: FixedAsset}
+  INCLUDES:
+    description: "Subject includes the object (finance spec: includes)."
+    pairs:
+      - {from: PaymentProposal, to: SupplierInvoice}
+  INFLUENCES:
+    description: "Subject influences the object (finance spec: influences)."
+    pairs:
+      - {from: ValueDriver, to: KPI}
+  INSTANCE_OF:
+    description: "Subject instance of the object (finance spec: instanceOf)."
+    pairs:
+      - {from: ControlExecution, to: Control}
+  ISSUED_BY:
+    description: "Subject issued by the object (finance spec: issuedBy)."
+    pairs:
+      - {from: SupplierInvoice, to: Supplier}
+      - {from: SupplierStatement, to: Supplier}
+  ISSUED_TO:
+    description: "Subject issued to the object (finance spec: issuedTo)."
+    pairs:
+      - {from: SalesInvoice, to: Customer}
+      - {from: PurchaseOrder, to: Supplier}
+  LOCATED_AT:
+    description: "Subject located at the object (finance spec: locatedAt)."
+    pairs:
+      - {from: FixedAsset, to: Location}
+  LOCATED_IN:
+    description: "Subject located in the object (finance spec: locatedIn)."
+    pairs:
+      - {from: Location, to: Geography}
+  MAKES:
+    description: "Subject makes the object (finance spec: makes)."
+    pairs:
+      - {from: Customer, to: PromiseToPay}
+  MATCHED_TO:
+    description: "Subject matched to the object (finance spec: matchedTo)."
+    pairs:
+      - {from: SupplierInvoice, to: GoodsReceipt}
+  MATCHES:
+    description: "Subject matches the object (finance spec: matches)."
+    pairs:
+      - {from: Reconciliation, to: BankTransaction}
+  MEASURED_ACROSS:
+    description: "Subject measured across the object (finance spec: measuredAcross)."
+    pairs:
+      - {from: ActualResult, to: Dimension}
+  MEASURED_BY:
+    description: "Subject measured by the object (finance spec: measuredBy)."
+    pairs:
+      - {from: L3ProcessEndpoint, to: KPI}
+  MEASURED_FOR:
+    description: "Subject measured for the object (finance spec: measuredFor)."
+    pairs:
+      - {from: ProductProfitability, to: SKU}
+      - {from: CustomerProfitability, to: Customer}
+      - {from: ChannelProfitability, to: Channel}
+  MEASURES:
+    description: "Subject measures the object (finance spec: measures)."
+    pairs:
+      - {from: FinancialTarget, to: BusinessObjective}
+      - {from: KPI, to: BusinessObjective}
+  MITIGATES:
+    description: "Subject mitigates the object (finance spec: mitigates)."
+    pairs:
+      - {from: HedgeInstrument, to: FXExposure}
+      - {from: Control, to: Risk}
+  MODIFIES:
+    description: "Subject modifies the object (finance spec: modifies)."
+    pairs:
+      - {from: Scenario, to: PlanningAssumption}
+  OCCURRED_DURING:
+    description: "Subject occurred during the object (finance spec: occurredDuring)."
+    pairs:
+      - {from: JournalLine, to: FiscalPeriod}
+      - {from: Balance, to: FiscalPeriod}
+      - {from: SalesInvoice, to: FiscalPeriod}
+  OPERATES_IN:
+    description: "Subject operates in the object (finance spec: operatesIn)."
+    pairs:
+      - {from: Customer, to: Geography}
+      - {from: Supplier, to: Geography}
+  ORIGINATES_IN:
+    description: "Subject originates in the object (finance spec: originatesIn)."
+    pairs:
+      - {from: JournalEntry, to: SourceSystem}
+      - {from: Dataset, to: SourceSystem}
+  OWNED_BY:
+    description: "Subject owned by the object (finance spec: ownedBy)."
+    pairs:
+      - {from: KPI, to: Role}
+      - {from: ManagementAction, to: Role}
+      - {from: FixedAsset, to: LegalEntity}
+      - {from: RemediationAction, to: Role}
+      - {from: Issue, to: Role}
+  OWNS:
+    description: "Subject owns the object (finance spec: owns)."
+    pairs:
+      - {from: Role, to: L3ProcessEndpoint}
+  PAID_FROM:
+    description: "Subject paid from the object (finance spec: paidFrom)."
+    pairs:
+      - {from: SupplierPayment, to: BankAccount}
+  PARENT_OF:
+    description: "Parent category of a child category."
+    pairs:
+      - {from: Category, to: Category}
+  PART_OF:
+    description: "Subject part of the object (finance spec: partOf)."
+    pairs:
+      - {from: Geography, to: Geography}
+  PERFORMED_BY:
+    description: "Subject performed by the object (finance spec: performedBy)."
+    pairs:
+      - {from: Control, to: Role}
+  PERFORMS:
+    description: "Subject performs the object (finance spec: performs)."
+    pairs:
+      - {from: Role, to: L3ProcessEndpoint}
+  PLACED_BY:
+    description: "Subject placed by the object (finance spec: placedBy)."
+    pairs:
+      - {from: SalesOrder, to: Customer}
+  PLACED_WITH:
+    description: "Subject placed with the object (finance spec: placedWith)."
+    pairs:
+      - {from: Investment, to: Counterparty}
+  PLANS:
+    description: "Subject plans the object (finance spec: plans)."
+    pairs:
+      - {from: Budget, to: KPI}
+  POSTS_TO:
+    description: "Subject posts to the object (finance spec: postsTo)."
+    pairs:
+      - {from: JournalLine, to: FinancialAccount}
+      - {from: APDocument, to: FinancialAccount}
+      - {from: CurrentTax, to: FinancialAccount}
+  PREDICTS:
+    description: "Subject predicts the object (finance spec: predicts)."
+    pairs:
+      - {from: Forecast, to: KPI}
+      - {from: Scenario, to: FinancialMetric}
+      - {from: LiquidityForecast, to: CashFlow}
+  PREPARED_FOR:
+    description: "Subject prepared for the object (finance spec: preparedFor)."
+    pairs:
+      - {from: LiquidityForecast, to: LegalEntity}
+  PRESENTS:
+    description: "Subject presents the object (finance spec: presents)."
+    pairs:
+      - {from: ManagementReport, to: KPI}
+      - {from: ManagementReport, to: ActualResult}
+  PRODUCES:
+    description: "Subject creates the object. Targets are an explicit allowed list (no generic Entity)."
+    pairs:
+      - {from: L3ProcessEndpoint, to: ProcessOutput}
+      - {from: L3ProcessEndpoint, to: SalesOrder}
+      - {from: L3ProcessEndpoint, to: SalesInvoice}
+      - {from: L3ProcessEndpoint, to: CreditNote}
+      - {from: L3ProcessEndpoint, to: DebitNote}
+      - {from: L3ProcessEndpoint, to: CustomerReceipt}
+      - {from: L3ProcessEndpoint, to: Receivable}
+      - {from: L3ProcessEndpoint, to: SupplierInvoice}
+      - {from: L3ProcessEndpoint, to: PurchaseOrder}
+      - {from: L3ProcessEndpoint, to: GoodsReceipt}
+      - {from: L3ProcessEndpoint, to: APDocument}
+      - {from: L3ProcessEndpoint, to: SupplierPayment}
+      - {from: L3ProcessEndpoint, to: JournalEntry}
+      - {from: L3ProcessEndpoint, to: Budget}
+      - {from: L3ProcessEndpoint, to: Forecast}
+      - {from: L3ProcessEndpoint, to: PromotionAccrual}
+      - {from: L3ProcessEndpoint, to: PromotionClaim}
+      - {from: L3ProcessEndpoint, to: PromotionSettlement}
+      - {from: L3ProcessEndpoint, to: InventoryProvision}
+      - {from: L3ProcessEndpoint, to: StandardCost}
+      - {from: L3ProcessEndpoint, to: FinancialStatement}
+      - {from: L3ProcessEndpoint, to: ManagementReport}
+      - {from: L3ProcessEndpoint, to: TaxReturn}
+      - {from: L3ProcessEndpoint, to: FixedAsset}
+      - {from: L3ProcessEndpoint, to: DepreciationEntry}
+      - {from: Control, to: Evidence}
+      - {from: ControlExecution, to: Evidence}
+  PURSUES:
+    description: "Subject pursues the object (finance spec: pursues)."
+    pairs:
+      - {from: Organization, to: BusinessObjective}
+  RAISED_BY:
+    description: "Subject raised by the object (finance spec: raisedBy)."
+    pairs:
+      - {from: TaxCase, to: TaxAuthority}
+      - {from: Finding, to: Organization}
+  RAISED_ON:
+    description: "AP exception is raised on a supplier invoice."
+    pairs:
+      - {from: APException, to: SupplierInvoice}
+  RECOMMENDS:
+    description: "Subject recommends the object (finance spec: recommends)."
+    pairs:
+      - {from: Commentary, to: ManagementAction}
+  RECORDED_FOR:
+    description: "Subject recorded for the object (finance spec: recordedFor)."
+    pairs:
+      - {from: JournalLine, to: LegalEntity}
+      - {from: Balance, to: LegalEntity}
+      - {from: CashPosition, to: LegalEntity}
+  REDUCED_BY:
+    description: "Subject reduced by the object (finance spec: reducedBy)."
+    pairs:
+      - {from: ProductProfitability, to: TradeSpend}
+  REDUCES:
+    description: "Subject reduces the object (finance spec: reduces)."
+    pairs:
+      - {from: CreditNote, to: SalesInvoice}
+      - {from: Deduction, to: CustomerReceipt}
+      - {from: TradeSpend, to: Revenue}
+      - {from: Discount, to: ListPrice}
+  REFERENCES:
+    description: "Subject references the object (finance spec: references)."
+    pairs:
+      - {from: SalesInvoice, to: SalesOrder}
+      - {from: InvoiceLine, to: SKU}
+      - {from: PromotionClaim, to: SalesInvoice}
+      - {from: PromotionClaim, to: SKU}
+      - {from: SupplierInvoice, to: PurchaseOrder}
+      - {from: HedgeInstrument, to: CurrencyPair}
+  REGISTERED_WITH:
+    description: "Subject registered with the object (finance spec: registeredWith)."
+    pairs:
+      - {from: TaxRegistration, to: TaxAuthority}
+  REMEDIATES:
+    description: "Subject remediates the object (finance spec: remediates)."
+    pairs:
+      - {from: RemediationAction, to: Deficiency}
+  REMOVES:
+    description: "Subject removes the object (finance spec: removes)."
+    pairs:
+      - {from: WriteOff, to: Receivable}
+      - {from: InventoryWriteOff, to: InventoryItem}
+      - {from: AssetDisposal, to: FixedAsset}
+  REPRESENTS:
+    description: "Subject represents the object (finance spec: represents)."
+    pairs:
+      - {from: InventoryBalance, to: InventoryItem}
+  SETTLES:
+    description: "Subject settles the object (finance spec: settles)."
+    pairs:
+      - {from: CustomerReceipt, to: SalesInvoice}
+      - {from: PromotionSettlement, to: PromotionClaim}
+      - {from: CreditNote, to: PromotionClaim}
+      - {from: SupplierPayment, to: SupplierInvoice}
+  SUBMITTED_BY:
+    description: "Subject submitted by the object (finance spec: submittedBy)."
+    pairs:
+      - {from: BudgetSubmission, to: BusinessUnit}
+      - {from: PromotionClaim, to: Customer}
+  SUMMARIZES:
+    description: "Subject summarizes the object (finance spec: summarizes)."
+    pairs:
+      - {from: TaxReturn, to: TaxLedger}
+  SUPPORTED_BY:
+    description: "Subject supported by the object (finance spec: supportedBy)."
+    pairs:
+      - {from: CreditNote, to: PromotionClaim}
+      - {from: Dispute, to: Evidence}
+      - {from: PromotionClaim, to: Evidence}
+      - {from: InventoryProvision, to: NRVAssessment}
+      - {from: InventoryWriteOff, to: Approval}
+      - {from: TaxPosition, to: Evidence}
+      - {from: CapitalRequest, to: BusinessCase}
+      - {from: Commentary, to: Evidence}
+      - {from: Recommendation, to: Evidence}
+  SUPPORTS:
+    description: "Subject supports the object (finance spec: supports)."
+    pairs:
+      - {from: SourceSystem, to: L3ProcessEndpoint}
+  TAKEN_AGAINST:
+    description: "Deduction is taken against an invoice."
+    pairs:
+      - {from: Deduction, to: SalesInvoice}
+  TARGETS:
+    description: "Trade promotion targets the customer."
+    pairs:
+      - {from: TradePromotion, to: Customer}
+  TRACES:
+    description: "Subject traces the object (finance spec: traces)."
+    pairs:
+      - {from: DataLineage, to: ManagementReport}
+  TRACES_TO:
+    description: "Subject traces to the object (finance spec: tracesTo)."
+    pairs:
+      - {from: DataLineage, to: SourceSystem}
+  TRIGGERED_BY:
+    description: "Subject triggered by the object (finance spec: triggeredBy)."
+    pairs:
+      - {from: L3ProcessEndpoint, to: TriggerEvent}
+  TRIGGERS:
+    description: "Subject triggers the object (finance spec: triggers)."
+    pairs:
+      - {from: MarginException, to: ManagementAction}
+  USES:
+    description: "Subject uses the object (finance spec: uses)."
+    pairs:
+      - {from: Forecast, to: PlanningAssumption}
+      - {from: TradePromotion, to: PromotionMechanic}
+      - {from: AllocationRule, to: CostDriver}
+      - {from: DepreciationEntry, to: DepreciationMethod}
+      - {from: Analysis, to: ActualResult}
+      - {from: Dashboard, to: Dataset}
+      - {from: SemanticModel, to: Dataset}
+  VALIDATES:
+    description: "Subject validates the object (finance spec: validates)."
+    pairs:
+      - {from: DataQualityRule, to: DataElement}
+  VALID_DURING:
+    description: "Subject valid during the object (finance spec: validDuring)."
+    pairs:
+      - {from: TradePromotion, to: FiscalPeriod}
+  VALID_IN:
+    description: "Subject is valid in the object geography or jurisdiction."
+    pairs:
+      - {from: TradePromotion, to: Geography}
+      - {from: TaxCode, to: Jurisdiction}
+  VALUED_USING:
+    description: "Subject valued using the object (finance spec: valuedUsing)."
+    pairs:
+      - {from: InventoryBalance, to: ValuationMethod}

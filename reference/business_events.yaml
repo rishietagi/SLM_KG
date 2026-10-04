@@ -1,0 +1,62 @@
+# Business events. The 15 "chain" events restate the §2 value-flow chain
+# (market signal -> ... -> consumption and feedback). Others are drafted stage boundaries.
+class: BusinessEvent
+defaults:
+  source_system: curated_reference
+  lane: curated
+  extraction_confidence: 1.0
+  reviewed: false
+  drafted_beyond_source: false
+  source_reference: "docs/source/cpg_value_chain_design.md#2-layer-1-should-be-the-first-build"
+rows:
+  - {id: "BusinessEvent:market_signal_detected", name: Market signal detected, event_type: signal}
+  - {id: "BusinessEvent:category_opportunity_identified", name: Category opportunity identified, event_type: stage_exit}
+  - {id: "BusinessEvent:product_concept_approved", name: Product concept approved, event_type: trigger}
+  - {id: "BusinessEvent:formulation_approved", name: Formulation approved, event_type: stage_exit}
+  - {id: "BusinessEvent:material_requirement_released", name: Ingredient and packaging requirement released, event_type: stage_entry}
+  - {id: "BusinessEvent:sourcing_decision_made", name: Sourcing decision made, event_type: stage_exit}
+  - {id: "BusinessEvent:production_plan_released", name: Production plan released, event_type: stage_entry}
+  - {id: "BusinessEvent:batch_produced", name: Batch produced, event_type: trigger}
+  - {id: "BusinessEvent:finished_sku_released", name: Finished SKU released, event_type: stage_exit}
+  - {id: "BusinessEvent:inventory_positioned", name: Inventory positioned, event_type: trigger}
+  - {id: "BusinessEvent:customer_order_received", name: Customer order received, event_type: trigger}
+  - {id: "BusinessEvent:delivered_to_distributor_retailer", name: Delivered to distributor or retailer, event_type: stage_exit}
+  - {id: "BusinessEvent:outlet_availability_achieved", name: Outlet availability achieved, event_type: stage_exit}
+  - {id: "BusinessEvent:consumer_purchase", name: Consumer purchase, event_type: trigger}
+  - {id: "BusinessEvent:consumption_feedback_received", name: Consumption and feedback received, event_type: signal}
+
+  - id: "BusinessEvent:innovation_brief_issued"
+    name: Innovation brief issued
+    event_type: stage_entry
+    drafted_beyond_source: true
+    review_note: "Not in the §2 chain; drafted as the Stage 2 -> 3 hand-off (innovation brief is a Stage 2 output)."
+  - id: "BusinessEvent:demand_planning_cycle_started"
+    name: Demand planning cycle started
+    event_type: stage_entry
+    drafted_beyond_source: true
+    review_note: "Drafted: Stage 6 has no entry event in the source."
+  - id: "BusinessEvent:replenishment_plan_approved"
+    name: Replenishment plan approved
+    event_type: stage_exit
+    drafted_beyond_source: true
+    review_note: "Drafted from Stage 6 activity 'Approve replenishment plan'."
+  - id: "BusinessEvent:customer_planning_cycle_started"
+    name: Customer planning cycle started
+    event_type: stage_entry
+    drafted_beyond_source: true
+    review_note: "Drafted: Stage 8 has no entry event in the source."
+  - id: "BusinessEvent:product_return_or_expiry_identified"
+    name: Product return or expiry identified
+    event_type: stage_entry
+    drafted_beyond_source: true
+    review_note: "Drafted from Stage 11 purpose and activities."
+  - id: "BusinessEvent:quality_issue_detected"
+    name: Quality issue detected
+    event_type: trigger
+    drafted_beyond_source: true
+    review_note: "Drafted from Stage 11 relationship 'ProductRecall INITIATED_BY QualityIssue'."
+  - id: "BusinessEvent:return_disposition_completed"
+    name: Return disposition completed
+    event_type: stage_exit
+    drafted_beyond_source: true
+    review_note: "Drafted from Stage 11 output 'Return disposition'."

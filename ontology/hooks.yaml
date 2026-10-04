@@ -1,0 +1,108 @@
+module: hooks
+description: >
+  Cross-layer hook relationships (PROJECT_CONTEXT §5.3), declared in Phase 1 so outer layers only
+  add targets and never restructure the spine. Hook targets not declared in finance.yaml are
+  declared here as stubs; their attributes arrive with their layer.
+
+classes:
+  Formulation:
+    layer: 3
+    stub: true
+    description: Recipe or formula realising a product concept.
+  Batch:
+    layer: 3
+    stub: true
+    description: Production batch or lot.
+  PackagingMaterial:
+    layer: 3
+    stub: true
+    description: Primary, secondary or tertiary packaging material.
+  Plant:
+    layer: 3
+    stub: true
+    description: Manufacturing site (own plant, contract manufacturer or co-packer site).
+  Warehouse:
+    layer: 3
+    stub: true
+    description: Storage and fulfilment location for finished goods.
+  Distributor:
+    layer: 4
+    stub: true
+    description: Route-to-market partner buying and redistributing to outlets. Separate from Customer; linked in Phase 2 (D18).
+  Retailer:
+    layer: 4
+    stub: true
+    description: Retail organization or chain selling to consumers. Separate from Customer (a buying account); linked in Phase 2 (D18).
+  Outlet:
+    layer: 4
+    stub: true
+    description: Individual point of sale.
+  LogisticsProvider:
+    layer: 4
+    stub: true
+    description: 3PL, transporter or C&F agent.
+  ConsumerSegment:
+    layer: 6
+    stub: true
+    description: Group of consumers with shared characteristics or needs.
+  NeedState:
+    layer: 6
+    stub: true
+    description: Underlying consumer need or motivation.
+  Touchpoint:
+    layer: 6
+    stub: true
+    description: Point of interaction between consumer and brand or channel.
+
+relationships:
+  ENABLED_BY:
+    description: Activity is executed through the functional process.
+    hook_layer: 2
+    pairs:
+      - {from: ValueChainActivity, to: ProcessGroup}
+      - {from: ValueChainActivity, to: L3ProcessEndpoint}
+
+  ACTS_ON:
+    description: Activity acts on the product or asset.
+    hook_layer: 3
+    pairs:
+      - {from: ValueChainActivity, to: Brand}
+      - {from: ValueChainActivity, to: Category}
+      - {from: ValueChainActivity, to: SKU}
+      - {from: ValueChainActivity, to: Formulation}
+      - {from: ValueChainActivity, to: Batch}
+      - {from: ValueChainActivity, to: PackagingMaterial}
+      - {from: ValueChainActivity, to: Plant}
+      - {from: ValueChainActivity, to: Warehouse}
+
+  INVOLVES:
+    description: Activity involves the ecosystem participant or channel.
+    hook_layer: 4
+    pairs:
+      - {from: ValueChainActivity, to: Supplier}
+      - {from: ValueChainActivity, to: Customer}
+      - {from: ValueChainActivity, to: Distributor}
+      - {from: ValueChainActivity, to: Retailer}
+      - {from: ValueChainActivity, to: Outlet}
+      - {from: ValueChainActivity, to: Channel}
+      - {from: ValueChainActivity, to: LogisticsProvider}
+
+  MEASURED_BY:
+    description: Subject is measured by the KPI.
+    hook_layer: 5
+    pairs:
+      - {from: ValueOutcome, to: KPI}
+
+  AFFECTS:
+    description: Subject affects the object.
+    hook_layer: 5
+    pairs:
+      - {from: Risk, to: ValueChainActivity}
+
+  TOUCHES:
+    description: Activity touches the consumer-layer concept.
+    hook_layer: 6
+    pairs:
+      - {from: ValueChainActivity, to: ConsumerSegment}
+      - {from: ValueChainActivity, to: NeedState}
+      - {from: ValueChainActivity, to: Touchpoint}

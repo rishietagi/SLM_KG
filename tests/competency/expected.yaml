@@ -1,0 +1,31 @@
+# Expected answers for competency questions 1-4 on the curated Layer-1 graph.
+cq1:
+  term: trade scheme creation
+  activity: Create trade scheme
+  stage: Customer, Channel and Revenue Growth
+  upstream: Warehousing and Distribution
+  downstream: Retail and Outlet Execution
+
+cq2:
+  # (Stage 3 output, Stage 4 activity) hand-offs
+  pairs:
+    - [Formulation, Translate formulation into material requirements]
+    - [Recipe, Translate formulation into material requirements]
+    - [Ingredient specification, Identify and qualify suppliers]
+    - [Ingredient specification, Approve ingredients and packaging]
+    - [Product specification, Approve ingredients and packaging]
+    - [Launch-ready SKU specification, Translate formulation into material requirements]
+    - [Launch-ready SKU specification, Approve ingredients and packaging]
+
+cq3:
+  term: consensus forecast
+  activities:
+    - Develop supply plan
+    - Conduct capacity planning
+    - Calculate material requirement
+    - Set inventory target
+    - Conduct S&OP or IBP review
+    - Set sales target
+
+cq4:
+  shared_aspects: [process type, hygiene and safety regime, shelf life and release, batching, in-process checks, labelling, release basis]
