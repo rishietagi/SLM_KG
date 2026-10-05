@@ -6,7 +6,7 @@ from typing import Literal
 
 from pydantic import BaseModel, ConfigDict, model_validator
 
-ONTOLOGY_HASH = "6b2a17b4253c6a3b"
+ONTOLOGY_HASH = "e51441442fa39b89"
 
 
 class NodeBase(BaseModel):
@@ -121,6 +121,13 @@ class AssetDisposal(NodeBase):
 class AuditRequest(NodeBase):
     """Request for information or evidence from an auditor. (layer 5)"""
     pass
+
+
+class AvailabilityObservation(NodeBase):
+    """Outlet visit observation of whether a SKU is on shelf (Stage 9). (layer 5)"""
+    observation_date: datetime.date
+    on_shelf: bool
+    facings: int | None = None
 
 
 class BOM(NodeBase):
@@ -299,7 +306,7 @@ class Constraint(NodeBase):
 
 class ConsumerSegment(NodeBase):
     """Group of consumers with shared characteristics or needs. (layer 6)"""
-    pass
+    segment_basis: str | None = None
 
 
 class Control(NodeBase):
@@ -467,6 +474,15 @@ class Deficiency(NodeBase):
     pass
 
 
+class DemandForecast(NodeBase):
+    """Expected sales volume for a SKU / geography / channel and period (Stage 6). Volume-based; distinct from finance Forecast, which is a financial amount. `version` is a label; ForecastVersion nodes are not used for demand forecasts in the MVP. (layer 2)"""
+    period: str
+    forecast_quantity: float
+    unit: str
+    forecast_type: Literal['baseline', 'consensus', 'constrained']
+    version: str | None = None
+
+
 class DepreciationEntry(NodeBase):
     """Periodic accounting entry for depreciation. (layer 2)"""
     pass
@@ -501,8 +517,8 @@ class Dispute(NodeBase):
 
 
 class Distributor(NodeBase):
-    """Route-to-market partner buying and redistributing to outlets. Separate from Customer; linked in Phase 2 (D18). (layer 4)"""
-    pass
+    """Route-to-market partner buying and redistributing to outlets. Separate from Customer; its buying account is a Customer linked by ACCOUNT_OF (D18, D38). (layer 4)"""
+    distributor_type: Literal['distributor', 'sub_distributor', 'wholesaler', 'cnf_agent']
 
 
 class EligibilityRule(NodeBase):
@@ -585,7 +601,7 @@ class FixedAsset(NodeBase):
 
 
 class Forecast(NodeBase):
-    """Expected future financial result. (layer 2)"""
+    """Expected future financial result. Distinct from DemandForecast (volume, Stage 6). (layer 2)"""
     version: str
     scenario: str
     period: str
@@ -689,6 +705,14 @@ class InventoryMovement(NodeBase):
     pass
 
 
+class InventoryPosition(NodeBase):
+    """Channel stock: quantity of a SKU held by a distributor or at a location at a point in time (Stage 7). Quantity only; distinct from finance InventoryBalance, the company's own-book quantity and value. §5.4 says HELD_AT Location; the MVP pair is HELD_AT Distributor (D39). (layer 5)"""
+    as_of_date: datetime.date
+    quantity: float
+    unit: str
+    days_of_cover: float | None = None
+
+
 class InventoryProvision(NodeBase):
     """Provision against inventory loss or reduced value. (layer 2)"""
     pass
@@ -716,6 +740,7 @@ class InvoiceLine(NodeBase):
     unit_price_text: str | None = None  # amount exactly as stated
     line_amount: float
     line_amount_text: str | None = None  # amount exactly as stated
+    unit: str | None = None
 
 
 class Issue(NodeBase):
@@ -812,7 +837,10 @@ class ManagementResponse(NodeBase):
 
 class Margin(NodeBase):
     """Profit measure after defined costs or deductions. (layer 5)"""
-    pass
+    value: float
+    value_text: str | None = None  # amount exactly as stated
+    unit: str
+    period: str
 
 
 class MarginException(NodeBase):
@@ -861,8 +889,9 @@ class Organization(NodeBase):
 
 
 class Outlet(NodeBase):
-    """Individual point of sale. (layer 4)"""
-    pass
+    """Individual point of sale (store, dark store or online storefront). (layer 4)"""
+    outlet_type: str
+    outlet_class: Literal['A', 'B', 'C'] | None = None
 
 
 class Output(NodeBase):
@@ -880,6 +909,14 @@ class PVMAnalysis(NodeBase):
     volume_effect_text: str | None = None  # amount exactly as stated
     mix_effect: float
     mix_effect_text: str | None = None  # amount exactly as stated
+
+
+class PackPricePoint(NodeBase):
+    """A pack size offered at a target consumer price point (price-pack architecture element, Stage 2). Shared by several SKUs; distinct from SKU.pack_size (one SKU's attribute) and from finance ListPrice (the company's selling price to customers). (layer 3)"""
+    pack_size: str
+    price_point: float
+    price_point_text: str | None = None  # amount exactly as stated
+    currency: str
 
 
 class PackagingMaterial(NodeBase):
@@ -1054,6 +1091,16 @@ class Provision(NodeBase):
     currency: str | None = None
 
 
+class PurchaseEvent(NodeBase):
+    """A consumer purchase occasion recorded by a household panel (Stage 10). (layer 6)"""
+    purchase_date: datetime.date
+    household_ref: str | None = None
+    quantity: float | None = None
+    spend: float | None = None
+    spend_text: str | None = None  # amount exactly as stated
+    currency: str | None = None
+
+
 class PurchaseOrder(NodeBase):
     """Approved order issued to a supplier. (layer 2)"""
     order_date: datetime.date
@@ -1120,8 +1167,8 @@ class ResponsibilityCentre(NodeBase):
 
 
 class Retailer(NodeBase):
-    """Retail organization or chain selling to consumers. Separate from Customer (a buying account); linked in Phase 2 (D18). (layer 4)"""
-    pass
+    """Retail organization or chain selling to consumers. Separate from Customer (a buying account); linked by ACCOUNT_OF (D18, D38). (layer 4)"""
+    retailer_type: Literal['modern_trade_chain', 'ecommerce_marketplace', 'quick_commerce', 'd2c']
 
 
 class Revenue(NodeBase):
@@ -1177,6 +1224,16 @@ class SalesOrder(NodeBase):
 class Scenario(NodeBase):
     """Alternative set of planning assumptions. (layer 2)"""
     pass
+
+
+class SellOutTransaction(NodeBase):
+    """Secondary sell-out of a SKU at an outlet (Stage 9 'Capture sell-out signal'). Sales by a third party, not recognised Revenue. The MVP records one row per outlet x SKU x week; the spec name is kept (D39). (layer 5)"""
+    week_start: datetime.date
+    quantity: float
+    unit: str
+    sales_value: float | None = None
+    sales_value_text: str | None = None  # amount exactly as stated
+    currency: str | None = None
 
 
 class SemanticModel(NodeBase):
@@ -1420,6 +1477,7 @@ NODE_MODELS: dict[str, type[NodeBase]] = {
     "AssetClass": AssetClass,
     "AssetDisposal": AssetDisposal,
     "AuditRequest": AuditRequest,
+    "AvailabilityObservation": AvailabilityObservation,
     "BOM": BOM,
     "Balance": Balance,
     "BankAccount": BankAccount,
@@ -1482,6 +1540,7 @@ NODE_MODELS: dict[str, type[NodeBase]] = {
     "Deduction": Deduction,
     "DeferredTax": DeferredTax,
     "Deficiency": Deficiency,
+    "DemandForecast": DemandForecast,
     "DepreciationEntry": DepreciationEntry,
     "DepreciationMethod": DepreciationMethod,
     "Dimension": Dimension,
@@ -1522,6 +1581,7 @@ NODE_MODELS: dict[str, type[NodeBase]] = {
     "InventoryBalance": InventoryBalance,
     "InventoryItem": InventoryItem,
     "InventoryMovement": InventoryMovement,
+    "InventoryPosition": InventoryPosition,
     "InventoryProvision": InventoryProvision,
     "InventoryWriteOff": InventoryWriteOff,
     "Investment": Investment,
@@ -1555,6 +1615,7 @@ NODE_MODELS: dict[str, type[NodeBase]] = {
     "Outlet": Outlet,
     "Output": Output,
     "PVMAnalysis": PVMAnalysis,
+    "PackPricePoint": PackPricePoint,
     "PackagingMaterial": PackagingMaterial,
     "PaymentFile": PaymentFile,
     "PaymentProposal": PaymentProposal,
@@ -1581,6 +1642,7 @@ NODE_MODELS: dict[str, type[NodeBase]] = {
     "PromotionResult": PromotionResult,
     "PromotionSettlement": PromotionSettlement,
     "Provision": Provision,
+    "PurchaseEvent": PurchaseEvent,
     "PurchaseOrder": PurchaseOrder,
     "Receivable": Receivable,
     "Recommendation": Recommendation,
@@ -1602,6 +1664,7 @@ NODE_MODELS: dict[str, type[NodeBase]] = {
     "SalesInvoice": SalesInvoice,
     "SalesOrder": SalesOrder,
     "Scenario": Scenario,
+    "SellOutTransaction": SellOutTransaction,
     "SemanticModel": SemanticModel,
     "SourceEvidence": SourceEvidence,
     "SourceSystem": SourceSystem,
@@ -1643,6 +1706,7 @@ NODE_MODELS: dict[str, type[NodeBase]] = {
 }
 
 ALLOWED_PAIRS: dict[str, set[tuple[str, str]]] = {
+    "ACCOUNT_OF": {("Customer", "Distributor"), ("Customer", "Retailer")},
     "ACTS_ON": {("ValueChainActivity", "Brand"), ("ValueChainActivity", "Category"), ("ValueChainActivity", "SKU"), ("ValueChainActivity", "Formulation"), ("ValueChainActivity", "Batch"), ("ValueChainActivity", "PackagingMaterial"), ("ValueChainActivity", "Plant"), ("ValueChainActivity", "Warehouse")},
     "ADDRESSES": {("ManagementAction", "Variance"), ("CollectionCase", "Receivable"), ("ManagementResponse", "Finding")},
     "AFFECTS": {("Risk", "ValueChainActivity"), ("ObsolescenceRisk", "InventoryItem"), ("ImpairmentIndicator", "FixedAsset"), ("ImpairmentIndicator", "CGU"), ("Risk", "L3ProcessEndpoint"), ("Risk", "FinancialAccount"), ("Risk", "FinancialStatement"), ("Issue", "Dataset")},
@@ -1660,7 +1724,7 @@ ALLOWED_PAIRS: dict[str, set[tuple[str, str]]] = {
     "ATTRIBUTED_TO": {("JournalLine", "BusinessUnit"), ("JournalLine", "CostCentre"), ("JournalLine", "ProfitCentre"), ("JournalLine", "SKU"), ("JournalLine", "Brand"), ("JournalLine", "Customer"), ("JournalLine", "Supplier"), ("JournalLine", "Channel"), ("JournalLine", "Geography")},
     "BASED_ON": {("Decision", "SourceEvidence"), ("Charge", "Benchmark")},
     "BECOMES_INPUT_TO": {("Output", "ValueChainActivity")},
-    "BELONGS_TO": {("ResponsibilityCentre", "BusinessUnit"), ("SKU", "ProductFamily"), ("FinancialAccount", "AccountGroup"), ("TradePromotion", "Brand"), ("FixedAsset", "AssetClass"), ("CostCentre", "BusinessUnit"), ("ProfitCentre", "BusinessUnit")},
+    "BELONGS_TO": {("ResponsibilityCentre", "BusinessUnit"), ("SKU", "ProductFamily"), ("FinancialAccount", "AccountGroup"), ("TradePromotion", "Brand"), ("FixedAsset", "AssetClass"), ("CostCentre", "BusinessUnit"), ("ProfitCentre", "BusinessUnit"), ("Outlet", "Channel")},
     "BELONGS_TO_BRAND": {("ProductFamily", "Brand")},
     "BELONGS_TO_CATEGORY": {("ProductFamily", "Category")},
     "CALCULATED_FOR": {("StandardCost", "SKU"), ("ActualCost", "SKU")},
@@ -1674,8 +1738,8 @@ ALLOWED_PAIRS: dict[str, set[tuple[str, str]]] = {
     "COMPOSED_OF": {("StandardCost", "CostComponent")},
     "CONSTRAINED_BY": {("ValueChainActivity", "Constraint")},
     "CONSUMES": {("ValueChainActivity", "Input"), ("L3ProcessEndpoint", "SalesOrder"), ("L3ProcessEndpoint", "SalesInvoice"), ("L3ProcessEndpoint", "CreditNote"), ("L3ProcessEndpoint", "DebitNote"), ("L3ProcessEndpoint", "CustomerReceipt"), ("L3ProcessEndpoint", "Receivable"), ("L3ProcessEndpoint", "SupplierInvoice"), ("L3ProcessEndpoint", "PurchaseOrder"), ("L3ProcessEndpoint", "GoodsReceipt"), ("L3ProcessEndpoint", "APDocument"), ("L3ProcessEndpoint", "SupplierPayment"), ("L3ProcessEndpoint", "JournalEntry"), ("L3ProcessEndpoint", "Budget"), ("L3ProcessEndpoint", "Forecast"), ("L3ProcessEndpoint", "PromotionAccrual"), ("L3ProcessEndpoint", "PromotionClaim"), ("L3ProcessEndpoint", "PromotionSettlement"), ("L3ProcessEndpoint", "InventoryProvision"), ("L3ProcessEndpoint", "StandardCost"), ("L3ProcessEndpoint", "FinancialStatement"), ("L3ProcessEndpoint", "ManagementReport"), ("L3ProcessEndpoint", "TaxReturn"), ("L3ProcessEndpoint", "FixedAsset"), ("L3ProcessEndpoint", "DepreciationEntry"), ("SalesOrder", "CreditLimit"), ("PromotionSettlement", "PromotionAccrual")},
-    "CONTAINS": {("CPGValueChain", "ValueChainStage"), ("ValueChainStage", "ValueChainActivity"), ("FinanceDomain", "ProcessGroup"), ("ProcessGroup", "L3ProcessEndpoint"), ("Organization", "LegalEntity"), ("Organization", "BusinessUnit"), ("ChartOfAccounts", "FinancialAccount"), ("JournalEntry", "JournalLine"), ("SalesOrder", "SKU"), ("SalesInvoice", "InvoiceLine"), ("PVMAnalysis", "VarianceDriver"), ("PurchaseOrder", "SKU"), ("PaymentFile", "SupplierPayment"), ("BankStatement", "BankTransaction")},
-    "CONTESTS": {("Dispute", "Deduction")},
+    "CONTAINS": {("CPGValueChain", "ValueChainStage"), ("ValueChainStage", "ValueChainActivity"), ("FinanceDomain", "ProcessGroup"), ("ProcessGroup", "L3ProcessEndpoint"), ("Organization", "LegalEntity"), ("Organization", "BusinessUnit"), ("ChartOfAccounts", "FinancialAccount"), ("JournalEntry", "JournalLine"), ("SalesOrder", "SKU"), ("SalesInvoice", "InvoiceLine"), ("PVMAnalysis", "VarianceDriver"), ("PurchaseOrder", "SKU"), ("PaymentFile", "SupplierPayment"), ("BankStatement", "BankTransaction"), ("PurchaseEvent", "SKU")},
+    "CONTESTS": {("Dispute", "Deduction"), ("Dispute", "PromotionClaim")},
     "CONTROLS": {("Control", "L3ProcessEndpoint")},
     "COUNTS": {("StockCount", "InventoryItem")},
     "COVERS": {("Budget", "FiscalPeriod"), ("Provision", "Receivable"), ("InventoryProvision", "InventoryItem"), ("TaxReturn", "FiscalPeriod"), ("Provision", "TaxCase")},
@@ -1695,36 +1759,41 @@ ALLOWED_PAIRS: dict[str, set[tuple[str, str]]] = {
     "EXPLAINS_DIFFERENCE_BETWEEN": {("Variance", "ActualResult"), ("PVMAnalysis", "ActualResult")},
     "EXPOSED_TO": {("L3ProcessEndpoint", "Risk")},
     "FILED_WITH": {("TaxReturn", "Regulator")},
+    "FORECASTS": {("DemandForecast", "SKU"), ("DemandForecast", "Geography"), ("DemandForecast", "Channel")},
     "FULFILLED_THROUGH": {("SalesOrder", "Channel")},
     "FUNDS": {("PromotionBudget", "TradePromotion"), ("Loan", "LegalEntity")},
     "GOVERNED_BY": {("ValueChainActivity", "DecisionRule"), ("FinancialAccount", "AccountingPolicy"), ("TradePromotion", "EligibilityRule"), ("SupplierInvoice", "PaymentTerm")},
     "GOVERNS": {("TransferPricingPolicy", "IntercompanyTransaction"), ("DataPolicy", "Dataset")},
-    "HAS": {("Customer", "CreditProfile"), ("Customer", "CreditLimit"), ("SKU", "BOM"), ("SKU", "Routing"), ("FixedAsset", "UsefulLife")},
-    "HELD_AT": {("InventoryBalance", "Location")},
+    "HAS": {("Customer", "CreditProfile"), ("Customer", "CreditLimit"), ("SKU", "BOM"), ("SKU", "Routing"), ("FixedAsset", "UsefulLife"), ("ConsumerSegment", "NeedState")},
+    "HELD_AT": {("InventoryBalance", "Location"), ("InventoryPosition", "Distributor")},
     "HELD_BY": {("TaxRegistration", "LegalEntity")},
     "HELD_IN": {("Balance", "FinancialAccount")},
     "IDENTIFIED_BY": {("Deficiency", "ControlTest")},
     "IMPACTS": {("ManagementAction", "KPI"), ("ManagementAction", "Margin")},
     "IMPAIRS": {("ImpairmentEntry", "FixedAsset")},
     "INCLUDES": {("PaymentProposal", "SupplierInvoice")},
+    "INCURRED_FOR": {("TradeSpend", "TradePromotion"), ("TradeSpend", "SKU")},
     "INFLUENCES": {("ValueChainActivity", "ValueDriver"), ("ValueDriver", "KPI")},
     "INSTANCE_OF": {("ControlExecution", "Control")},
     "INVOLVES": {("ValueChainActivity", "Supplier"), ("ValueChainActivity", "Customer"), ("ValueChainActivity", "Distributor"), ("ValueChainActivity", "Retailer"), ("ValueChainActivity", "Outlet"), ("ValueChainActivity", "Channel"), ("ValueChainActivity", "LogisticsProvider")},
     "ISSUED_BY": {("SupplierInvoice", "Supplier"), ("SupplierStatement", "Supplier")},
-    "ISSUED_TO": {("SalesInvoice", "Customer"), ("PurchaseOrder", "Supplier")},
+    "ISSUED_TO": {("SalesInvoice", "Customer"), ("PurchaseOrder", "Supplier"), ("CreditNote", "Customer")},
     "LOCATED_AT": {("FixedAsset", "Location")},
-    "LOCATED_IN": {("Location", "Geography")},
+    "LOCATED_IN": {("Location", "Geography"), ("Outlet", "Geography")},
     "MAKES": {("Customer", "PromiseToPay")},
     "MATCHED_TO": {("SupplierInvoice", "GoodsReceipt")},
     "MATCHES": {("Reconciliation", "BankTransaction")},
     "MEASURED_ACROSS": {("ActualResult", "Dimension")},
     "MEASURED_BY": {("ValueOutcome", "KPI"), ("L3ProcessEndpoint", "KPI")},
-    "MEASURED_FOR": {("ProductProfitability", "SKU"), ("CustomerProfitability", "Customer"), ("ChannelProfitability", "Channel")},
-    "MEASURES": {("FinancialTarget", "BusinessObjective"), ("KPI", "BusinessObjective")},
+    "MEASURED_FOR": {("ProductProfitability", "SKU"), ("CustomerProfitability", "Customer"), ("ChannelProfitability", "Channel"), ("InventoryPosition", "SKU"), ("Margin", "SKU")},
+    "MEASURES": {("FinancialTarget", "BusinessObjective"), ("KPI", "BusinessObjective"), ("AvailabilityObservation", "SKU")},
     "MITIGATES": {("HedgeInstrument", "FXExposure"), ("Control", "Risk")},
     "MODIFIES": {("Scenario", "PlanningAssumption")},
+    "MOTIVATED_BY": {("PurchaseEvent", "NeedState")},
+    "OBSERVED_AT": {("AvailabilityObservation", "Outlet")},
     "OCCURRED_DURING": {("JournalLine", "FiscalPeriod"), ("Balance", "FiscalPeriod"), ("SalesInvoice", "FiscalPeriod")},
-    "OPERATES_IN": {("Customer", "Geography"), ("Supplier", "Geography")},
+    "OCCURS_AT": {("SellOutTransaction", "Outlet"), ("PurchaseEvent", "Outlet")},
+    "OPERATES_IN": {("Customer", "Geography"), ("Supplier", "Geography"), ("Distributor", "Geography")},
     "ORIGINATES_IN": {("JournalEntry", "SourceSystem"), ("Dataset", "SourceSystem")},
     "OWNED_BY": {("KPI", "Role"), ("ManagementAction", "Role"), ("FixedAsset", "LegalEntity"), ("RemediationAction", "Role"), ("Issue", "Role")},
     "OWNS": {("Role", "L3ProcessEndpoint")},
@@ -1741,6 +1810,7 @@ ALLOWED_PAIRS: dict[str, set[tuple[str, str]]] = {
     "PREDICTS": {("Forecast", "KPI"), ("Scenario", "FinancialMetric"), ("LiquidityForecast", "CashFlow")},
     "PREPARED_FOR": {("LiquidityForecast", "LegalEntity")},
     "PRESENTS": {("ManagementReport", "KPI"), ("ManagementReport", "ActualResult")},
+    "PRICED_AT": {("SKU", "PackPricePoint")},
     "PRODUCES": {("ValueChainActivity", "Output"), ("L3ProcessEndpoint", "ProcessOutput"), ("L3ProcessEndpoint", "SalesOrder"), ("L3ProcessEndpoint", "SalesInvoice"), ("L3ProcessEndpoint", "CreditNote"), ("L3ProcessEndpoint", "DebitNote"), ("L3ProcessEndpoint", "CustomerReceipt"), ("L3ProcessEndpoint", "Receivable"), ("L3ProcessEndpoint", "SupplierInvoice"), ("L3ProcessEndpoint", "PurchaseOrder"), ("L3ProcessEndpoint", "GoodsReceipt"), ("L3ProcessEndpoint", "APDocument"), ("L3ProcessEndpoint", "SupplierPayment"), ("L3ProcessEndpoint", "JournalEntry"), ("L3ProcessEndpoint", "Budget"), ("L3ProcessEndpoint", "Forecast"), ("L3ProcessEndpoint", "PromotionAccrual"), ("L3ProcessEndpoint", "PromotionClaim"), ("L3ProcessEndpoint", "PromotionSettlement"), ("L3ProcessEndpoint", "InventoryProvision"), ("L3ProcessEndpoint", "StandardCost"), ("L3ProcessEndpoint", "FinancialStatement"), ("L3ProcessEndpoint", "ManagementReport"), ("L3ProcessEndpoint", "TaxReturn"), ("L3ProcessEndpoint", "FixedAsset"), ("L3ProcessEndpoint", "DepreciationEntry"), ("Control", "Evidence"), ("ControlExecution", "Evidence")},
     "PURSUES": {("Organization", "BusinessObjective")},
     "RAISED_BY": {("TaxCase", "TaxAuthority"), ("Finding", "Organization")},
@@ -1749,14 +1819,16 @@ ALLOWED_PAIRS: dict[str, set[tuple[str, str]]] = {
     "RECORDED_FOR": {("JournalLine", "LegalEntity"), ("Balance", "LegalEntity"), ("CashPosition", "LegalEntity")},
     "REDUCED_BY": {("ProductProfitability", "TradeSpend")},
     "REDUCES": {("CreditNote", "SalesInvoice"), ("Deduction", "CustomerReceipt"), ("TradeSpend", "Revenue"), ("Discount", "ListPrice")},
-    "REFERENCES": {("SalesInvoice", "SalesOrder"), ("InvoiceLine", "SKU"), ("PromotionClaim", "SalesInvoice"), ("PromotionClaim", "SKU"), ("SupplierInvoice", "PurchaseOrder"), ("HedgeInstrument", "CurrencyPair")},
+    "REFERENCES": {("SalesInvoice", "SalesOrder"), ("InvoiceLine", "SKU"), ("PromotionClaim", "SalesInvoice"), ("PromotionClaim", "SKU"), ("SupplierInvoice", "PurchaseOrder"), ("HedgeInstrument", "CurrencyPair"), ("SellOutTransaction", "SKU")},
     "REGISTERED_WITH": {("TaxRegistration", "TaxAuthority")},
     "REMEDIATES": {("RemediationAction", "Deficiency")},
     "REMOVES": {("WriteOff", "Receivable"), ("InventoryWriteOff", "InventoryItem"), ("AssetDisposal", "FixedAsset")},
     "REPRESENTS": {("InventoryBalance", "InventoryItem")},
     "REQUIRES": {("ValueChainActivity", "Decision")},
     "SELECTS": {("Decision", "DecisionOption")},
+    "SERVES": {("Distributor", "Outlet")},
     "SETTLES": {("CustomerReceipt", "SalesInvoice"), ("PromotionSettlement", "PromotionClaim"), ("CreditNote", "PromotionClaim"), ("SupplierPayment", "SupplierInvoice")},
+    "STOCKS": {("Outlet", "SKU")},
     "SUBMITTED_BY": {("BudgetSubmission", "BusinessUnit"), ("PromotionClaim", "Customer")},
     "SUMMARIZES": {("TaxReturn", "TaxLedger")},
     "SUPPORTED_BY": {("ValueChainActivity", "Organization"), ("CreditNote", "PromotionClaim"), ("Dispute", "Evidence"), ("PromotionClaim", "Evidence"), ("InventoryProvision", "NRVAssessment"), ("InventoryWriteOff", "Approval"), ("TaxPosition", "Evidence"), ("CapitalRequest", "BusinessCase"), ("Commentary", "Evidence"), ("Recommendation", "Evidence")},
@@ -1769,6 +1841,7 @@ ALLOWED_PAIRS: dict[str, set[tuple[str, str]]] = {
     "TRACES_TO": {("DataLineage", "SourceSystem")},
     "TRIGGERED_BY": {("ValueChainActivity", "BusinessEvent"), ("L3ProcessEndpoint", "TriggerEvent")},
     "TRIGGERS": {("MarginException", "ManagementAction")},
+    "UPLIFTS": {("TradePromotion", "DemandForecast")},
     "USES": {("Forecast", "PlanningAssumption"), ("TradePromotion", "PromotionMechanic"), ("AllocationRule", "CostDriver"), ("DepreciationEntry", "DepreciationMethod"), ("Analysis", "ActualResult"), ("Dashboard", "Dataset"), ("SemanticModel", "Dataset")},
     "VALIDATES": {("DataQualityRule", "DataElement")},
     "VALID_DURING": {("TradePromotion", "FiscalPeriod")},
@@ -1781,7 +1854,7 @@ ALLOWED_PAIRS: dict[str, set[tuple[str, str]]] = {
 class Edge(BaseModel):
     """One relationship instance; properties outside the relationship's declaration must be None."""
     model_config = ConfigDict(extra="forbid")
-    relationship: Literal['ACTS_ON', 'ADDRESSES', 'AFFECTS', 'AGGREGATES', 'ALLOCATES', 'ANSWERS', 'APPLIES', 'APPLIES_TO', 'APPROVED_BY', 'APPROVED_FOR', 'ARISES_FROM', 'ASKS_FOR', 'ASSESSED_FOR', 'ASSIGNS_TO', 'ATTRIBUTED_TO', 'BASED_ON', 'BECOMES_INPUT_TO', 'BELONGS_TO', 'BELONGS_TO_BRAND', 'BELONGS_TO_CATEGORY', 'CALCULATED_FOR', 'CAUSED_BY', 'CLAIMED_AGAINST', 'CLASSIFIED_IN', 'CLOSES', 'COMPARED_AGAINST', 'COMPARES', 'COMPARES_AGAINST', 'COMPOSED_OF', 'CONSTRAINED_BY', 'CONSUMES', 'CONTAINS', 'CONTESTS', 'CONTROLS', 'COUNTS', 'COVERS', 'CREATED_FOR', 'CREATED_FROM', 'CREATES', 'DEFINED_BY', 'DENOMINATED_IN', 'DEPENDS_ON', 'DEPRECIATES', 'DERIVED_FROM', 'DRIVEN_BY', 'ENABLED_BY', 'EVALUATES', 'EXECUTED_IN', 'EXPLAINS', 'EXPLAINS_DIFFERENCE_BETWEEN', 'EXPOSED_TO', 'FILED_WITH', 'FULFILLED_THROUGH', 'FUNDS', 'GOVERNED_BY', 'GOVERNS', 'HAS', 'HELD_AT', 'HELD_BY', 'HELD_IN', 'IDENTIFIED_BY', 'IMPACTS', 'IMPAIRS', 'INCLUDES', 'INFLUENCES', 'INSTANCE_OF', 'INVOLVES', 'ISSUED_BY', 'ISSUED_TO', 'LOCATED_AT', 'LOCATED_IN', 'MAKES', 'MATCHED_TO', 'MATCHES', 'MEASURED_ACROSS', 'MEASURED_BY', 'MEASURED_FOR', 'MEASURES', 'MITIGATES', 'MODIFIES', 'OCCURRED_DURING', 'OPERATES_IN', 'ORIGINATES_IN', 'OWNED_BY', 'OWNS', 'PAID_FROM', 'PARENT_OF', 'PART_OF', 'PERFORMED_BY', 'PERFORMS', 'PLACED_BY', 'PLACED_WITH', 'PLANS', 'POSTS_TO', 'PRECEDES', 'PREDICTS', 'PREPARED_FOR', 'PRESENTS', 'PRODUCES', 'PURSUES', 'RAISED_BY', 'RAISED_ON', 'RECOMMENDS', 'RECORDED_FOR', 'REDUCED_BY', 'REDUCES', 'REFERENCES', 'REGISTERED_WITH', 'REMEDIATES', 'REMOVES', 'REPRESENTS', 'REQUIRES', 'SELECTS', 'SETTLES', 'SUBMITTED_BY', 'SUMMARIZES', 'SUPPORTED_BY', 'SUPPORTED_BY_EVIDENCE', 'SUPPORTS', 'TAKEN_AGAINST', 'TARGETS', 'TOUCHES', 'TRACES', 'TRACES_TO', 'TRIGGERED_BY', 'TRIGGERS', 'USES', 'VALIDATES', 'VALID_DURING', 'VALID_IN', 'VALUED_USING', 'VARIES_IN']
+    relationship: Literal['ACCOUNT_OF', 'ACTS_ON', 'ADDRESSES', 'AFFECTS', 'AGGREGATES', 'ALLOCATES', 'ANSWERS', 'APPLIES', 'APPLIES_TO', 'APPROVED_BY', 'APPROVED_FOR', 'ARISES_FROM', 'ASKS_FOR', 'ASSESSED_FOR', 'ASSIGNS_TO', 'ATTRIBUTED_TO', 'BASED_ON', 'BECOMES_INPUT_TO', 'BELONGS_TO', 'BELONGS_TO_BRAND', 'BELONGS_TO_CATEGORY', 'CALCULATED_FOR', 'CAUSED_BY', 'CLAIMED_AGAINST', 'CLASSIFIED_IN', 'CLOSES', 'COMPARED_AGAINST', 'COMPARES', 'COMPARES_AGAINST', 'COMPOSED_OF', 'CONSTRAINED_BY', 'CONSUMES', 'CONTAINS', 'CONTESTS', 'CONTROLS', 'COUNTS', 'COVERS', 'CREATED_FOR', 'CREATED_FROM', 'CREATES', 'DEFINED_BY', 'DENOMINATED_IN', 'DEPENDS_ON', 'DEPRECIATES', 'DERIVED_FROM', 'DRIVEN_BY', 'ENABLED_BY', 'EVALUATES', 'EXECUTED_IN', 'EXPLAINS', 'EXPLAINS_DIFFERENCE_BETWEEN', 'EXPOSED_TO', 'FILED_WITH', 'FORECASTS', 'FULFILLED_THROUGH', 'FUNDS', 'GOVERNED_BY', 'GOVERNS', 'HAS', 'HELD_AT', 'HELD_BY', 'HELD_IN', 'IDENTIFIED_BY', 'IMPACTS', 'IMPAIRS', 'INCLUDES', 'INCURRED_FOR', 'INFLUENCES', 'INSTANCE_OF', 'INVOLVES', 'ISSUED_BY', 'ISSUED_TO', 'LOCATED_AT', 'LOCATED_IN', 'MAKES', 'MATCHED_TO', 'MATCHES', 'MEASURED_ACROSS', 'MEASURED_BY', 'MEASURED_FOR', 'MEASURES', 'MITIGATES', 'MODIFIES', 'MOTIVATED_BY', 'OBSERVED_AT', 'OCCURRED_DURING', 'OCCURS_AT', 'OPERATES_IN', 'ORIGINATES_IN', 'OWNED_BY', 'OWNS', 'PAID_FROM', 'PARENT_OF', 'PART_OF', 'PERFORMED_BY', 'PERFORMS', 'PLACED_BY', 'PLACED_WITH', 'PLANS', 'POSTS_TO', 'PRECEDES', 'PREDICTS', 'PREPARED_FOR', 'PRESENTS', 'PRICED_AT', 'PRODUCES', 'PURSUES', 'RAISED_BY', 'RAISED_ON', 'RECOMMENDS', 'RECORDED_FOR', 'REDUCED_BY', 'REDUCES', 'REFERENCES', 'REGISTERED_WITH', 'REMEDIATES', 'REMOVES', 'REPRESENTS', 'REQUIRES', 'SELECTS', 'SERVES', 'SETTLES', 'STOCKS', 'SUBMITTED_BY', 'SUMMARIZES', 'SUPPORTED_BY', 'SUPPORTED_BY_EVIDENCE', 'SUPPORTS', 'TAKEN_AGAINST', 'TARGETS', 'TOUCHES', 'TRACES', 'TRACES_TO', 'TRIGGERED_BY', 'TRIGGERS', 'UPLIFTS', 'USES', 'VALIDATES', 'VALID_DURING', 'VALID_IN', 'VALUED_USING', 'VARIES_IN']
     from_type: str
     from_id: str
     to_type: str
@@ -1821,6 +1894,7 @@ class Edge(BaseModel):
 
 REL_PROPERTY_NAMES = ['aspect', 'dependency_basis', 'sequence', 'variation']
 EDGE_PROPERTIES: dict[str, set[str]] = {
+    "ACCOUNT_OF": set(),
     "ACTS_ON": set(),
     "ADDRESSES": set(),
     "AFFECTS": set(),
@@ -1873,6 +1947,7 @@ EDGE_PROPERTIES: dict[str, set[str]] = {
     "EXPLAINS_DIFFERENCE_BETWEEN": set(),
     "EXPOSED_TO": set(),
     "FILED_WITH": set(),
+    "FORECASTS": set(),
     "FULFILLED_THROUGH": set(),
     "FUNDS": set(),
     "GOVERNED_BY": set(),
@@ -1885,6 +1960,7 @@ EDGE_PROPERTIES: dict[str, set[str]] = {
     "IMPACTS": set(),
     "IMPAIRS": set(),
     "INCLUDES": set(),
+    "INCURRED_FOR": set(),
     "INFLUENCES": set(),
     "INSTANCE_OF": set(),
     "INVOLVES": set(),
@@ -1901,7 +1977,10 @@ EDGE_PROPERTIES: dict[str, set[str]] = {
     "MEASURES": set(),
     "MITIGATES": set(),
     "MODIFIES": set(),
+    "MOTIVATED_BY": set(),
+    "OBSERVED_AT": set(),
     "OCCURRED_DURING": set(),
+    "OCCURS_AT": set(),
     "OPERATES_IN": set(),
     "ORIGINATES_IN": set(),
     "OWNED_BY": set(),
@@ -1919,6 +1998,7 @@ EDGE_PROPERTIES: dict[str, set[str]] = {
     "PREDICTS": set(),
     "PREPARED_FOR": set(),
     "PRESENTS": set(),
+    "PRICED_AT": set(),
     "PRODUCES": set(),
     "PURSUES": set(),
     "RAISED_BY": set(),
@@ -1934,7 +2014,9 @@ EDGE_PROPERTIES: dict[str, set[str]] = {
     "REPRESENTS": set(),
     "REQUIRES": set(),
     "SELECTS": set(),
+    "SERVES": set(),
     "SETTLES": set(),
+    "STOCKS": set(),
     "SUBMITTED_BY": set(),
     "SUMMARIZES": set(),
     "SUPPORTED_BY": set(),
@@ -1947,14 +2029,16 @@ EDGE_PROPERTIES: dict[str, set[str]] = {
     "TRACES_TO": set(),
     "TRIGGERED_BY": set(),
     "TRIGGERS": set(),
+    "UPLIFTS": set(),
     "USES": set(),
     "VALIDATES": set(),
     "VALID_DURING": set(),
     "VALID_IN": set(),
     "VALUED_USING": set(),
-    "VARIES_IN": {'aspect', 'variation'},
+    "VARIES_IN": {'variation', 'aspect'},
 }
 EDGE_REQUIRED: dict[str, list[str]] = {
+    "ACCOUNT_OF": [],
     "ACTS_ON": [],
     "ADDRESSES": [],
     "AFFECTS": [],
@@ -2007,6 +2091,7 @@ EDGE_REQUIRED: dict[str, list[str]] = {
     "EXPLAINS_DIFFERENCE_BETWEEN": [],
     "EXPOSED_TO": [],
     "FILED_WITH": [],
+    "FORECASTS": [],
     "FULFILLED_THROUGH": [],
     "FUNDS": [],
     "GOVERNED_BY": [],
@@ -2019,6 +2104,7 @@ EDGE_REQUIRED: dict[str, list[str]] = {
     "IMPACTS": [],
     "IMPAIRS": [],
     "INCLUDES": [],
+    "INCURRED_FOR": [],
     "INFLUENCES": [],
     "INSTANCE_OF": [],
     "INVOLVES": [],
@@ -2035,7 +2121,10 @@ EDGE_REQUIRED: dict[str, list[str]] = {
     "MEASURES": [],
     "MITIGATES": [],
     "MODIFIES": [],
+    "MOTIVATED_BY": [],
+    "OBSERVED_AT": [],
     "OCCURRED_DURING": [],
+    "OCCURS_AT": [],
     "OPERATES_IN": [],
     "ORIGINATES_IN": [],
     "OWNED_BY": [],
@@ -2053,6 +2142,7 @@ EDGE_REQUIRED: dict[str, list[str]] = {
     "PREDICTS": [],
     "PREPARED_FOR": [],
     "PRESENTS": [],
+    "PRICED_AT": [],
     "PRODUCES": [],
     "PURSUES": [],
     "RAISED_BY": [],
@@ -2068,7 +2158,9 @@ EDGE_REQUIRED: dict[str, list[str]] = {
     "REPRESENTS": [],
     "REQUIRES": [],
     "SELECTS": [],
+    "SERVES": [],
     "SETTLES": [],
+    "STOCKS": [],
     "SUBMITTED_BY": [],
     "SUMMARIZES": [],
     "SUPPORTED_BY": [],
@@ -2081,6 +2173,7 @@ EDGE_REQUIRED: dict[str, list[str]] = {
     "TRACES_TO": [],
     "TRIGGERED_BY": [],
     "TRIGGERS": [],
+    "UPLIFTS": [],
     "USES": [],
     "VALIDATES": [],
     "VALID_DURING": [],

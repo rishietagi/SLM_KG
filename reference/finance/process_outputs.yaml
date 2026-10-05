@@ -1,0 +1,31 @@
+# ProcessOutput rows for the L3 endpoints in l3_endpoints.yaml (drafted; DECISIONS D41).
+class: ProcessOutput
+defaults:
+  source_system: curated_reference
+  lane: curated
+  extraction_confidence: 1.0
+  reviewed: false
+  drafted_beyond_source: true
+  source_reference: "docs/PROJECT_CONTEXT.md#6-layer-2-finance-ontology-overlay"
+  status: draft
+rows:
+  - {id: "ProcessOutput:po_financial_forecast", name: "Financial forecast by SKU and channel", output_type: record}
+  - {id: "ProcessOutput:po_secondary_sales_record", name: "Secondary sales record", output_type: record}
+  - {id: "ProcessOutput:po_credit_decision", name: "Order released or credit-blocked", output_type: decision}
+  - {id: "ProcessOutput:po_sales_invoice", name: "Sales invoice", output_type: record}
+  - {id: "ProcessOutput:po_receivable_cleared", name: "Receivable cleared", output_type: record}
+  - {id: "ProcessOutput:po_deduction_resolution", name: "Deduction resolved or disputed", output_type: decision}
+  - {id: "ProcessOutput:po_distributor_scorecard", name: "Distributor scorecard", output_type: record}
+  - {id: "ProcessOutput:po_trade_budget", name: "Approved trade budget by brand and channel", output_type: decision}
+  - {id: "ProcessOutput:po_approved_promotion", name: "Approved promotion with funded budget", output_type: decision}
+  - {id: "ProcessOutput:po_promotion_accrual", name: "Promotion accrual posted", output_type: record}
+  - {id: "ProcessOutput:po_trued_up_accruals", name: "Trued-up trade accruals", output_type: record}
+  - {id: "ProcessOutput:po_claim_decision", name: "Claim approved, partly approved or rejected", output_type: decision}
+  - {id: "ProcessOutput:po_claim_settlement", name: "Credit note or settlement issued", output_type: record}
+  - {id: "ProcessOutput:po_promotion_result", name: "Promotion result (incremental volume, revenue, margin)", output_type: record}
+  - {id: "ProcessOutput:po_price_condition", name: "Price condition record", output_type: record}
+  - {id: "ProcessOutput:po_profitability_report", name: "Profitability report", output_type: record}
+  - {id: "ProcessOutput:po_standard_cost", name: "Standard cost by SKU", output_type: record}
+  - {id: "ProcessOutput:po_variance_analysis", name: "Manufacturing variance analysis", output_type: record}
+  - {id: "ProcessOutput:po_inventory_provision", name: "Inventory provision", output_type: record}
+  - {id: "ProcessOutput:po_supplier_payment", name: "Supplier payment", output_type: record}

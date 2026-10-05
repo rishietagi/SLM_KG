@@ -44,9 +44,27 @@ def collect(store: GraphStore) -> dict:
         "unreviewed_nodes": sum(1 for n in nodes if not n["reviewed"]),
         "drafted_nodes": sum(1 for n in nodes if n["drafted"]),
         "drafted_edges": sum(1 for e in edges if e["drafted"]),
-        "rejected": sum(1 for p in (staging / "rejected").glob("*") if p.name != ".gitkeep"),
-        "unresolved": sum(1 for p in (staging / "unresolved").glob("*") if p.name != ".gitkeep"),
+        "rejected": _records(staging / "rejected"),
+        "rejected_by_reason": _rejection_reasons(staging / "rejected"),
+        "unresolved": _records(staging / "unresolved"),
+        "review": _records(staging / "review"),
+        "staged": _records(staging / "extracted"),
     }
+
+
+def _records(directory) -> int:
+    return sum(sum(1 for line in p.open(encoding="utf-8") if line.strip()) for p in directory.glob("*.jsonl"))
+
+
+def _rejection_reasons(directory) -> dict:
+    import json
+
+    out: Counter = Counter()
+    for p in directory.glob("*.jsonl"):
+        for line in p.open(encoding="utf-8"):
+            if line.strip():
+                out.update({r.split(":")[0] for r in json.loads(line)["reasons"]})
+    return dict(out)
 
 
 def render(m: dict) -> str:
@@ -62,8 +80,10 @@ def render(m: dict) -> str:
         f"orphans, extracted lane    : {m['orphans_by_lane'].get('extracted', 0)} / {extracted}   (target < 5%)",
         f"outer-layer nodes reaching a ValueChainActivity: {m['outer'][0]} / {m['outer'][1]}"
         + ("   (no outer-layer instances until Phase 2)" if m["outer"][1] == 0 else ""),
-        f"validation rejections      : {m['rejected']}",
+        f"validation rejections      : {m['rejected']} of {m['staged']} staged records"
+        + (f"  {m['rejected_by_reason']}" if m["rejected_by_reason"] else ""),
         f"unresolved items           : {m['unresolved']}",
+        f"resolution review queue    : {m['review']}",
         f"awaiting review            : {m['unreviewed_nodes']} nodes; drafted beyond source: "
         f"{m['drafted_nodes']} nodes, {m['drafted_edges']} edges",
         "",

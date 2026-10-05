@@ -1,0 +1,17 @@
+relationship: CREATES
+defaults:
+  source_system: curated_reference
+  lane: curated
+  extraction_confidence: 1.0
+  reviewed: false
+  drafted_beyond_source: true
+  source_reference: "docs/source/cpg_value_chain_design.md#layer-5-performance-and-risk"
+rows:
+  - {from: "ValueChainActivity:s09_capture_sell_out",        to: "ValueOutcome:sell_through"}
+  - {from: "ValueChainActivity:s09_execute_assortment",      to: "ValueOutcome:distribution_reach"}
+  - {from: "ValueChainActivity:s09_check_osa",               to: "ValueOutcome:shelf_availability"}
+  - {from: "ValueChainActivity:s08_plan_promotion",          to: "ValueOutcome:trade_effectiveness"}
+  - {from: "ValueChainActivity:s09_track_scheme_compliance", to: "ValueOutcome:claim_control"}
+  - {from: "ValueChainActivity:s06_consensus_forecast",      to: "ValueOutcome:forecast_quality"}
+  - {from: "ValueChainActivity:s08_set_pricing_terms",       to: "ValueOutcome:gross_margin"}
+  - {from: "ValueChainActivity:s07_deliver",                 to: "ValueOutcome:service_level"}

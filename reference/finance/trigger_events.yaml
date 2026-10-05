@@ -1,0 +1,30 @@
+# TriggerEvent rows for the L3 endpoints in l3_endpoints.yaml (drafted; DECISIONS D41).
+class: TriggerEvent
+defaults:
+  source_system: curated_reference
+  lane: curated
+  extraction_confidence: 1.0
+  reviewed: false
+  drafted_beyond_source: true
+  source_reference: "docs/PROJECT_CONTEXT.md#6-layer-2-finance-ontology-overlay"
+rows:
+  - {id: "TriggerEvent:te_consensus_demand_approved", name: "Consensus demand approved"}
+  - {id: "TriggerEvent:te_sell_out_received", name: "Distributor sell-out data received"}
+  - {id: "TriggerEvent:te_order_captured", name: "Customer order captured"}
+  - {id: "TriggerEvent:te_delivery_confirmed", name: "Delivery confirmed"}
+  - {id: "TriggerEvent:te_payment_received", name: "Customer payment received"}
+  - {id: "TriggerEvent:te_short_payment", name: "Short payment with deduction received"}
+  - {id: "TriggerEvent:te_month_end", name: "Month end"}
+  - {id: "TriggerEvent:te_annual_plan_approved", name: "Annual operating plan approved"}
+  - {id: "TriggerEvent:te_promotion_proposed", name: "Promotion proposal submitted"}
+  - {id: "TriggerEvent:te_promoted_sales_invoiced", name: "Promoted sales invoiced"}
+  - {id: "TriggerEvent:te_period_end", name: "Period end"}
+  - {id: "TriggerEvent:te_claim_received", name: "Scheme claim received from customer"}
+  - {id: "TriggerEvent:te_claim_approved", name: "Claim approved"}
+  - {id: "TriggerEvent:te_promotion_closed", name: "Promotion period closed"}
+  - {id: "TriggerEvent:te_price_change_approved", name: "Price change approved"}
+  - {id: "TriggerEvent:te_period_close_completed", name: "Period close completed"}
+  - {id: "TriggerEvent:te_cost_roll", name: "New SKU released or annual cost roll"}
+  - {id: "TriggerEvent:te_production_order_closed", name: "Production order closed"}
+  - {id: "TriggerEvent:te_ageing_review", name: "Inventory ageing review"}
+  - {id: "TriggerEvent:te_supplier_invoice_received", name: "Supplier invoice received"}

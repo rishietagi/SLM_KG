@@ -181,3 +181,93 @@ approved Phase-1 plan; the owner approved all proposed defaults on 2026-10-04.
   9. Overlaps to document or merge: Revenue/Margin vs ActualResult, Jurisdiction/Geography, Filing/TaxReturn, Exposure/FXExposure, FinancialMetric/MetricDefinition/KPI, Formula vs `KPI.formula`.
   10. Attributes duplicating edges (`owner`, TrialBalance `legal_entity`/`period`) and `effective_from`/`effective_to` vs `valid_from`/`valid_to`.
   11. SUPPORTED_BY means both "participant organisation" (Layer 1, per PROJECT_CONTEXT §5.2) and "evidence" (finance).
+
+## Phase 2 — Finance overlay and MVP extraction (2026-10-04)
+
+Owner decisions for Phase 2:
+- Full §13 scope.
+- Hybrid ingestion: tabular feeds go through deterministic mappers; narrative documents go through the LLM.
+- The LLM is Gemini. The key is read from `GEMINI_API_KEY` and never written to files; `.env` is gitignored.
+- The L3 catalogue is drafted by Claude ("make your own"); there is no xlsx.
+- The extracted lane enforces only the spec §4 core.
+
+**D37 — New module `ontology/mvp_commercial.yaml`** for the §9 commercial thread.
+- **Classes:**
+  - PackPricePoint (L3)
+  - DemandForecast (L2, consistent with finance Forecast)
+  - InventoryPosition (L5)
+  - AvailabilityObservation (L5)
+  - SellOutTransaction (L5)
+  - PurchaseEvent (L6)
+- **Pairs:** taken from §5.4 Stages 6–10 and the §9 priority list, e.g. SERVES, STOCKS, FORECASTS, UPLIFTS, OBSERVED_AT, OCCURS_AT, MOTIVATED_BY, INCURRED_FOR, plus additions to LOCATED_IN, BELONGS_TO, MEASURED_FOR, HELD_AT, REFERENCES, CONTAINS, HAS, ISSUED_TO and CONTESTS.
+- **No new classes for:** MicroMarket (it is `Geography` with `geography_level=micro_market`, since the spec's Geography definition includes micro-market) and CustomerOrder (it is `SalesOrder`, D19).
+- **Distributor loading** is measured on primary `InvoiceLine` quantities, so no order-line class is needed (D36 #7, for the MVP).
+
+**D38 — `Customer ACCOUNT_OF Distributor|Retailer`.** Resolves D18. Claims stay `SUBMITTED_BY Customer` (spec §8). The trade partner is reached through the account. Distributor, Retailer, Outlet, ConsumerSegment and NeedState were promoted from stubs and given attributes.
+
+**D39 — Follow-ups from the Phase-2 ontology review.**
+- InventoryPosition is channel stock (quantity only), as distinct from own-book InventoryBalance. Its pair is `HELD_AT Distributor`, where §5.4 says `HELD_AT Location`.
+- SellOutTransaction is third-party secondary sales, not Revenue. It is a weekly outlet×SKU aggregate; the spec name is kept.
+- PackPricePoint is described as distinct from `SKU.pack_size` and from ListPrice.
+- Forecast and DemandForecast cross-reference each other.
+- `InvoiceLine.unit` added. CQ6 compares uplift ratios within each side (primary vs baseline, sell-out vs baseline), so the units can differ between primary and secondary.
+- Pairs added: `CreditNote ISSUED_TO Customer` and `Dispute CONTESTS PromotionClaim`.
+- SERVES and ACCOUNT_OF can carry `valid_from`/`valid_to` from edge_base. The synthetic masters are static.
+
+**D40 — Extraction slices and the LLM schema.**
+- `ontology/slices.yaml` defines `trade_promotion`, `claims_settlement` and `order_to_cash`. Routing scores chunks by keywords; the highest score wins and ties go to claims.
+- Codegen emits `gen/json_schema/slices/<slice>.json` in the JSON-Schema subset that structured-output APIs accept: no `additionalProperties`, attributes as `[{key, value}]`, and a per-item `confidence`.
+- The pipeline coerces values to ontology types and adds provenance from the chunk (file/section). The result is the full spec §7 envelope (`gen/json_schema/extraction_output.json`).
+- Outlets, SERVES, account masters, sell-out, availability, inventory and forecasts come from the structured lane.
+- Sending synthetic documents to Gemini is approved. Real client documents are not.
+
+**D41 — Drafted finance overlay (curated, `reference/finance/`).**
+- 9 of the 16 FinanceDomains (spec names), 15 ProcessGroups and 20 L3ProcessEndpoints, each with one TriggerEvent and one ProcessOutput.
+- 28 `ENABLED_BY` edges from activities in Stages 4–9.
+- Everything except the domain names is `drafted_beyond_source`.
+- Endpoints realising the five processes PROJECT_CONTEXT §6 names (trade promotion accrual, claim settlement, product costing, inventory provisioning, profitability) carry a review note.
+- The other 7 domains (strategy & performance, treasury, tax, capex & fixed assets, reporting & analytics, risk & controls, data governance) wait for L3 detail. Without process groups linked to activities they would be orphans.
+
+**D42 — KPIs reach the spine through value outcomes.** 11 KPIs, named from the design notes' Layer 5 list, with drafted definitions and formulas, attach to 8 ValueOutcomes via `MEASURED_BY`. Activities `CREATES` those outcomes.
+
+**D43 — Finance classes given attributes when the MVP needs them.**
+- Margin gets `value`, `unit` and `period`.
+- New pair `TradeSpend INCURRED_FOR SKU`, for SKU-level listing and visibility spend. This feeds the planted CQ9 pattern.
+
+**D44 — Validation of the extracted lane comes in two stages.**
+- **Per staged record:** declared class, relationship and pair; id, name and provenance; attribute types. Failures go to `staging/rejected/` with reasons.
+- **Missing spec-"required" attributes are warnings only**, as the owner chose.
+- **The spec §4 core constraints run on the resolved, merged entity** (`validate/staging_checks.check_core`, called from the resolver). One fact is often spread over several documents: the claim letter states the amount, and the credit note states the approval and settlement.
+- **Core attributes:** claim amount and status; promotion start and end dates; KPI definition, formula and unit; and so on.
+- **Core edges:** a claim needs SUBMITTED_BY Customer and CLAIMED_AGAINST TradePromotion; a promotion needs a target.
+- **Currency** is required whenever an amount is present.
+
+**D45 — Anchor rules.** `reference/rules/anchor_rules.yaml` links every instance of Brand, Category, SKU, Customer, Distributor, Retailer, Outlet, Channel, ConsumerSegment and NeedState to a curated activity, through ACTS_ON, INVOLVES or TOUCHES. Every other extracted class reaches the spine through its own edges, so the extracted orphan rate is 0 (target < 5%). Anchor edges are lane `extracted`, `source_system: anchor_rules`.
+
+**D46 — Resolution policy.**
+- **Order:** exact id → alias table plus master names → fuzzy match (stdlib difflib, ≥ 0.92) → review queue. Always within one class, so do-not-merge pairs can't merge.
+- **Masters:** the 18 master/transaction classes must match a structured-lane record. Otherwise the record goes to `staging/review/`, along with its edges.
+- **New facts:** documents may introduce claims, credit notes, evidence and disputes.
+- **Merging:** the structured lane wins attribute conflicts. Other names go into `aliases`.
+- **Status conflicts:** where sources of the same priority disagree, the furthest-progressed status wins (settled > approved/rejected > submitted).
+
+**D47 — The viewer keeps high-volume instance classes out of the initial graph.** Those are SellOutTransaction, AvailabilityObservation, PurchaseEvent, InvoiceLine, InventoryPosition, DemandForecast, SalesOrder, SalesInvoice and Margin. `/api/expand/{id}` adds up to 30 neighbours per relationship on demand. Extracted instances sit in a band below the value chain, and the finance overlay sits under its enabling activities.
+
+**D48 — The synthetic dataset** (`data/synthetic/generate.py`, seed 42) uses the fictional "Aurora Consumer Goods".
+- **Masters:** 2 brands (one spanning two categories), 3 categories, 30 SKUs, 3 micro-markets, 3 channels.
+- **Partners and outlets:** 10 distributors, 2 retailers, 200 outlets.
+- **Promotions:** 6, over FY26 Q1–Q2. They exist both as a TPM export (header, targets, SKUs) and as circulars (mechanic, budget, eligibility), resolved by promotion id.
+- **Generated outputs** (CSV, documents, `truth.json`) are gitignored and rebuilt by `make synth`.
+- **CQ6 definitions:**
+  - The window is the promotion period; the baseline is the equal-length period immediately before it.
+  - "Loaded" means primary InvoiceLine quantity up ≥ 30% for the targeted distributor accounts.
+  - "No sell-through" means sell-out at the outlets those distributors SERVE is up ≤ 10%. Both thresholds live in `tests/competency/expected.yaml`.
+  - Only promotions targeting distributor accounts are evaluated.
+  - **Result:** TP2026-003 (+78% primary, −5% sell-out) is the only promotion flagged.
+
+**D49 — LLM runs.**
+- Default model `gemini-flash-latest`, overridable with `KG_LLM_MODEL`.
+- Temperature 0, with schema-forced JSON (`response_json_schema`).
+- Each live call records a fixture in `tests/fixtures/llm/`. These are synthetic-document responses and safe to commit.
+- `make test` always uses replay.
+- CQ7 is skipped until fixtures exist.

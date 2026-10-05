@@ -1,6 +1,6 @@
 {
   "additionalProperties": false,
-  "description": "Route-to-market partner buying and redistributing to outlets. Separate from Customer; linked in Phase 2 (D18). (layer 4)",
+  "description": "Route-to-market partner buying and redistributing to outlets. Separate from Customer; its buying account is a Customer linked by ACCOUNT_OF (D18, D38). (layer 4)",
   "properties": {
     "id": {
       "title": "Id",
@@ -147,6 +147,16 @@
       ],
       "default": null,
       "title": "Last Updated"
+    },
+    "distributor_type": {
+      "enum": [
+        "distributor",
+        "sub_distributor",
+        "wholesaler",
+        "cnf_agent"
+      ],
+      "title": "Distributor Type",
+      "type": "string"
     }
   },
   "required": [
@@ -156,7 +166,8 @@
     "source_reference",
     "extraction_confidence",
     "lane",
-    "reviewed"
+    "reviewed",
+    "distributor_type"
   ],
   "title": "Distributor",
   "type": "object",

@@ -1,6 +1,6 @@
 {
   "additionalProperties": false,
-  "description": "Retail organization or chain selling to consumers. Separate from Customer (a buying account); linked in Phase 2 (D18). (layer 4)",
+  "description": "Retail organization or chain selling to consumers. Separate from Customer (a buying account); linked by ACCOUNT_OF (D18, D38). (layer 4)",
   "properties": {
     "id": {
       "title": "Id",
@@ -147,6 +147,16 @@
       ],
       "default": null,
       "title": "Last Updated"
+    },
+    "retailer_type": {
+      "enum": [
+        "modern_trade_chain",
+        "ecommerce_marketplace",
+        "quick_commerce",
+        "d2c"
+      ],
+      "title": "Retailer Type",
+      "type": "string"
     }
   },
   "required": [
@@ -156,7 +166,8 @@
     "source_reference",
     "extraction_confidence",
     "lane",
-    "reviewed"
+    "reviewed",
+    "retailer_type"
   ],
   "title": "Retailer",
   "type": "object",

@@ -273,6 +273,7 @@ classes:
       quantity:    {type: double, required: true}
       unit_price:  {type: decimal, required: true}
       line_amount: {type: decimal, required: true}
+      unit:        {type: string, description: "Quantity unit (e.g. case, unit); added for CQ6 (D39)"}
   CreditNote:
     layer: 2
     description: "Document reducing a customer invoice or receivable."
@@ -466,7 +467,7 @@ classes:
       status:  {type: string, required: true}
   Forecast:
     layer: 2
-    description: "Expected future financial result."
+    description: "Expected future financial result. Distinct from DemandForecast (volume, Stage 6)."
     source_key: forecastID
     spec_ref: docs/source/finance_extraction_spec.md
     attributes:
@@ -668,6 +669,10 @@ classes:
     layer: 5
     description: "Profit measure after defined costs or deductions."
     spec_ref: docs/source/finance_extraction_spec.md
+    attributes:
+      value:  {type: decimal, required: true, description: "Added in Phase 2 for the synthetic margin feed (D43)"}
+      unit:   {type: string, required: true}
+      period: {type: string, required: true}
   ProductProfitability:
     layer: 5
     description: "Profitability measured for a SKU, product family or brand."

@@ -1,0 +1,192 @@
+module: mvp_commercial
+description: >
+  Phase 2 MVP commercial thread (PROJECT_CONTEXT §9): consumer insight -> demand forecast -> SKU and
+  pack -> distributor -> outlet -> promotion -> availability -> sell-out -> margin -> consumer response.
+  Classes and pairs drawn from §5.4 Stages 6-10 and the §9 priority list. MicroMarket is Geography with
+  geography_level=micro_market; CustomerOrder is SalesOrder (D19); distributor loading is measured on
+  primary InvoiceLine quantities (D37).
+
+classes:
+  PackPricePoint:
+    layer: 3
+    description: >
+      A pack size offered at a target consumer price point (price-pack architecture element, Stage 2).
+      Shared by several SKUs; distinct from SKU.pack_size (one SKU's attribute) and from finance ListPrice
+      (the company's selling price to customers).
+    spec_ref: docs/PROJECT_CONTEXT.md#54-the-11-stages
+    attributes:
+      pack_size:   {type: string, required: true}
+      price_point: {type: decimal, required: true}
+      currency:    {type: string, required: true}
+
+  DemandForecast:
+    layer: 2
+    description: >
+      Expected sales volume for a SKU / geography / channel and period (Stage 6). Volume-based; distinct
+      from finance Forecast, which is a financial amount. `version` is a label; ForecastVersion nodes are
+      not used for demand forecasts in the MVP.
+    spec_ref: docs/PROJECT_CONTEXT.md#54-the-11-stages
+    attributes:
+      period:            {type: string, required: true}
+      forecast_quantity: {type: double, required: true}
+      unit:              {type: string, required: true}
+      forecast_type:     {type: enum, required: true, values: [baseline, consensus, constrained]}
+      version:           {type: string}
+
+  InventoryPosition:
+    layer: 5
+    description: >
+      Channel stock: quantity of a SKU held by a distributor or at a location at a point in time (Stage 7).
+      Quantity only; distinct from finance InventoryBalance, the company's own-book quantity and value.
+      §5.4 says HELD_AT Location; the MVP pair is HELD_AT Distributor (D39).
+    spec_ref: docs/PROJECT_CONTEXT.md#54-the-11-stages
+    attributes:
+      as_of_date:     {type: date, required: true}
+      quantity:       {type: double, required: true}
+      unit:           {type: string, required: true}
+      days_of_cover:  {type: double}
+
+  AvailabilityObservation:
+    layer: 5
+    description: Outlet visit observation of whether a SKU is on shelf (Stage 9).
+    spec_ref: docs/PROJECT_CONTEXT.md#54-the-11-stages
+    attributes:
+      observation_date: {type: date, required: true}
+      on_shelf:         {type: bool, required: true}
+      facings:          {type: int64}
+
+  SellOutTransaction:
+    layer: 5
+    description: >
+      Secondary sell-out of a SKU at an outlet (Stage 9 'Capture sell-out signal'). Sales by a third party,
+      not recognised Revenue. The MVP records one row per outlet x SKU x week; the spec name is kept (D39).
+    spec_ref: docs/PROJECT_CONTEXT.md#54-the-11-stages
+    attributes:
+      week_start:  {type: date, required: true}
+      quantity:    {type: double, required: true}
+      unit:        {type: string, required: true}
+      sales_value: {type: decimal}
+      currency:    {type: string}
+
+  PurchaseEvent:
+    layer: 6
+    description: A consumer purchase occasion recorded by a household panel (Stage 10).
+    spec_ref: docs/PROJECT_CONTEXT.md#54-the-11-stages
+    attributes:
+      purchase_date: {type: date, required: true}
+      household_ref: {type: string, description: "Pseudonymous panel household id"}
+      quantity:      {type: double}
+      spend:         {type: decimal}
+      currency:      {type: string}
+
+relationships:
+  SERVES:
+    description: Route-to-market partner serves the outlet.
+    pairs:
+      - {from: Distributor, to: Outlet}
+
+  LOCATED_IN:
+    description: Subject is located in the geography.
+    pairs:
+      - {from: Outlet, to: Geography}
+
+  BELONGS_TO:
+    description: Subject is a member of the object grouping.
+    pairs:
+      - {from: Outlet, to: Channel}
+
+  OPERATES_IN:
+    description: Subject operates in the geography.
+    pairs:
+      - {from: Distributor, to: Geography}
+
+  ACCOUNT_OF:
+    description: The customer (buying/billing account) belongs to the trade partner (D38).
+    pairs:
+      - {from: Customer, to: Distributor}
+      - {from: Customer, to: Retailer}
+
+  STOCKS:
+    description: Outlet ranges the SKU.
+    pairs:
+      - {from: Outlet, to: SKU}
+
+  PRICED_AT:
+    description: SKU is offered at the pack-price point.
+    pairs:
+      - {from: SKU, to: PackPricePoint}
+
+  FORECASTS:
+    description: Demand forecast covers the SKU, geography or channel.
+    pairs:
+      - {from: DemandForecast, to: SKU}
+      - {from: DemandForecast, to: Geography}
+      - {from: DemandForecast, to: Channel}
+
+  UPLIFTS:
+    description: Promotion adds uplift to the demand forecast.
+    pairs:
+      - {from: TradePromotion, to: DemandForecast}
+
+  MEASURED_FOR:
+    description: Measure is taken for the object.
+    pairs:
+      - {from: InventoryPosition, to: SKU}
+      - {from: Margin, to: SKU}
+
+  HELD_AT:
+    description: Inventory is held at the location or partner.
+    pairs:
+      - {from: InventoryPosition, to: Distributor}
+
+  OBSERVED_AT:
+    description: Observation was made at the outlet.
+    pairs:
+      - {from: AvailabilityObservation, to: Outlet}
+
+  MEASURES:
+    description: Subject measures the object.
+    pairs:
+      - {from: AvailabilityObservation, to: SKU}
+
+  OCCURS_AT:
+    description: Transaction or event occurs at the outlet.
+    pairs:
+      - {from: SellOutTransaction, to: Outlet}
+      - {from: PurchaseEvent, to: Outlet}
+
+  REFERENCES:
+    description: Subject refers to the object.
+    pairs:
+      - {from: SellOutTransaction, to: SKU}
+
+  CONTAINS:
+    description: Structural containment, parent to child.
+    pairs:
+      - {from: PurchaseEvent, to: SKU}
+
+  MOTIVATED_BY:
+    description: Purchase is motivated by the need state.
+    pairs:
+      - {from: PurchaseEvent, to: NeedState}
+
+  HAS:
+    description: Subject has the object.
+    pairs:
+      - {from: ConsumerSegment, to: NeedState}
+
+  INCURRED_FOR:
+    description: Trade spend is incurred for the promotion.
+    pairs:
+      - {from: TradeSpend, to: TradePromotion}
+      - {from: TradeSpend, to: SKU, note: "SKU-level listing/visibility spend (D43)"}
+
+  ISSUED_TO:
+    description: Document is issued to the party.
+    pairs:
+      - {from: CreditNote, to: Customer}
+
+  CONTESTS:
+    description: Dispute contests the object.
+    pairs:
+      - {from: Dispute, to: PromotionClaim, note: "rejected or short-approved claims (D39)"}

@@ -29,3 +29,21 @@ cq3:
 
 cq4:
   shared_aspects: [process type, hygiene and safety regime, shelf life and release, batching, in-process checks, labelling, release basis]
+
+cq5:
+  stage: 9
+  endpoints:
+    - Accrue trade promotion liability
+    - Evaluate post-event promotion ROI
+    - Measure distributor and channel performance
+    - Record secondary sales and sell-out
+    - Settle approved claims
+    - True up trade accruals at period end
+    - Validate trade scheme claims
+
+cq6:
+  min_primary_uplift: 0.30   # "loaded": primary (sell-in) volume up at least 30% vs the equal-length pre-period
+  max_sell_out_uplift: 0.10  # "no sell-through": outlet sell-out up at most 10%
+
+cq7:
+  promotion: TP2026-005

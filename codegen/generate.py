@@ -216,6 +216,58 @@ def gen_extraction_schema(onto: Ontology) -> dict:
     }
 
 
+def gen_slice_schema(onto: Ontology, name: str) -> dict:
+    """LLM-facing schema for one slice (DECISIONS D40).
+
+    Kept to the JSON-Schema subset structured-output APIs accept: no additionalProperties, no
+    free-form objects. Attributes are [{key, value}] pairs, coerced to ontology types after
+    extraction. Provenance is added by the pipeline from the chunk, not produced by the model.
+    """
+    sl = onto.slices.slices[name]
+    kv = {"type": "array", "items": {"type": "object", "required": ["key", "value"],
+                                     "properties": {"key": {"type": "string"}, "value": {"type": "string"}}}}
+    conf = {"type": "number", "minimum": 0, "maximum": 1}
+    return {
+        "type": "object",
+        "required": ["entities", "relationships", "unresolved_items"],
+        "properties": {
+            "entities": {"type": "array", "items": {
+                "type": "object",
+                "required": ["entity_type", "entity_id", "name", "source_label", "attributes", "confidence"],
+                "properties": {
+                    "entity_type": {"type": "string", "enum": sl.classes},
+                    "entity_id": {"type": "string"},
+                    "name": {"type": "string"},
+                    "source_label": {"type": "string"},
+                    "attributes": kv,
+                    "confidence": conf,
+                },
+            }},
+            "relationships": {"type": "array", "items": {
+                "type": "object",
+                "required": ["subject_type", "subject_id", "relationship", "object_type", "object_id", "confidence"],
+                "properties": {
+                    "subject_type": {"type": "string", "enum": sl.classes},
+                    "subject_id": {"type": "string"},
+                    "relationship": {"type": "string", "enum": sl.relationships},
+                    "object_type": {"type": "string", "enum": sl.classes},
+                    "object_id": {"type": "string"},
+                    "confidence": conf,
+                },
+            }},
+            "unresolved_items": {"type": "array", "items": {
+                "type": "object",
+                "required": ["source_text", "reason"],
+                "properties": {
+                    "source_text": {"type": "string"},
+                    "reason": {"type": "string"},
+                    "candidate_entity_types": {"type": "array", "items": {"type": "string"}},
+                },
+            }},
+        },
+    }
+
+
 def gen_index(onto: Ontology) -> dict:
     return {
         "_comment": BANNER,
@@ -261,6 +313,10 @@ def run() -> Ontology:
         schema["$comment"] = BANNER
         _dump(GEN / "json_schema" / f"{cls}.json", schema)
     _dump(GEN / "json_schema" / "extraction_output.json", gen_extraction_schema(onto))
+    if onto.slices:
+        (GEN / "json_schema" / "slices").mkdir()
+        for name in onto.slices.slices:
+            _dump(GEN / "json_schema" / "slices" / f"{name}.json", gen_slice_schema(onto, name))
     _dump(GEN / "ontology_index.json", gen_index(onto))
     (GEN / ".ontology_hash").write_text(onto.hash, encoding="utf-8")
     print(f"gen: {len(onto.classes)} node tables, {len(onto.relationships)} rel tables, "

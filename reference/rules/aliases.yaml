@@ -1,0 +1,19 @@
+# Canonical alias table for entity resolution (PROJECT_CONTEXT §10.2 step 5). Matching is per class and
+# case-insensitive. Master names from the structured lane are indexed automatically; list only extra
+# variants seen in documents here.
+aliases:
+  Channel:
+    "Channel:GT": [general trade, gt, traditional trade]
+    "Channel:MT": [modern trade, mt, organised retail]
+    "Channel:QC": [quick commerce, q-commerce, qc]
+  Geography:
+    "Geography:PUNE": [pune city, pune metro]
+  Currency:
+    "Currency:INR": [inr, rupees, indian rupee, rs]
+  PromotionMechanic:
+    "PromotionMechanic:rebate": [rebate]
+    "PromotionMechanic:price_discount": [price discount, price-off, price off]
+    "PromotionMechanic:free_goods": [free goods, buy 4 get 1]
+    "PromotionMechanic:volume_incentive": [volume incentive]
+    "PromotionMechanic:display_allowance": [display allowance]
+    "PromotionMechanic:bundle": [bundle]

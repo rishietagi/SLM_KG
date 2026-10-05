@@ -147,6 +147,30 @@
       ],
       "default": null,
       "title": "Last Updated"
+    },
+    "value": {
+      "title": "Value",
+      "type": "number"
+    },
+    "value_text": {
+      "anyOf": [
+        {
+          "type": "string"
+        },
+        {
+          "type": "null"
+        }
+      ],
+      "default": null,
+      "title": "Value Text"
+    },
+    "unit": {
+      "title": "Unit",
+      "type": "string"
+    },
+    "period": {
+      "title": "Period",
+      "type": "string"
     }
   },
   "required": [
@@ -156,7 +180,10 @@
     "source_reference",
     "extraction_confidence",
     "lane",
-    "reviewed"
+    "reviewed",
+    "value",
+    "unit",
+    "period"
   ],
   "title": "Margin",
   "type": "object",

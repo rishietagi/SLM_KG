@@ -1,0 +1,37 @@
+# KPI definitions (curated). Names come from the Layer 5 list in the design notes; definitions,
+# formulas and owners are drafted (D42).
+class: KPI
+defaults:
+  source_system: curated_reference
+  lane: curated
+  extraction_confidence: 1.0
+  reviewed: false
+  drafted_beyond_source: true
+  source_reference: "docs/source/cpg_value_chain_design.md#layer-5-performance-and-risk"
+  aggregation_method: sum-then-ratio
+  reporting_frequency: monthly
+  owner: Commercial Finance
+rows:
+  - {id: "KPI:sell_through_rate", name: Sell-through rate, unit: "%",
+     business_definition: "Share of units shipped to a distributor that sold out to outlets in the period.",
+     formula: "sell_out_units / primary_units"}
+  - {id: "KPI:numeric_distribution", name: Numeric distribution, unit: "%", owner: Sales Operations,
+     business_definition: "Share of outlets in the universe that stocked the SKU.", formula: "outlets_stocking / outlet_universe"}
+  - {id: "KPI:weighted_distribution", name: Weighted distribution, unit: "%", owner: Sales Operations,
+     business_definition: "Category sales share of outlets that stocked the SKU.", formula: "category_sales_of_stocking_outlets / total_category_sales"}
+  - {id: "KPI:on_shelf_availability", name: On-shelf availability, unit: "%", owner: Sales Operations,
+     business_definition: "Share of outlet visits where the SKU was on shelf.", formula: "visits_on_shelf / visits"}
+  - {id: "KPI:trade_spend_roi", name: Trade-spend ROI, unit: ratio,
+     business_definition: "Incremental gross margin generated per unit of trade spend.", formula: "incremental_margin / trade_spend"}
+  - {id: "KPI:incremental_volume", name: Incremental volume, unit: units,
+     business_definition: "Promoted-period volume above baseline.", formula: "actual_units - baseline_units"}
+  - {id: "KPI:claim_settlement_cycle_time", name: Claim settlement cycle time, unit: days, aggregation_method: average,
+     business_definition: "Days from claim receipt to settlement.", formula: "avg(settlement_date - claim_date)"}
+  - {id: "KPI:claim_approval_rate", name: Claim approval rate, unit: "%",
+     business_definition: "Approved claim value as a share of claimed value.", formula: "approved_amount / claim_amount"}
+  - {id: "KPI:forecast_accuracy", name: Forecast accuracy, unit: "%", owner: Demand Planning,
+     business_definition: "One minus weighted absolute percentage error of the consensus forecast.", formula: "1 - sum(|actual - forecast|) / sum(actual)"}
+  - {id: "KPI:gross_margin_pct", name: Gross margin %, unit: "%",
+     business_definition: "Net revenue less cost of goods, over net revenue.", formula: "(net_revenue - cogs) / net_revenue"}
+  - {id: "KPI:otif", name: On-time in-full, unit: "%", owner: Supply Chain,
+     business_definition: "Share of orders delivered on time and complete.", formula: "orders_otif / orders"}

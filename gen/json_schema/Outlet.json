@@ -1,6 +1,6 @@
 {
   "additionalProperties": false,
-  "description": "Individual point of sale. (layer 4)",
+  "description": "Individual point of sale (store, dark store or online storefront). (layer 4)",
   "properties": {
     "id": {
       "title": "Id",
@@ -147,6 +147,27 @@
       ],
       "default": null,
       "title": "Last Updated"
+    },
+    "outlet_type": {
+      "title": "Outlet Type",
+      "type": "string"
+    },
+    "outlet_class": {
+      "anyOf": [
+        {
+          "enum": [
+            "A",
+            "B",
+            "C"
+          ],
+          "type": "string"
+        },
+        {
+          "type": "null"
+        }
+      ],
+      "default": null,
+      "title": "Outlet Class"
     }
   },
   "required": [
@@ -156,7 +177,8 @@
     "source_reference",
     "extraction_confidence",
     "lane",
-    "reviewed"
+    "reviewed",
+    "outlet_type"
   ],
   "title": "Outlet",
   "type": "object",

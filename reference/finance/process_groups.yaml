@@ -1,0 +1,41 @@
+# Finance L2 process groups for the commercial thread. Drafted (no L3 catalogue available, owner chose
+# "make your own"); groups covering the five processes PROJECT_CONTEXT §6 names are noted.
+class: ProcessGroup
+defaults:
+  source_system: curated_reference
+  lane: curated
+  extraction_confidence: 1.0
+  reviewed: false
+  drafted_beyond_source: true
+  source_reference: "docs/PROJECT_CONTEXT.md#6-layer-2-finance-ontology-overlay"
+rows:
+  - {id: "ProcessGroup:pbf_volume_to_value", name: Volume-to-value forecasting, description: "Converting demand plans into financial forecasts.",
+     edges: {CONTAINS: ["L3ProcessEndpoint:l3_value_demand_plan"]}}
+  - {id: "ProcessGroup:r2r_revenue_recording", name: Secondary sales recording, description: "Recording secondary sales and sell-out for reporting.",
+     edges: {CONTAINS: ["L3ProcessEndpoint:l3_record_secondary_sales"]}}
+  - {id: "ProcessGroup:o2c_billing", name: Credit and billing, description: "Credit release and customer invoicing.",
+     edges: {CONTAINS: ["L3ProcessEndpoint:l3_check_credit", "L3ProcessEndpoint:l3_issue_invoice"]}}
+  - {id: "ProcessGroup:o2c_collections", name: Cash application and collections,
+     edges: {CONTAINS: ["L3ProcessEndpoint:l3_apply_cash"]}}
+  - {id: "ProcessGroup:o2c_deductions", name: Deductions and disputes,
+     edges: {CONTAINS: ["L3ProcessEndpoint:l3_resolve_deductions"]}}
+  - {id: "ProcessGroup:cf_distributor_performance", name: Distributor and channel performance,
+     edges: {CONTAINS: ["L3ProcessEndpoint:l3_measure_distributor_performance"]}}
+  - {id: "ProcessGroup:gtn_trade_planning", name: Trade promotion planning and budgeting,
+     edges: {CONTAINS: ["L3ProcessEndpoint:l3_set_trade_budget", "L3ProcessEndpoint:l3_approve_promotion"]}}
+  - {id: "ProcessGroup:gtn_accrual", name: Trade promotion accrual, review_note: "Process named in PROJECT_CONTEXT §6.",
+     edges: {CONTAINS: ["L3ProcessEndpoint:l3_accrue_trade_promotion", "L3ProcessEndpoint:l3_close_trade_accruals"]}}
+  - {id: "ProcessGroup:gtn_claims", name: Claim validation and settlement, review_note: "Claim settlement is named in PROJECT_CONTEXT §6.",
+     edges: {CONTAINS: ["L3ProcessEndpoint:l3_validate_scheme_claims", "L3ProcessEndpoint:l3_settle_claims"]}}
+  - {id: "ProcessGroup:gtn_evaluation", name: Post-event promotion evaluation,
+     edges: {CONTAINS: ["L3ProcessEndpoint:l3_evaluate_promotion_roi"]}}
+  - {id: "ProcessGroup:pp_pricing", name: Price management,
+     edges: {CONTAINS: ["L3ProcessEndpoint:l3_maintain_price_conditions"]}}
+  - {id: "ProcessGroup:pp_profitability", name: Profitability analysis, review_note: "Profitability is named in PROJECT_CONTEXT §6.",
+     edges: {CONTAINS: ["L3ProcessEndpoint:l3_analyse_profitability"]}}
+  - {id: "ProcessGroup:pc_costing", name: Product costing, review_note: "Product costing is named in PROJECT_CONTEXT §6.",
+     edges: {CONTAINS: ["L3ProcessEndpoint:l3_calculate_standard_cost", "L3ProcessEndpoint:l3_analyse_manufacturing_variance"]}}
+  - {id: "ProcessGroup:ia_valuation", name: Inventory valuation and provisioning, review_note: "Inventory provisioning is named in PROJECT_CONTEXT §6.",
+     edges: {CONTAINS: ["L3ProcessEndpoint:l3_provision_inventory"]}}
+  - {id: "ProcessGroup:p2p_purchase_to_pay", name: Purchase to pay,
+     edges: {CONTAINS: ["L3ProcessEndpoint:l3_match_and_pay_supplier"]}}

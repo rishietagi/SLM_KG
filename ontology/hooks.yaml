@@ -27,27 +27,31 @@ classes:
     description: Storage and fulfilment location for finished goods.
   Distributor:
     layer: 4
-    stub: true
-    description: Route-to-market partner buying and redistributing to outlets. Separate from Customer; linked in Phase 2 (D18).
+    description: Route-to-market partner buying and redistributing to outlets. Separate from Customer; its buying account is a Customer linked by ACCOUNT_OF (D18, D38).
+    attributes:
+      distributor_type: {type: enum, required: true, values: [distributor, sub_distributor, wholesaler, cnf_agent]}
   Retailer:
     layer: 4
-    stub: true
-    description: Retail organization or chain selling to consumers. Separate from Customer (a buying account); linked in Phase 2 (D18).
+    description: Retail organization or chain selling to consumers. Separate from Customer (a buying account); linked by ACCOUNT_OF (D18, D38).
+    attributes:
+      retailer_type: {type: enum, required: true, values: [modern_trade_chain, ecommerce_marketplace, quick_commerce, d2c]}
   Outlet:
     layer: 4
-    stub: true
-    description: Individual point of sale.
+    description: Individual point of sale (store, dark store or online storefront).
+    attributes:
+      outlet_type:  {type: string, required: true, description: "e.g. kirana, chemist, supermarket, dark_store"}
+      outlet_class: {type: enum, values: [A, B, C], description: "Outlet classification (Stage 9 'Classify outlet')"}
   LogisticsProvider:
     layer: 4
     stub: true
     description: 3PL, transporter or C&F agent.
   ConsumerSegment:
     layer: 6
-    stub: true
     description: Group of consumers with shared characteristics or needs.
+    attributes:
+      segment_basis: {type: string, description: "e.g. life stage, income band, usage"}
   NeedState:
     layer: 6
-    stub: true
     description: Underlying consumer need or motivation.
   Touchpoint:
     layer: 6

@@ -1,0 +1,176 @@
+{
+  "type": "object",
+  "required": [
+    "entities",
+    "relationships",
+    "unresolved_items"
+  ],
+  "properties": {
+    "entities": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "required": [
+          "entity_type",
+          "entity_id",
+          "name",
+          "source_label",
+          "attributes",
+          "confidence"
+        ],
+        "properties": {
+          "entity_type": {
+            "type": "string",
+            "enum": [
+              "PromotionClaim",
+              "TradePromotion",
+              "Customer",
+              "Distributor",
+              "SKU",
+              "SalesInvoice",
+              "CreditNote",
+              "PromotionSettlement",
+              "Evidence",
+              "Currency",
+              "Deduction",
+              "Dispute"
+            ]
+          },
+          "entity_id": {
+            "type": "string"
+          },
+          "name": {
+            "type": "string"
+          },
+          "source_label": {
+            "type": "string"
+          },
+          "attributes": {
+            "type": "array",
+            "items": {
+              "type": "object",
+              "required": [
+                "key",
+                "value"
+              ],
+              "properties": {
+                "key": {
+                  "type": "string"
+                },
+                "value": {
+                  "type": "string"
+                }
+              }
+            }
+          },
+          "confidence": {
+            "type": "number",
+            "minimum": 0,
+            "maximum": 1
+          }
+        }
+      }
+    },
+    "relationships": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "required": [
+          "subject_type",
+          "subject_id",
+          "relationship",
+          "object_type",
+          "object_id",
+          "confidence"
+        ],
+        "properties": {
+          "subject_type": {
+            "type": "string",
+            "enum": [
+              "PromotionClaim",
+              "TradePromotion",
+              "Customer",
+              "Distributor",
+              "SKU",
+              "SalesInvoice",
+              "CreditNote",
+              "PromotionSettlement",
+              "Evidence",
+              "Currency",
+              "Deduction",
+              "Dispute"
+            ]
+          },
+          "subject_id": {
+            "type": "string"
+          },
+          "relationship": {
+            "type": "string",
+            "enum": [
+              "CLAIMED_AGAINST",
+              "SUBMITTED_BY",
+              "REFERENCES",
+              "SUPPORTED_BY",
+              "SETTLES",
+              "REDUCES",
+              "DENOMINATED_IN",
+              "TAKEN_AGAINST",
+              "CONTESTS",
+              "ACCOUNT_OF",
+              "ISSUED_TO"
+            ]
+          },
+          "object_type": {
+            "type": "string",
+            "enum": [
+              "PromotionClaim",
+              "TradePromotion",
+              "Customer",
+              "Distributor",
+              "SKU",
+              "SalesInvoice",
+              "CreditNote",
+              "PromotionSettlement",
+              "Evidence",
+              "Currency",
+              "Deduction",
+              "Dispute"
+            ]
+          },
+          "object_id": {
+            "type": "string"
+          },
+          "confidence": {
+            "type": "number",
+            "minimum": 0,
+            "maximum": 1
+          }
+        }
+      }
+    },
+    "unresolved_items": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "required": [
+          "source_text",
+          "reason"
+        ],
+        "properties": {
+          "source_text": {
+            "type": "string"
+          },
+          "reason": {
+            "type": "string"
+          },
+          "candidate_entity_types": {
+            "type": "array",
+            "items": {
+              "type": "string"
+            }
+          }
+        }
+      }
+    }
+  }
+}

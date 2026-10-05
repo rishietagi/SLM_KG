@@ -17,6 +17,19 @@ def main(argv: list[str]) -> int:
 
         run()
         return 0
+    if cmd == "stage":
+        from pipeline.tabular import run
+
+        run()
+        return 0
+    if cmd == "extract":
+        from extract.run import run
+
+        return run()
+    if cmd == "resolve":
+        from resolve.resolver import run
+
+        return run()
     if cmd == "validate":
         from validate.run import run
 

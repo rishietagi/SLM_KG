@@ -1,0 +1,15 @@
+# Anchor rules (DECISIONS D45): every extracted instance of these classes gets a hook edge from a curated
+# value-chain activity, so instance data has a path to the spine (CLAUDE.md rule 8). Other extracted
+# classes reach the spine through their own edges (e.g. SellOutTransaction -> Outlet <- activity).
+# Anchor edges are lane `extracted`, source_system `anchor_rules`, citing this file.
+rules:
+  - {class: Brand,           relationship: ACTS_ON,  from: "ValueChainActivity:s02_set_brand_role"}
+  - {class: Category,        relationship: ACTS_ON,  from: "ValueChainActivity:s02_define_category_strategy"}
+  - {class: SKU,             relationship: ACTS_ON,  from: "ValueChainActivity:s09_execute_assortment"}
+  - {class: Customer,        relationship: INVOLVES, from: "ValueChainActivity:s08_segment_customers"}
+  - {class: Distributor,     relationship: INVOLVES, from: "ValueChainActivity:s08_manage_distributor_performance"}
+  - {class: Retailer,        relationship: INVOLVES, from: "ValueChainActivity:s08_joint_business_plan"}
+  - {class: Outlet,          relationship: INVOLVES, from: "ValueChainActivity:s09_visit_outlet"}
+  - {class: Channel,         relationship: INVOLVES, from: "ValueChainActivity:s08_design_route_to_market"}
+  - {class: ConsumerSegment, relationship: TOUCHES,  from: "ValueChainActivity:s01_analyze_shopper_behaviour"}
+  - {class: NeedState,       relationship: TOUCHES,  from: "ValueChainActivity:s01_identify_need_states"}

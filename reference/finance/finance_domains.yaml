@@ -1,0 +1,40 @@
+# Finance domains used by the commercial thread. Names are from the finance spec's 16-domain list.
+# The other 6 domains (strategy & performance, treasury, tax, capex & fixed assets, reporting &
+# analytics, risk & controls, data governance) wait for L3 detail: without a process group linked
+# to an activity they would be orphans (DECISIONS D41).
+class: FinanceDomain
+defaults:
+  source_system: curated_reference
+  lane: curated
+  extraction_confidence: 1.0
+  reviewed: false
+  drafted_beyond_source: false
+  source_reference: "docs/source/finance_extraction_spec.md#role"
+rows:
+  - id: "FinanceDomain:fd02_planning_budgeting_forecasting"
+    name: Planning, budgeting and forecasting
+    edges: {CONTAINS: ["ProcessGroup:pbf_volume_to_value"]}
+  - id: "FinanceDomain:fd03_record_to_report"
+    name: Record-to-report
+    edges: {CONTAINS: ["ProcessGroup:r2r_revenue_recording"]}
+  - id: "FinanceDomain:fd04_order_to_cash"
+    name: Order-to-cash
+    edges: {CONTAINS: ["ProcessGroup:o2c_billing", "ProcessGroup:o2c_collections", "ProcessGroup:o2c_deductions"]}
+  - id: "FinanceDomain:fd05_commercial_finance"
+    name: Commercial finance
+    edges: {CONTAINS: ["ProcessGroup:cf_distributor_performance"]}
+  - id: "FinanceDomain:fd06_gross_to_net_trade_investment"
+    name: Gross-to-net and trade investment
+    edges: {CONTAINS: ["ProcessGroup:gtn_trade_planning", "ProcessGroup:gtn_accrual", "ProcessGroup:gtn_claims", "ProcessGroup:gtn_evaluation"]}
+  - id: "FinanceDomain:fd07_pricing_profitability"
+    name: Pricing and profitability
+    edges: {CONTAINS: ["ProcessGroup:pp_pricing", "ProcessGroup:pp_profitability"]}
+  - id: "FinanceDomain:fd08_product_costing"
+    name: Product costing
+    edges: {CONTAINS: ["ProcessGroup:pc_costing"]}
+  - id: "FinanceDomain:fd09_inventory_accounting"
+    name: Inventory accounting
+    edges: {CONTAINS: ["ProcessGroup:ia_valuation"]}
+  - id: "FinanceDomain:fd10_procure_to_pay"
+    name: Procure-to-pay
+    edges: {CONTAINS: ["ProcessGroup:p2p_purchase_to_pay"]}

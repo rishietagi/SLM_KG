@@ -146,18 +146,51 @@ const TYPES = {
   DecisionOption:     { label: 'Option',       c: '#fb7185', shape: 'ellipse',          size: 12, on: false },
   SubSector:          { label: 'Sub-sector',   c: '#8b5cf6', shape: 'octagon',          size: 30, on: true },
   SourceEvidence:     { label: 'Evidence',     c: '#64748b', shape: 'tag',              size: 16, on: false },
+  // Layer 2/5 curated finance overlay
+  FinanceDomain:      { label: 'Finance domain', c: '#0284c7', shape: 'round-rectangle', size: 30, on: true },
+  ProcessGroup:       { label: 'Process group', c: '#0ea5e9', shape: 'round-rectangle',  size: 24, on: true },
+  L3ProcessEndpoint:  { label: 'L3 process',   c: '#38bdf8', shape: 'hexagon',          size: 20, on: true },
+  TriggerEvent:       { label: 'Trigger',      c: '#7dd3fc', shape: 'triangle',         size: 14, on: false },
+  ProcessOutput:      { label: 'Process output', c: '#bae6fd', shape: 'ellipse',        size: 14, on: false },
+  ValueOutcome:       { label: 'Value outcome', c: '#fb7185', shape: 'ellipse',         size: 18, on: true },
+  KPI:                { label: 'KPI',          c: '#e11d48', shape: 'diamond',          size: 20, on: true },
+  // Extracted instances (shown in a band below the value chain)
+  TradePromotion:     { label: 'Promotion',    c: '#f97316', shape: 'star',             size: 26, on: true },
+  PromotionClaim:     { label: 'Claim',        c: '#ea580c', shape: 'round-rectangle',  size: 18, on: true },
+  CreditNote:         { label: 'Credit note',  c: '#c2410c', shape: 'tag',              size: 16, on: true },
+  PromotionSettlement:{ label: 'Settlement',   c: '#9a3412', shape: 'tag',              size: 16, on: true },
+  Distributor:        { label: 'Distributor',  c: '#f59e0b', shape: 'round-rectangle',  size: 20, on: true },
+  Retailer:           { label: 'Retailer',     c: '#fbbf24', shape: 'round-rectangle',  size: 20, on: true },
+  Customer:           { label: 'Customer',     c: '#d97706', shape: 'ellipse',          size: 18, on: true },
+  Outlet:             { label: 'Outlet',       c: '#fcd34d', shape: 'ellipse',          size: 10, on: false },
+  Brand:              { label: 'Brand',        c: '#047857', shape: 'star',             size: 24, on: true },
+  Category:           { label: 'Category',     c: '#10b981', shape: 'octagon',          size: 22, on: true },
+  SKU:                { label: 'SKU',          c: '#059669', shape: 'ellipse',          size: 14, on: true },
 };
+// Any other class: coloured by its layer, hidden until switched on.
+function ensureType(cls, layer) {
+  TYPES[cls] ||= { label: cls, c: LAYER[layer]?.c || '#94a3b8', shape: 'ellipse', size: 14, on: false };
+  return TYPES[cls];
+}
+function ensureRel(rel) { RELS[rel] ||= { c: '#94a3b8', on: false }; return RELS[rel]; }
 const RELS = {
   PRECEDES: { c: '#6366f1', on: true }, CONTAINS: { c: '#94a3b8', on: false }, DEPENDS_ON: { c: '#f97316', on: true },
   BECOMES_INPUT_TO: { c: '#10b981', on: false }, PRODUCES: { c: '#34d399', on: false }, CONSUMES: { c: '#14b8a6', on: false },
   TRIGGERED_BY: { c: '#f59e0b', on: false }, REQUIRES: { c: '#f43f5e', on: false }, SELECTS: { c: '#fb7185', on: false },
   VARIES_IN: { c: '#8b5cf6', on: false }, BASED_ON: { c: '#64748b', on: false }, SUPPORTED_BY_EVIDENCE: { c: '#64748b', on: false },
+  ENABLED_BY: { c: '#0ea5e9', on: true }, CREATES: { c: '#fb7185', on: false }, MEASURED_BY: { c: '#e11d48', on: false },
+  ACTS_ON: { c: '#a78bfa', on: false }, INVOLVES: { c: '#a78bfa', on: false }, TOUCHES: { c: '#a78bfa', on: false },
+  TARGETS: { c: '#f97316', on: true }, APPLIES_TO: { c: '#fb923c', on: true }, ACCOUNT_OF: { c: '#f59e0b', on: true },
+  CLAIMED_AGAINST: { c: '#ea580c', on: true }, SETTLES: { c: '#9a3412', on: true }, SUBMITTED_BY: { c: '#d97706', on: false },
 };
 const CQS = [
   { n: 1, title: 'Trade scheme creation', sub: 'Which stage, and its neighbours?' },
   { n: 2, title: 'Stage 3 → Stage 4', sub: 'Outputs that become inputs' },
   { n: 3, title: 'Consensus forecast', sub: 'Activities that depend on it' },
   { n: 4, title: 'Stage 5 by sub-sector', sub: 'Food & beverage vs home care' },
+  { n: 5, title: 'Finance enablers', sub: 'L3 processes behind outlet execution' },
+  { n: 6, title: 'Loaded, no sell-through', sub: 'Promotions that only filled distributors' },
+  { n: 7, title: 'TP2026-005 claim trail', sub: 'Claimed, approved, settled, invoices, SKUs' },
 ];
 
 const S = { graph: null, schema: null, cyG: null, cyS: null, scope: 'spine', layers: new Set([1,2,3,4,5,6]), report: null };
@@ -284,7 +317,15 @@ function stageOf(g) {
   pick('SELECTS', null, (e, s, t) => { col[t.id] = col[s.id]; });
   pick('SUPPORTED_BY_EVIDENCE', null, (e, s, t) => { if (s.cls === 'ValueChainStage') col[t.id] = s.stage_number; });
   pick('BASED_ON', null, (e, s, t) => { if (col[t.id] == null) col[t.id] = col[s.id]; });
-  g.nodes.forEach((n) => { if (col[n.id] == null) col[n.id] = 0; });
+  // finance overlay: endpoint under its first enabling activity, then its group and domain, trigger and output
+  pick('ENABLED_BY', null, (e, s, t) => { if (t && (col[t.id] == null || col[s.id] < col[t.id])) col[t.id] = col[s.id]; });
+  pick('CONTAINS', null, (e, s, t) => { if (s?.cls === 'ProcessGroup' && col[s.id] == null) col[s.id] = col[t.id]; });
+  pick('CONTAINS', null, (e, s, t) => { if (s?.cls === 'FinanceDomain' && col[s.id] == null) col[s.id] = col[t.id]; });
+  pick('TRIGGERED_BY', null, (e, s, t) => { if (s?.cls === 'L3ProcessEndpoint') col[t.id] = col[s.id]; });
+  pick('PRODUCES', null, (e, s, t) => { if (s?.cls === 'L3ProcessEndpoint') col[t.id] = col[s.id]; });
+  pick('CREATES', null, (e, s, t) => { if (col[t.id] == null) col[t.id] = col[s.id]; });
+  pick('MEASURED_BY', null, (e, s, t) => { if (col[t.id] == null) col[t.id] = col[s.id]; });
+  g.nodes.forEach((n) => { if (n.lane === 'extracted') col[n.id] = -1; else if (col[n.id] == null) col[n.id] = 0; });
   return { col, parent };
 }
 
@@ -293,10 +334,12 @@ function initGraph(g) {
   const els = [];
   g.nodes.forEach((n) => {
     const label = n.cls === 'ValueChainStage' ? `${n.stage_number} · ${n.name}` : n.name;
-    els.push({ group: 'nodes', data: { id: n.id, label, cls: n.cls, col: col[n.id], seq: n.sequence ?? 0, drafted: !!n.drafted, parent: parent[n.id] } });
+    ensureType(n.cls, n.layer);
+    els.push({ group: 'nodes', data: { id: n.id, label, cls: n.cls, col: col[n.id], seq: n.sequence ?? 0, drafted: !!n.drafted, parent: parent[n.id], lane: n.lane } });
   });
   g.edges.forEach((e) => {
     if (e.rel === 'CONTAINS' && parent[e.target] === e.source) return; // shown as compound nesting
+    ensureRel(e.rel);
     els.push({ group: 'edges', data: { id: e.id, source: e.source, target: e.target, rel: e.rel, drafted: !!e.drafted } });
   });
   S.cyG = cytoscape({ container: $('cyGraph'), elements: els, style: graphStyle(), wheelSensitivity: 0.25, minZoom: 0.08, maxZoom: 3 });
@@ -307,7 +350,14 @@ function initGraph(g) {
   Object.entries(TYPES).forEach(([cls, t]) => { if (!counts[cls]) return; $('typeChips').appendChild(chip(t.label, t.c, t.on, (on) => { t.on = on; applyFilters(true); }, counts[cls])); });
   const rc = {}; g.edges.forEach((e) => (rc[e.rel] = (rc[e.rel] || 0) + 1));
   Object.entries(RELS).forEach(([rel, r]) => { if (!rc[rel]) return; $('relChips').appendChild(chip(rel, r.c, r.on, (on) => { r.on = on; applyFilters(false); }, rc[rel])); });
-  $('gLegend').innerHTML = Object.entries(TYPES).filter(([c]) => counts[c]).map(([c, t]) => `<span class="inline-flex items-center gap-1 rounded-full bg-white/85 px-2 py-0.5 shadow-sm dark:bg-slate-900/85"><span class="h-2 w-2 rounded-full" style="background:${t.c}"></span>${t.label}</span>`).join('');
+  const hidden = Object.entries(g.hidden_counts || {});
+  if (hidden.length) {
+    const note = document.createElement('p');
+    note.className = 'mt-3 text-xs leading-relaxed text-slate-400';
+    note.innerHTML = 'Not loaded up front: ' + hidden.map(([c, n]) => `${esc(c)} <b>${n.toLocaleString()}</b>`).join(', ') + '. Use <i>Expand neighbours</i> on a node to pull them in.';
+    $('relChips').after(note);
+  }
+  $('gLegend').innerHTML = Object.entries(TYPES).filter(([c]) => counts[c] && TYPES[c].on).map(([c, t]) => `<span class="inline-flex items-center gap-1 rounded-full bg-white/85 px-2 py-0.5 shadow-sm dark:bg-slate-900/85"><span class="h-2 w-2 rounded-full" style="background:${t.c}"></span>${t.label}</span>`).join('');
 
   // CQ cards
   CQS.forEach((q) => {
@@ -340,12 +390,24 @@ function applyFilters(relayout, animate = true) {
 // Activities start at the same y in every stage; events/inputs stack above, outputs/decisions below.
 function columnPositions() {
   const cy = S.cyG, W = 290, ROW_H = 1500, ACT_H = 44, pos = {};
-  const ABOVE = ['BusinessEvent', 'Input'], BELOW = ['Output', 'Decision', 'DecisionOption', 'SourceEvidence'];
+  const ABOVE = ['BusinessEvent', 'Input'];
+  const BELOW = ['Output', 'Decision', 'DecisionOption', 'SourceEvidence', 'L3ProcessEndpoint', 'ProcessGroup', 'FinanceDomain',
+                 'TriggerEvent', 'ProcessOutput', 'ValueOutcome', 'KPI'];
   const cols = {};
+  const byLabel = (a, b) => String(a.data('label')).localeCompare(String(b.data('label')));
   cy.nodes().filter((n) => !n.hasClass('hidden') || n.hasClass('focus')).forEach((n) => {
-    if (n.data('cls') !== 'ValueChainStage') (cols[n.data('col')] ||= []).push(n);
+    if (n.data('cls') !== 'ValueChainStage' && n.data('col') !== -2) (cols[n.data('col')] ||= []).push(n);
   });
-  const byLabel = (a, b) => a.data('label').localeCompare(b.data('label'));
+  // extracted instances: one row band per class under the value chain
+  let yBand = 2 * ROW_H + 250;
+  const band = cols['-1'] || [];
+  delete cols['-1'];
+  const order = Object.keys(TYPES);
+  [...new Set(band.map((n) => n.data('cls')))].sort((a, b) => order.indexOf(a) - order.indexOf(b)).forEach((cls) => {
+    const list = band.filter((n) => n.data('cls') === cls).sort(byLabel);
+    list.forEach((n, i) => { pos[n.id()] = { x: (i % 18) * 105, y: yBand + Math.floor(i / 18) * 70 }; });
+    yBand += Math.ceil(list.length / 18) * 70 + 90;
+  });
   Object.entries(cols).forEach(([c, nodes]) => {
     c = +c;
     const row = c <= 6 ? 0 : 1, x0 = (row ? c - 6 : c) * W, y0 = row * ROW_H;
@@ -419,10 +481,11 @@ async function renderNodePanel(id) {
       <div class="mt-4 divide-y divide-slate-100 dark:divide-slate-800">${props.map(([k, v]) => kv(k, fmt(v))).join('')}</div>
       <h3 class="mb-1 mt-5 text-[11px] font-semibold uppercase tracking-wider text-slate-400">Provenance</h3>
       <div class="divide-y divide-slate-100 dark:divide-slate-800">${kv('source', sourceLink(pr.source_reference))}${kv('system', esc(pr.source_system))}${kv('confidence', esc(pr.extraction_confidence))}</div>
-      <h3 class="mb-2 mt-5 text-[11px] font-semibold uppercase tracking-wider text-slate-400">Relationships · ${d.neighbors.length}</h3>
+      <div class="mb-2 mt-5 flex items-center justify-between"><h3 class="text-[11px] font-semibold uppercase tracking-wider text-slate-400">Relationships</h3>
+        <button data-expand="${esc(d.id)}" class="rounded-md border border-slate-200 px-2 py-1 text-xs hover:bg-slate-100 dark:border-slate-700 dark:hover:bg-slate-800">Expand neighbours</button></div>
       <div class="space-y-3">${Object.entries(groups).map(([g, list]) => `
         <div><div class="mb-1 text-xs font-medium" style="color:${RELS[list[0].rel]?.c || '#94a3b8'}">${esc(g)} <span class="text-slate-400">${list.length}</span></div>
-          <div class="space-y-1">${list.map((nb) => `<button data-goto="${esc(nb.id)}" class="flex w-full items-start gap-2 rounded-lg px-2 py-1.5 text-left text-[13px] hover:bg-slate-100 dark:hover:bg-slate-800">
+          <div class="space-y-1">${list.map((nb) => !nb.id ? `<div class="px-2 py-1 text-xs text-slate-400">${esc(nb.name)}</div>` : `<button data-goto="${esc(nb.id)}" class="flex w-full items-start gap-2 rounded-lg px-2 py-1.5 text-left text-[13px] hover:bg-slate-100 dark:hover:bg-slate-800">
             <span class="mt-1.5 h-2 w-2 shrink-0 rounded-full" style="background:${TYPES[nb.cls]?.c || '#94a3b8'}"></span>
             <span class="min-w-0"><span class="block">${esc(nb.name)}</span>${Object.entries(nb.props).filter(([k]) => k !== 'drafted_beyond_source').map(([k, v]) => `<span class="block text-xs text-slate-400"><b class="font-medium">${esc(k)}:</b> ${esc(v)}</span>`).join('')}
             ${nb.props.drafted_beyond_source ? '<span class="text-[11px] text-amber-500">drafted</span>' : ''}</span></button>`).join('')}</div></div>`).join('')}</div>
@@ -431,6 +494,8 @@ async function renderNodePanel(id) {
 }
 
 document.addEventListener('click', (ev) => {
+  const x = ev.target.closest('[data-expand]');
+  if (x) { ev.preventDefault(); expandNode(x.dataset.expand); return; }
   const a = ev.target.closest('[data-goto]');
   if (!a) return;
   ev.preventDefault();
@@ -439,6 +504,36 @@ document.addEventListener('click', (ev) => {
   const n = S.cyG?.getElementById(id);
   if (n && n.length) { n.addClass('focus'); focusNode(id); }
 });
+
+async function expandNode(id) {
+  const cy = S.cyG, center = cy.getElementById(id);
+  try {
+    const r = await api('/api/expand/' + encodeURIComponent(id) + '?limit=30');
+    const fresh = r.nodes.filter((n) => !cy.getElementById(n.id).length);
+    const c = center.position();
+    const add = fresh.map((n, i) => {
+      ensureType(n.cls, n.layer);
+      const ang = (2 * Math.PI * i) / Math.max(1, fresh.length), rad = 140 + 6 * fresh.length;
+      return { group: 'nodes', data: { id: n.id, label: n.name, cls: n.cls, col: -2, seq: 0, lane: n.lane },
+               position: { x: c.x + rad * Math.cos(ang), y: c.y + rad * Math.sin(ang) } };
+    });
+    const have = new Set(cy.edges().map((e) => `${e.data('source')}|${e.data('rel')}|${e.data('target')}`));
+    r.edges.forEach((e) => {
+      if (have.has(`${e.source}|${e.rel}|${e.target}`)) return;
+      ensureRel(e.rel);
+      add.push({ group: 'edges', data: { id: e.id, source: e.source, target: e.target, rel: e.rel, drafted: !!e.drafted } });
+    });
+    const added = cy.add(add);
+    const hood = center.closedNeighborhood();
+    cy.elements().removeClass('faded');
+    added.addClass('focus');
+    hood.addClass('focus');
+    cy.elements().not(hood).not(hood.parents()).addClass('faded');
+    cy.animate({ fit: { eles: hood, padding: 60 } }, { duration: 350 });
+    const more = Object.entries(r.truncated);
+    if (more.length) showError(`Showing up to 30 per relationship; more exist: ${more.map(([k, n]) => `${k} (${n})`).join(', ')}`);
+  } catch (e) { showError(e.message); }
+}
 
 async function runCQ(n) {
   const p = $('gPanel');

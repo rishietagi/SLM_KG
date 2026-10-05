@@ -41,6 +41,7 @@
               "AssetClass",
               "AssetDisposal",
               "AuditRequest",
+              "AvailabilityObservation",
               "BOM",
               "Balance",
               "BankAccount",
@@ -103,6 +104,7 @@
               "Deduction",
               "DeferredTax",
               "Deficiency",
+              "DemandForecast",
               "DepreciationEntry",
               "DepreciationMethod",
               "Dimension",
@@ -143,6 +145,7 @@
               "InventoryBalance",
               "InventoryItem",
               "InventoryMovement",
+              "InventoryPosition",
               "InventoryProvision",
               "InventoryWriteOff",
               "Investment",
@@ -176,6 +179,7 @@
               "Outlet",
               "Output",
               "PVMAnalysis",
+              "PackPricePoint",
               "PackagingMaterial",
               "PaymentFile",
               "PaymentProposal",
@@ -202,6 +206,7 @@
               "PromotionResult",
               "PromotionSettlement",
               "Provision",
+              "PurchaseEvent",
               "PurchaseOrder",
               "Receivable",
               "Recommendation",
@@ -223,6 +228,7 @@
               "SalesInvoice",
               "SalesOrder",
               "Scenario",
+              "SellOutTransaction",
               "SemanticModel",
               "SourceEvidence",
               "SourceSystem",
@@ -340,6 +346,7 @@
               "AssetClass",
               "AssetDisposal",
               "AuditRequest",
+              "AvailabilityObservation",
               "BOM",
               "Balance",
               "BankAccount",
@@ -402,6 +409,7 @@
               "Deduction",
               "DeferredTax",
               "Deficiency",
+              "DemandForecast",
               "DepreciationEntry",
               "DepreciationMethod",
               "Dimension",
@@ -442,6 +450,7 @@
               "InventoryBalance",
               "InventoryItem",
               "InventoryMovement",
+              "InventoryPosition",
               "InventoryProvision",
               "InventoryWriteOff",
               "Investment",
@@ -475,6 +484,7 @@
               "Outlet",
               "Output",
               "PVMAnalysis",
+              "PackPricePoint",
               "PackagingMaterial",
               "PaymentFile",
               "PaymentProposal",
@@ -501,6 +511,7 @@
               "PromotionResult",
               "PromotionSettlement",
               "Provision",
+              "PurchaseEvent",
               "PurchaseOrder",
               "Receivable",
               "Recommendation",
@@ -522,6 +533,7 @@
               "SalesInvoice",
               "SalesOrder",
               "Scenario",
+              "SellOutTransaction",
               "SemanticModel",
               "SourceEvidence",
               "SourceSystem",
@@ -567,6 +579,7 @@
           },
           "relationship": {
             "enum": [
+              "ACCOUNT_OF",
               "ACTS_ON",
               "ADDRESSES",
               "AFFECTS",
@@ -619,6 +632,7 @@
               "EXPLAINS_DIFFERENCE_BETWEEN",
               "EXPOSED_TO",
               "FILED_WITH",
+              "FORECASTS",
               "FULFILLED_THROUGH",
               "FUNDS",
               "GOVERNED_BY",
@@ -631,6 +645,7 @@
               "IMPACTS",
               "IMPAIRS",
               "INCLUDES",
+              "INCURRED_FOR",
               "INFLUENCES",
               "INSTANCE_OF",
               "INVOLVES",
@@ -647,7 +662,10 @@
               "MEASURES",
               "MITIGATES",
               "MODIFIES",
+              "MOTIVATED_BY",
+              "OBSERVED_AT",
               "OCCURRED_DURING",
+              "OCCURS_AT",
               "OPERATES_IN",
               "ORIGINATES_IN",
               "OWNED_BY",
@@ -665,6 +683,7 @@
               "PREDICTS",
               "PREPARED_FOR",
               "PRESENTS",
+              "PRICED_AT",
               "PRODUCES",
               "PURSUES",
               "RAISED_BY",
@@ -680,7 +699,9 @@
               "REPRESENTS",
               "REQUIRES",
               "SELECTS",
+              "SERVES",
               "SETTLES",
+              "STOCKS",
               "SUBMITTED_BY",
               "SUMMARIZES",
               "SUPPORTED_BY",
@@ -693,6 +714,7 @@
               "TRACES_TO",
               "TRIGGERED_BY",
               "TRIGGERS",
+              "UPLIFTS",
               "USES",
               "VALIDATES",
               "VALID_DURING",
@@ -720,6 +742,7 @@
               "AssetClass",
               "AssetDisposal",
               "AuditRequest",
+              "AvailabilityObservation",
               "BOM",
               "Balance",
               "BankAccount",
@@ -782,6 +805,7 @@
               "Deduction",
               "DeferredTax",
               "Deficiency",
+              "DemandForecast",
               "DepreciationEntry",
               "DepreciationMethod",
               "Dimension",
@@ -822,6 +846,7 @@
               "InventoryBalance",
               "InventoryItem",
               "InventoryMovement",
+              "InventoryPosition",
               "InventoryProvision",
               "InventoryWriteOff",
               "Investment",
@@ -855,6 +880,7 @@
               "Outlet",
               "Output",
               "PVMAnalysis",
+              "PackPricePoint",
               "PackagingMaterial",
               "PaymentFile",
               "PaymentProposal",
@@ -881,6 +907,7 @@
               "PromotionResult",
               "PromotionSettlement",
               "Provision",
+              "PurchaseEvent",
               "PurchaseOrder",
               "Receivable",
               "Recommendation",
@@ -902,6 +929,7 @@
               "SalesInvoice",
               "SalesOrder",
               "Scenario",
+              "SellOutTransaction",
               "SemanticModel",
               "SourceEvidence",
               "SourceSystem",
@@ -1014,6 +1042,7 @@
                 "AssetClass",
                 "AssetDisposal",
                 "AuditRequest",
+                "AvailabilityObservation",
                 "BOM",
                 "Balance",
                 "BankAccount",
@@ -1076,6 +1105,7 @@
                 "Deduction",
                 "DeferredTax",
                 "Deficiency",
+                "DemandForecast",
                 "DepreciationEntry",
                 "DepreciationMethod",
                 "Dimension",
@@ -1116,6 +1146,7 @@
                 "InventoryBalance",
                 "InventoryItem",
                 "InventoryMovement",
+                "InventoryPosition",
                 "InventoryProvision",
                 "InventoryWriteOff",
                 "Investment",
@@ -1149,6 +1180,7 @@
                 "Outlet",
                 "Output",
                 "PVMAnalysis",
+                "PackPricePoint",
                 "PackagingMaterial",
                 "PaymentFile",
                 "PaymentProposal",
@@ -1175,6 +1207,7 @@
                 "PromotionResult",
                 "PromotionSettlement",
                 "Provision",
+                "PurchaseEvent",
                 "PurchaseOrder",
                 "Receivable",
                 "Recommendation",
@@ -1196,6 +1229,7 @@
                 "SalesInvoice",
                 "SalesOrder",
                 "Scenario",
+                "SellOutTransaction",
                 "SemanticModel",
                 "SourceEvidence",
                 "SourceSystem",
@@ -1241,6 +1275,7 @@
             "type": "array",
             "items": {
               "enum": [
+                "ACCOUNT_OF",
                 "ACTS_ON",
                 "ADDRESSES",
                 "AFFECTS",
@@ -1293,6 +1328,7 @@
                 "EXPLAINS_DIFFERENCE_BETWEEN",
                 "EXPOSED_TO",
                 "FILED_WITH",
+                "FORECASTS",
                 "FULFILLED_THROUGH",
                 "FUNDS",
                 "GOVERNED_BY",
@@ -1305,6 +1341,7 @@
                 "IMPACTS",
                 "IMPAIRS",
                 "INCLUDES",
+                "INCURRED_FOR",
                 "INFLUENCES",
                 "INSTANCE_OF",
                 "INVOLVES",
@@ -1321,7 +1358,10 @@
                 "MEASURES",
                 "MITIGATES",
                 "MODIFIES",
+                "MOTIVATED_BY",
+                "OBSERVED_AT",
                 "OCCURRED_DURING",
+                "OCCURS_AT",
                 "OPERATES_IN",
                 "ORIGINATES_IN",
                 "OWNED_BY",
@@ -1339,6 +1379,7 @@
                 "PREDICTS",
                 "PREPARED_FOR",
                 "PRESENTS",
+                "PRICED_AT",
                 "PRODUCES",
                 "PURSUES",
                 "RAISED_BY",
@@ -1354,7 +1395,9 @@
                 "REPRESENTS",
                 "REQUIRES",
                 "SELECTS",
+                "SERVES",
                 "SETTLES",
+                "STOCKS",
                 "SUBMITTED_BY",
                 "SUMMARIZES",
                 "SUPPORTED_BY",
@@ -1367,6 +1410,7 @@
                 "TRACES_TO",
                 "TRIGGERED_BY",
                 "TRIGGERS",
+                "UPLIFTS",
                 "USES",
                 "VALIDATES",
                 "VALID_DURING",
@@ -1384,6 +1428,16 @@
     }
   },
   "x-allowed-pairs": {
+    "ACCOUNT_OF": [
+      [
+        "Customer",
+        "Distributor"
+      ],
+      [
+        "Customer",
+        "Retailer"
+      ]
+    ],
     "ACTS_ON": [
       [
         "ValueChainActivity",
@@ -1646,6 +1700,10 @@
       [
         "ProfitCentre",
         "BusinessUnit"
+      ],
+      [
+        "Outlet",
+        "Channel"
       ]
     ],
     "BELONGS_TO_BRAND": [
@@ -1922,12 +1980,20 @@
       [
         "BankStatement",
         "BankTransaction"
+      ],
+      [
+        "PurchaseEvent",
+        "SKU"
       ]
     ],
     "CONTESTS": [
       [
         "Dispute",
         "Deduction"
+      ],
+      [
+        "Dispute",
+        "PromotionClaim"
       ]
     ],
     "CONTROLS": [
@@ -2152,6 +2218,20 @@
         "Regulator"
       ]
     ],
+    "FORECASTS": [
+      [
+        "DemandForecast",
+        "SKU"
+      ],
+      [
+        "DemandForecast",
+        "Geography"
+      ],
+      [
+        "DemandForecast",
+        "Channel"
+      ]
+    ],
     "FULFILLED_THROUGH": [
       [
         "SalesOrder",
@@ -2216,12 +2296,20 @@
       [
         "FixedAsset",
         "UsefulLife"
+      ],
+      [
+        "ConsumerSegment",
+        "NeedState"
       ]
     ],
     "HELD_AT": [
       [
         "InventoryBalance",
         "Location"
+      ],
+      [
+        "InventoryPosition",
+        "Distributor"
       ]
     ],
     "HELD_BY": [
@@ -2262,6 +2350,16 @@
       [
         "PaymentProposal",
         "SupplierInvoice"
+      ]
+    ],
+    "INCURRED_FOR": [
+      [
+        "TradeSpend",
+        "TradePromotion"
+      ],
+      [
+        "TradeSpend",
+        "SKU"
       ]
     ],
     "INFLUENCES": [
@@ -2328,6 +2426,10 @@
       [
         "PurchaseOrder",
         "Supplier"
+      ],
+      [
+        "CreditNote",
+        "Customer"
       ]
     ],
     "LOCATED_AT": [
@@ -2339,6 +2441,10 @@
     "LOCATED_IN": [
       [
         "Location",
+        "Geography"
+      ],
+      [
+        "Outlet",
         "Geography"
       ]
     ],
@@ -2388,6 +2494,14 @@
       [
         "ChannelProfitability",
         "Channel"
+      ],
+      [
+        "InventoryPosition",
+        "SKU"
+      ],
+      [
+        "Margin",
+        "SKU"
       ]
     ],
     "MEASURES": [
@@ -2398,6 +2512,10 @@
       [
         "KPI",
         "BusinessObjective"
+      ],
+      [
+        "AvailabilityObservation",
+        "SKU"
       ]
     ],
     "MITIGATES": [
@@ -2416,6 +2534,18 @@
         "PlanningAssumption"
       ]
     ],
+    "MOTIVATED_BY": [
+      [
+        "PurchaseEvent",
+        "NeedState"
+      ]
+    ],
+    "OBSERVED_AT": [
+      [
+        "AvailabilityObservation",
+        "Outlet"
+      ]
+    ],
     "OCCURRED_DURING": [
       [
         "JournalLine",
@@ -2430,6 +2560,16 @@
         "FiscalPeriod"
       ]
     ],
+    "OCCURS_AT": [
+      [
+        "SellOutTransaction",
+        "Outlet"
+      ],
+      [
+        "PurchaseEvent",
+        "Outlet"
+      ]
+    ],
     "OPERATES_IN": [
       [
         "Customer",
@@ -2437,6 +2577,10 @@
       ],
       [
         "Supplier",
+        "Geography"
+      ],
+      [
+        "Distributor",
         "Geography"
       ]
     ],
@@ -2578,6 +2722,12 @@
       [
         "ManagementReport",
         "ActualResult"
+      ]
+    ],
+    "PRICED_AT": [
+      [
+        "SKU",
+        "PackPricePoint"
       ]
     ],
     "PRODUCES": [
@@ -2784,6 +2934,10 @@
       [
         "HedgeInstrument",
         "CurrencyPair"
+      ],
+      [
+        "SellOutTransaction",
+        "SKU"
       ]
     ],
     "REGISTERED_WITH": [
@@ -2830,6 +2984,12 @@
         "DecisionOption"
       ]
     ],
+    "SERVES": [
+      [
+        "Distributor",
+        "Outlet"
+      ]
+    ],
     "SETTLES": [
       [
         "CustomerReceipt",
@@ -2846,6 +3006,12 @@
       [
         "SupplierPayment",
         "SupplierInvoice"
+      ]
+    ],
+    "STOCKS": [
+      [
+        "Outlet",
+        "SKU"
       ]
     ],
     "SUBMITTED_BY": [
@@ -2974,6 +3140,12 @@
       [
         "MarginException",
         "ManagementAction"
+      ]
+    ],
+    "UPLIFTS": [
+      [
+        "TradePromotion",
+        "DemandForecast"
       ]
     ],
     "USES": [

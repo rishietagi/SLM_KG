@@ -147,6 +147,18 @@
       ],
       "default": null,
       "title": "Last Updated"
+    },
+    "segment_basis": {
+      "anyOf": [
+        {
+          "type": "string"
+        },
+        {
+          "type": "null"
+        }
+      ],
+      "default": null,
+      "title": "Segment Basis"
     }
   },
   "required": [

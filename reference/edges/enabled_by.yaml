@@ -1,0 +1,46 @@
+# Layer-2 hook: value-chain activities ENABLED_BY finance L3 endpoints (PROJECT_CONTEXT §5.3, §6).
+# §6 says trade promotion accrual, claim settlement, product costing, inventory provisioning and
+# profitability attach to several stages (5-9); the specific activity links are drafted (D41).
+relationship: ENABLED_BY
+defaults:
+  source_system: curated_reference
+  lane: curated
+  extraction_confidence: 1.0
+  reviewed: false
+  drafted_beyond_source: true
+  source_reference: "docs/PROJECT_CONTEXT.md#6-layer-2-finance-ontology-overlay"
+rows:
+  # Stage 5
+  - {from: "ValueChainActivity:s05_create_production_plan",       to: "L3ProcessEndpoint:l3_calculate_standard_cost"}
+  - {from: "ValueChainActivity:s05_record_yield_loss_downtime",   to: "L3ProcessEndpoint:l3_analyse_manufacturing_variance"}
+  - {from: "ValueChainActivity:s05_record_yield_loss_downtime",   to: "L3ProcessEndpoint:l3_calculate_standard_cost"}
+  # Stage 4
+  - {from: "ValueChainActivity:s04_place_purchase_order",         to: "L3ProcessEndpoint:l3_match_and_pay_supplier"}
+  - {from: "ValueChainActivity:s05_receive_release_materials",    to: "L3ProcessEndpoint:l3_match_and_pay_supplier"}
+  # Stage 6
+  - {from: "ValueChainActivity:s06_consensus_forecast",           to: "L3ProcessEndpoint:l3_value_demand_plan"}
+  - {from: "ValueChainActivity:s06_approve_replenishment_plan",   to: "L3ProcessEndpoint:l3_value_demand_plan"}
+  # Stage 7
+  - {from: "ValueChainActivity:s07_confirm_pod",                  to: "L3ProcessEndpoint:l3_issue_invoice"}
+  - {from: "ValueChainActivity:s07_monitor_freshness_expiry",     to: "L3ProcessEndpoint:l3_provision_inventory"}
+  - {from: "ValueChainActivity:s07_process_returns",              to: "L3ProcessEndpoint:l3_resolve_deductions"}
+  # Stage 8
+  - {from: "ValueChainActivity:s08_set_pricing_terms",            to: "L3ProcessEndpoint:l3_maintain_price_conditions"}
+  - {from: "ValueChainActivity:s08_set_pricing_terms",            to: "L3ProcessEndpoint:l3_analyse_profitability"}
+  - {from: "ValueChainActivity:s08_negotiate_customer_agreement", to: "L3ProcessEndpoint:l3_maintain_price_conditions"}
+  - {from: "ValueChainActivity:s08_plan_promotion",               to: "L3ProcessEndpoint:l3_set_trade_budget"}
+  - {from: "ValueChainActivity:s08_plan_promotion",               to: "L3ProcessEndpoint:l3_approve_promotion"}
+  - {from: "ValueChainActivity:s08_create_trade_scheme",          to: "L3ProcessEndpoint:l3_approve_promotion"}
+  - {from: "ValueChainActivity:s08_create_trade_scheme",          to: "L3ProcessEndpoint:l3_accrue_trade_promotion"}
+  - {from: "ValueChainActivity:s08_capture_order",                to: "L3ProcessEndpoint:l3_check_credit"}
+  - {from: "ValueChainActivity:s08_capture_order",                to: "L3ProcessEndpoint:l3_apply_cash"}
+  - {from: "ValueChainActivity:s08_manage_distributor_performance", to: "L3ProcessEndpoint:l3_measure_distributor_performance"}
+  - {from: "ValueChainActivity:s08_manage_distributor_performance", to: "L3ProcessEndpoint:l3_settle_claims"}
+  # Stage 9 — outlet execution (CQ5)
+  - {from: "ValueChainActivity:s09_activate_promotion",           to: "L3ProcessEndpoint:l3_accrue_trade_promotion"}
+  - {from: "ValueChainActivity:s09_activate_promotion",           to: "L3ProcessEndpoint:l3_evaluate_promotion_roi"}
+  - {from: "ValueChainActivity:s09_track_scheme_compliance",      to: "L3ProcessEndpoint:l3_validate_scheme_claims"}
+  - {from: "ValueChainActivity:s09_track_scheme_compliance",      to: "L3ProcessEndpoint:l3_settle_claims"}
+  - {from: "ValueChainActivity:s09_capture_sell_out",             to: "L3ProcessEndpoint:l3_record_secondary_sales"}
+  - {from: "ValueChainActivity:s09_capture_sell_out",             to: "L3ProcessEndpoint:l3_measure_distributor_performance"}
+  - {from: "ValueChainActivity:s09_capture_sell_out",             to: "L3ProcessEndpoint:l3_close_trade_accruals"}

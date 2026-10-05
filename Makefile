@@ -2,10 +2,22 @@
 PYTHON ?= C:/miniconda/envs/mmsa/python.exe
 CLI := $(PYTHON) -m pipeline.cli
 
-.PHONY: gen validate load test report viewer clean all
+.PHONY: gen validate load test report viewer clean all synth stage extract resolve
 
 gen:
 	$(CLI) gen
+
+synth:
+	$(PYTHON) data/synthetic/generate.py
+
+stage:
+	$(CLI) stage
+
+extract:
+	$(CLI) extract
+
+resolve:
+	$(CLI) resolve
 
 validate:
 	$(CLI) validate

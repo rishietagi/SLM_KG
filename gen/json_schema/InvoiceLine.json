@@ -183,6 +183,18 @@
       ],
       "default": null,
       "title": "Line Amount Text"
+    },
+    "unit": {
+      "anyOf": [
+        {
+          "type": "string"
+        },
+        {
+          "type": "null"
+        }
+      ],
+      "default": null,
+      "title": "Unit"
     }
   },
   "required": [

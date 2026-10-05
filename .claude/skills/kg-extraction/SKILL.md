@@ -41,9 +41,10 @@ Class mappings: Claim→PromotionClaim, Auditor→Organization(`organization_typ
 - Order: exact source id → canonical alias table → fuzzy match above threshold → human review queue.
 - Keep every alternative label in `aliases` and the original in `source_label`.
 - **Never auto-merge**: Customer/Consumer, Brand/ProductFamily, Category/SKU, Channel/Customer, CostCentre/ProfitCentre, Budget/Forecast, TradePromotion/Discount, PromotionClaim/Deduction, Risk/Issue, Control/L3ProcessEndpoint (`ontology/common.yaml: do_not_merge`).
-- A distributor that submits a claim is extracted as `Customer` (spec §8 example). `Distributor` is a separate Layer-4 class; the link between them is a Phase-2 decision.
+- A distributor that submits a claim is extracted as `Customer` (spec §8 example). `Distributor` is a separate Layer-4 class; the account links to it with `Customer ACCOUNT_OF Distributor` (DECISIONS D38), which comes from the structured master feed.
 
 ## Constraints to validate (spec §4, canonical names)
+Checked on the resolved entity, not per document (D44). Missing non-core "required" attributes are warnings.
 - L3ProcessEndpoint: exactly one ProcessGroup (CONTAINS), ≥1 TRIGGERED_BY TriggerEvent, ≥1 PRODUCES.
 - JournalEntry: ≥2 JournalLines, one ORIGINATES_IN SourceSystem, a LegalEntity and FiscalPeriod.
 - JournalLine: one POSTS_TO FinancialAccount, amount, debit_credit_indicator, one DENOMINATED_IN Currency, RECORDED_FOR LegalEntity, OCCURRED_DURING FiscalPeriod.
@@ -62,3 +63,8 @@ Edges: `(PromotionClaim:CLM8421)-[:SUBMITTED_BY]->(Customer:D107)`, `-[:CLAIMED_
 
 ## Data handling
 Default to `data/synthetic/`. Do not send real client documents to an external model API unless `docs/DECISIONS.md` records approval. Never commit real client data.
+
+## Pipeline commands (Phase 2)
+`make synth` (synthetic data) → `make stage` (tabular feeds) → `make extract` (documents; `KG_LLM=gemini` for live calls,
+default `replay`) → `make validate` → `make resolve` → `make load` → `make report`. Slices: `ontology/slices.yaml`;
+LLM schemas: `gen/json_schema/slices/`; prompts: `extract/prompts.py`.
