@@ -20,10 +20,10 @@ def _remove_db(path: Path) -> None:
             p.unlink()
 
 
-def build_database(db_path: Path = DB_PATH, parquet_dir: Path = PARQUET_DIR, include_extracted: bool = True) -> GraphStore:
-    """Fresh database with the full schema, the curated lane and (if resolved) the extracted lane."""
+def build_database(db_path: Path = DB_PATH, parquet_dir: Path = PARQUET_DIR) -> GraphStore:
+    """Fresh database with the full schema and all curated data. Returns an open store."""
     onto = load_ontology()
-    parquet = write_parquet(onto, parquet_dir, include_extracted)
+    parquet = write_parquet(onto, parquet_dir)
     _remove_db(db_path)
     store = get_store().connect(db_path)
     store.apply_ddl(DDL_PATH)

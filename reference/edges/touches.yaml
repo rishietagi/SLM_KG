@@ -1,0 +1,39 @@
+# Layer-6 hook: activity TOUCHES consumer concept (links drafted).
+relationship: TOUCHES
+defaults:
+  source_system: curated_reference
+  lane: curated
+  extraction_confidence: 1.0
+  reviewed: false
+  drafted_beyond_source: true
+  source_reference: "docs/PROJECT_CONTEXT.md#53-cross-layer-hook-relationships"
+rows:
+  - {from: "ValueChainActivity:s01_analyze_shopper_behaviour", to: "ConsumerConcept:consumer"}
+  - {from: "ValueChainActivity:s01_analyze_shopper_behaviour", to: "ConsumerConcept:household"}
+  - {from: "ValueChainActivity:s01_analyze_shopper_behaviour", to: "ConsumerConcept:consumer_segment"}
+  - {from: "ValueChainActivity:s01_create_opportunity_hypotheses", to: "ConsumerConcept:consumer_segment"}
+  - {from: "ValueChainActivity:s01_identify_need_states", to: "ConsumerConcept:need_state"}
+  - {from: "ValueChainActivity:s03_create_product_concept", to: "ConsumerConcept:need_state"}
+  - {from: "ValueChainActivity:s01_identify_need_states", to: "ConsumerConcept:consumption_occasion"}
+  - {from: "ValueChainActivity:s10_consume_use", to: "ConsumerConcept:consumption_occasion"}
+  - {from: "ValueChainActivity:s09_execute_assortment", to: "ConsumerConcept:shopper_mission"}
+  - {from: "ValueChainActivity:s10_evaluate_alternatives", to: "ConsumerConcept:shopper_mission"}
+  - {from: "ValueChainActivity:s10_evaluate_alternatives", to: "ConsumerConcept:preference"}
+  - {from: "ValueChainActivity:s02_define_price_pack_architecture", to: "ConsumerConcept:preference"}
+  - {from: "ValueChainActivity:s10_discover_product", to: "ConsumerConcept:journey"}
+  - {from: "ValueChainActivity:s10_discover_product", to: "ConsumerConcept:touchpoint"}
+  - {from: "ValueChainActivity:s09_verify_planogram_display", to: "ConsumerConcept:touchpoint"}
+  - {from: "ValueChainActivity:s10_purchase_product", to: "ConsumerConcept:basket"}
+  - {from: "ValueChainActivity:s10_purchase_product", to: "ConsumerConcept:purchase_event"}
+  - {from: "ValueChainActivity:s10_consume_use", to: "ConsumerConcept:consumption_event"}
+  - {from: "ValueChainActivity:s10_provide_feedback", to: "ConsumerConcept:feedback"}
+  - {from: "ValueChainActivity:s01_monitor_trends", to: "ConsumerConcept:feedback"}
+  - {from: "ValueChainActivity:s10_submit_complaint", to: "ConsumerConcept:complaint"}
+  - {from: "ValueChainActivity:s11_corrective_action", to: "ConsumerConcept:complaint"}
+  - {from: "ValueChainActivity:s10_provide_feedback", to: "ConsumerConcept:sentiment"}
+  - {from: "ValueChainActivity:s10_recommend_review", to: "ConsumerConcept:sentiment"}
+  - {from: "ValueChainActivity:s01_monitor_trends", to: "ConsumerConcept:sentiment"}
+  - {from: "ValueChainActivity:s10_repurchase", to: "ConsumerConcept:loyalty"}
+  - {from: "ValueChainActivity:s10_recommend_review", to: "ConsumerConcept:advocacy"}
+  - {from: "ValueChainActivity:s10_switch", to: "ConsumerConcept:churn_switching"}
+  - {from: "ValueChainActivity:s01_analyze_competition", to: "ConsumerConcept:churn_switching"}

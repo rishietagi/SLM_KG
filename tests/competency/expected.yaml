@@ -35,15 +35,46 @@ cq5:
   endpoints:
     - Accrue trade promotion liability
     - Evaluate post-event promotion ROI
+    - Manage field sales incentives
+    - Plan and execute consumer campaign
+    - Recruit and onboard field sales representatives
     - Measure distributor and channel performance
     - Record secondary sales and sell-out
     - Settle approved claims
     - True up trade accruals at period end
     - Validate trade scheme claims
 
+
 cq6:
-  min_primary_uplift: 0.30   # "loaded": primary (sell-in) volume up at least 30% vs the equal-length pre-period
-  max_sell_out_uplift: 0.10  # "no sell-through": outlet sell-out up at most 10%
+  stage: 9
+  kpis: [Claim approval rate, Claim settlement cycle time, Numeric distribution, On-shelf availability,
+         Secondary sales, Sell-out, Sell-through rate, Weighted distribution]
+  risks: [Demand volatility risk]
 
 cq7:
-  promotion: TP2026-005
+  stage: 5
+  concepts: [Allergen, Batch and lot, Finished good, Formulation, Ingredient, Manufacturing line, Plant, Quality specification]
+  must_relate:
+    - [Batch and lot, PRODUCED_AT, Plant]
+    - [Batch and lot, BASED_ON, Formulation]
+    - [Formulation, CONTAINS, Ingredient]
+
+cq8:
+  first: 7
+  last: 10
+  concepts: [Carrying and forwarding agent, D2C channel, Distributor, E-commerce marketplace, Food-service customer,
+             Micro-market, Modern trade, Outlet, Quick-commerce platform, Retailer, Sub-distributor,
+             Third-party logistics provider, Wholesaler]
+
+cq9:
+  stage: 10
+  touched: [Advocacy, Basket, Churn or switching, Complaint, Consumer journey, Consumption event, Consumption occasion,
+            Feedback, Loyalty, Preference, Purchase event, Sentiment, Shopper mission, Touchpoint]
+  trace: {batch: Batch and lot, plant: Plant, sku: SKU}
+
+cq10:
+  area: ProcessArea:trade_promotion_management
+  stages: [8, 9]
+  l3: [Accrue trade promotion liability, Approve promotion financials, Evaluate post-event promotion ROI,
+       Set annual trade promotion budget, Settle approved claims, True up trade accruals at period end,
+       Validate trade scheme claims]

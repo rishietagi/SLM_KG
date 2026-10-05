@@ -1,0 +1,187 @@
+module: intelligence_layers
+description: >
+  Layers 2-6 of the CPG intelligence graph as sector concepts (DECISIONS D50). Nodes are concepts such as
+  "SKU", "Distributor" or "Need state", not records of a company. Concept names come from the six-layer
+  lists in docs/source/cpg_value_chain_design.md §1; concept-to-concept edges come from the per-stage
+  relationships in PROJECT_CONTEXT §5.4 where both ends are layer concepts.
+
+classes:
+  ProcessArea:
+    layer: 2
+    description: Level-1 functional process (e.g. order-to-cash); contains L2 process groups.
+    spec_ref: docs/PROJECT_CONTEXT.md#2-the-six-layer-model
+    attributes:
+      process_code: {type: string, description: "Short code, e.g. O2C"}
+
+  ProductAssetConcept:
+    layer: 3
+    description: A product or asset concept in CPG (what is planned, produced and sold), e.g. SKU, formulation, batch, plant.
+    spec_ref: docs/source/cpg_value_chain_design.md#layer-3-product-and-asset
+    attributes:
+      concept_group: {type: enum, required: true, values: [portfolio, product_definition, material_packaging, manufacturing, logistics, quality_compliance]}
+
+  EcosystemConcept:
+    layer: 4
+    description: An ecosystem participant type, route-to-market channel or geography concept in CPG.
+    spec_ref: docs/source/cpg_value_chain_design.md#layer-4-ecosystem-and-channel
+    attributes:
+      concept_kind: {type: enum, required: true, values: [participant, channel, geography]}
+
+  RiskType:
+    layer: 5
+    description: A category of risk that can affect value-chain activities (type-level; distinct from finance Risk instances).
+    spec_ref: docs/source/cpg_value_chain_design.md#layer-5-performance-and-risk
+    attributes:
+      risk_category: {type: enum, required: true, values: [supply, regulatory, sustainability, demand, market, quality]}
+
+  ConsumerConcept:
+    layer: 6
+    description: A consumer and experience concept (why demand changes), e.g. need state, occasion, journey, loyalty.
+    spec_ref: docs/source/cpg_value_chain_design.md#layer-6-consumer-and-experience
+    attributes:
+      concept_kind: {type: enum, required: true, values: [actor, motivation, journey, transaction, signal]}
+
+relationships:
+  # ---- Layer 2 hierarchy --------------------------------------------------------------------------
+  CONTAINS:
+    description: Structural containment, parent to child.
+    pairs:
+      - {from: ProcessArea, to: ProcessGroup, cardinality: "1:N"}
+      - {from: ProductAssetConcept, to: ProductAssetConcept, note: "Formulation CONTAINS Ingredient; Ingredient CONTAINS Allergen"}
+      - {from: ConsumerConcept, to: ProductAssetConcept, note: "Purchase event / basket CONTAINS SKU"}
+      - {from: ConsumerConcept, to: ConsumerConcept, note: "Journey CONTAINS Touchpoint"}
+
+  # ---- Layer 3 product and asset ---------------------------------------------------------------------
+  BASED_ON:
+    description: Subject is based on the object.
+    pairs:
+      - {from: ProductAssetConcept, to: ProductAssetConcept, note: "SKU / Batch BASED_ON Formulation"}
+  REQUIRES:
+    description: Subject requires the object.
+    pairs:
+      - {from: ProductAssetConcept, to: ProductAssetConcept, note: "Formulation REQUIRES Ingredient; SKU REQUIRES Packaging specification"}
+  HAS:
+    description: Subject has the object as a defining property or specification.
+    pairs:
+      - {from: ProductAssetConcept, to: ProductAssetConcept, note: "SKU HAS Shelf life / Quality specification"}
+      - {from: ConsumerConcept, to: ConsumerConcept, note: "Consumer segment HAS Need state"}
+  CONFORMS_TO:
+    description: Subject conforms to the specification.
+    pairs:
+      - {from: ProductAssetConcept, to: ProductAssetConcept}
+  PRODUCED_AT:
+    description: Produced at the site.
+    pairs:
+      - {from: ProductAssetConcept, to: ProductAssetConcept}
+  PRODUCED_ON:
+    description: Produced on the line.
+    pairs:
+      - {from: ProductAssetConcept, to: ProductAssetConcept}
+  PACKAGED_AS:
+    description: Batch is packaged as the SKU.
+    pairs:
+      - {from: ProductAssetConcept, to: ProductAssetConcept}
+  STORED_AT:
+    description: Stored at the location.
+    pairs:
+      - {from: ProductAssetConcept, to: ProductAssetConcept}
+  BELONGS_TO:
+    description: Subject is a member of the object grouping.
+    pairs:
+      - {from: ProductAssetConcept, to: ProductAssetConcept, note: "SKU BELONGS_TO Product family"}
+  BELONGS_TO_BRAND:
+    description: Product family belongs to a brand (brand hierarchy, independent of category).
+    pairs:
+      - {from: ProductAssetConcept, to: ProductAssetConcept}
+  BELONGS_TO_CATEGORY:
+    description: Product family belongs to a category (category hierarchy).
+    pairs:
+      - {from: ProductAssetConcept, to: ProductAssetConcept}
+  PRICED_AT:
+    description: SKU is offered at the pack-price point.
+    pairs:
+      - {from: ProductAssetConcept, to: ProductAssetConcept}
+  SUPPORTED_BY:
+    description: Claim is supported by the evidence or certification.
+    pairs:
+      - {from: ProductAssetConcept, to: ProductAssetConcept, note: "Product claim SUPPORTED_BY Certification / Quality specification"}
+
+  # ---- Layer 4 ecosystem and channel ------------------------------------------------------------------
+  SERVES:
+    description: Participant or channel serves the object.
+    pairs:
+      - {from: EcosystemConcept, to: EcosystemConcept, note: "Distributor SERVES Outlet"}
+      - {from: EcosystemConcept, to: ConsumerConcept, note: "Channel SERVES Consumer segment"}
+  SUPPLIES:
+    description: Supplier supplies the material.
+    pairs:
+      - {from: EcosystemConcept, to: ProductAssetConcept}
+  OPERATES:
+    description: Participant operates the asset.
+    pairs:
+      - {from: EcosystemConcept, to: ProductAssetConcept, note: "Contract manufacturer / co-packer OPERATES Plant"}
+  LOCATED_IN:
+    description: Subject is located in the geography.
+    pairs:
+      - {from: EcosystemConcept, to: EcosystemConcept}
+  STOCKS:
+    description: Outlet stocks the SKU.
+    pairs:
+      - {from: EcosystemConcept, to: ProductAssetConcept}
+
+  # ---- Layer 5 risk ---------------------------------------------------------------------------------
+  THREATENS:
+    description: Risk type threatens the concept.
+    pairs:
+      - {from: RiskType, to: ProductAssetConcept}
+      - {from: RiskType, to: EcosystemConcept}
+
+  # ---- Layer 6 consumer and experience ----------------------------------------------------------------
+  OCCURS_IN:
+    description: Need state occurs in the consumption occasion.
+    pairs:
+      - {from: ConsumerConcept, to: ConsumerConcept}
+  OCCURS_AT:
+    description: Event occurs at the touchpoint.
+    pairs:
+      - {from: ConsumerConcept, to: ConsumerConcept}
+  MOTIVATED_BY:
+    description: Purchase is motivated by the need state.
+    pairs:
+      - {from: ConsumerConcept, to: ConsumerConcept}
+  PARTICIPATES_IN:
+    description: Consumer or household participates in the event.
+    pairs:
+      - {from: ConsumerConcept, to: ConsumerConcept}
+  GENERATES:
+    description: Event generates the signal.
+    pairs:
+      - {from: ConsumerConcept, to: ConsumerConcept}
+  EXPRESSES:
+    description: Feedback expresses the sentiment.
+    pairs:
+      - {from: ConsumerConcept, to: ConsumerConcept}
+  FOLLOWS:
+    description: Behaviour follows the event (e.g. loyalty follows purchase). Distinct from stage order, which uses PRECEDES.
+    pairs:
+      - {from: ConsumerConcept, to: ConsumerConcept}
+  CONSUMED_IN:
+    description: SKU is consumed in the occasion.
+    pairs:
+      - {from: ProductAssetConcept, to: ConsumerConcept}
+  CONCERNS:
+    description: Complaint concerns the product concept.
+    pairs:
+      - {from: ConsumerConcept, to: ProductAssetConcept}
+  TRACES_TO_BATCH:
+    description: Complaint traces to a production batch (PROJECT_CONTEXT §5.4 calls it RELATES_TO_BATCH; renamed, D53).
+    pairs:
+      - {from: ConsumerConcept, to: ProductAssetConcept}
+  MOVES_FROM:
+    description: Switching moves away from the brand.
+    pairs:
+      - {from: ConsumerConcept, to: ProductAssetConcept}
+  MOVES_TO:
+    description: Switching moves to the brand.
+    pairs:
+      - {from: ConsumerConcept, to: ProductAssetConcept}

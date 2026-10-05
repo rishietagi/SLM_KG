@@ -5,6 +5,8 @@ description: Extraction rules for the CPG Intelligence Graph — use for anythin
 
 # KG extraction rules
 
+> **Deferred (DECISIONS D50, 2026-10-05):** the graph is a concept-level intelligence layer with no instance data. The extracted lane and its pipeline were removed from the working tree (kept in git history, commit d593136). These rules apply only if document extraction is brought back into scope.
+
 Source of these rules: `docs/source/finance_extraction_spec.md` (verbatim, camelCase). This skill is the
 **operative** version: canonical names come from `ontology/*.yaml`, never from the spec text.
 

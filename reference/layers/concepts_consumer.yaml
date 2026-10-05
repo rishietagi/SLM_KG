@@ -1,0 +1,122 @@
+# Layer 6 consumer and experience concepts (names: design notes Layer 6 list). Edges: PROJECT_CONTEXT §5.4; uncited ones drafted.
+class: ConsumerConcept
+defaults:
+  source_system: curated_reference
+  lane: curated
+  extraction_confidence: 1.0
+  reviewed: false
+  drafted_beyond_source: false
+  source_reference: "docs/source/cpg_value_chain_design.md#layer-6-consumer-and-experience"
+rows:
+  - id: "ConsumerConcept:consumer"
+    name: "Consumer"
+    concept_kind: actor
+    aliases: ["end user"]
+    edges:
+      PARTICIPATES_IN:
+        - {to: "ConsumerConcept:purchase_event", source_reference: "docs/PROJECT_CONTEXT.md#54-the-11-stages"}
+  - id: "ConsumerConcept:household"
+    name: "Household"
+    concept_kind: actor
+    edges:
+      PARTICIPATES_IN:
+        - {to: "ConsumerConcept:purchase_event", drafted_beyond_source: true}
+  - id: "ConsumerConcept:consumer_segment"
+    name: "Consumer segment"
+    concept_kind: actor
+    aliases: ["segment"]
+    edges:
+      HAS:
+        - {to: "ConsumerConcept:need_state", source_reference: "docs/PROJECT_CONTEXT.md#54-the-11-stages"}
+        - {to: "ConsumerConcept:preference", drafted_beyond_source: true}
+  - id: "ConsumerConcept:need_state"
+    name: "Need state"
+    concept_kind: motivation
+    edges:
+      OCCURS_IN:
+        - {to: "ConsumerConcept:consumption_occasion", source_reference: "docs/PROJECT_CONTEXT.md#54-the-11-stages"}
+  - id: "ConsumerConcept:consumption_occasion"
+    name: "Consumption occasion"
+    concept_kind: motivation
+    aliases: ["occasion"]
+  - id: "ConsumerConcept:shopper_mission"
+    name: "Shopper mission"
+    concept_kind: motivation
+  - id: "ConsumerConcept:preference"
+    name: "Preference"
+    concept_kind: motivation
+  - id: "ConsumerConcept:journey"
+    name: "Consumer journey"
+    concept_kind: journey
+    aliases: ["path to purchase"]
+    edges:
+      CONTAINS:
+        - {to: "ConsumerConcept:touchpoint", drafted_beyond_source: true}
+  - id: "ConsumerConcept:touchpoint"
+    name: "Touchpoint"
+    concept_kind: journey
+  - id: "ConsumerConcept:basket"
+    name: "Basket"
+    concept_kind: transaction
+    edges:
+      CONTAINS:
+        - {to: "ProductAssetConcept:sku", drafted_beyond_source: true}
+  - id: "ConsumerConcept:purchase_event"
+    name: "Purchase event"
+    concept_kind: transaction
+    aliases: ["purchase"]
+    edges:
+      CONTAINS:
+        - {to: "ProductAssetConcept:sku", source_reference: "docs/PROJECT_CONTEXT.md#54-the-11-stages"}
+      OCCURS_AT:
+        - {to: "ConsumerConcept:touchpoint", source_reference: "docs/PROJECT_CONTEXT.md#54-the-11-stages"}
+      MOTIVATED_BY:
+        - {to: "ConsumerConcept:need_state", source_reference: "docs/PROJECT_CONTEXT.md#54-the-11-stages"}
+  - id: "ConsumerConcept:consumption_event"
+    name: "Consumption event"
+    concept_kind: transaction
+    aliases: ["usage"]
+    edges:
+      GENERATES:
+        - {to: "ConsumerConcept:feedback", source_reference: "docs/PROJECT_CONTEXT.md#54-the-11-stages"}
+  - id: "ConsumerConcept:feedback"
+    name: "Feedback"
+    concept_kind: signal
+    edges:
+      EXPRESSES:
+        - {to: "ConsumerConcept:sentiment", source_reference: "docs/PROJECT_CONTEXT.md#54-the-11-stages"}
+  - id: "ConsumerConcept:complaint"
+    name: "Complaint"
+    concept_kind: signal
+    edges:
+      CONCERNS:
+        - {to: "ProductAssetConcept:sku", source_reference: "docs/PROJECT_CONTEXT.md#54-the-11-stages"}
+      TRACES_TO_BATCH:
+        - {to: "ProductAssetConcept:batch", source_reference: "docs/PROJECT_CONTEXT.md#54-the-11-stages"}
+  - id: "ConsumerConcept:sentiment"
+    name: "Sentiment"
+    concept_kind: signal
+  - id: "ConsumerConcept:loyalty"
+    name: "Loyalty"
+    concept_kind: signal
+    aliases: ["repeat purchase"]
+    edges:
+      FOLLOWS:
+        - {to: "ConsumerConcept:purchase_event", source_reference: "docs/PROJECT_CONTEXT.md#54-the-11-stages"}
+  - id: "ConsumerConcept:advocacy"
+    name: "Advocacy"
+    concept_kind: signal
+    aliases: ["recommendation"]
+    edges:
+      FOLLOWS:
+        - {to: "ConsumerConcept:loyalty", drafted_beyond_source: true}
+  - id: "ConsumerConcept:churn_switching"
+    name: "Churn or switching"
+    review_note: "At concept level MOVES_FROM and MOVES_TO both point at Brand; they carry meaning once brand instances exist."
+    concept_kind: signal
+    aliases: ["brand switching", "churn"]
+    edges:
+      MOVES_FROM:
+        - {to: "ProductAssetConcept:brand", source_reference: "docs/PROJECT_CONTEXT.md#54-the-11-stages"}
+      MOVES_TO:
+        - {to: "ProductAssetConcept:brand", source_reference: "docs/PROJECT_CONTEXT.md#54-the-11-stages"}

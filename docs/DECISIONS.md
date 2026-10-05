@@ -271,3 +271,73 @@ Owner decisions for Phase 2:
 - Each live call records a fixture in `tests/fixtures/llm/`. These are synthetic-document responses and safe to commit.
 - `make test` always uses replay.
 - CQ7 is skipped until fixtures exist.
+
+## Scope change — CPG intelligence layer (2026-10-05)
+
+**D50 — The graph is a CPG sector intelligence layer, not an instance graph.**
+*Owner direction:* CPG broadly (not only FMCG); value chain, L1/L2/L3 processes, product and asset, ecosystem and channel, performance and risk, consumer and experience; **no data about clients, companies, people or transactions**.
+- **Removed from the working tree** (kept in git history, commit `d593136`):
+  - the synthetic dataset;
+  - tabular staging, LLM extraction and resolution;
+  - `ontology/mvp_commercial.yaml` and `ontology/slices.yaml`;
+  - instance CQ6/CQ7;
+  - staging metrics;
+  - the viewer's heavy-class and expand code;
+  - `.env`. **The Gemini key pasted in chat should be revoked.**
+- **Superseded:** D37–D40 and D43–D49.
+- **D41/D42** (drafted finance L3 overlay, KPIs) carry forward. FinanceDomain nodes are dropped: ProcessArea is now the parent of ProcessGroup in the graph. The FinanceDomain CONTAINS ProcessGroup pair stays in finance.yaml as spec schema only.
+- **New module `ontology/intelligence_layers.yaml`:**
+  - ProcessArea (L2, the L1 process level);
+  - ProductAssetConcept (L3);
+  - EcosystemConcept (L4, with `concept_kind` participant / channel / geography);
+  - RiskType (L5);
+  - ConsumerConcept (L6);
+  - about 30 concept relationships taken from PROJECT_CONTEXT §5.4.
+- **Hooks retargeted to the concept classes:**
+  - ACTS_ON → ProductAssetConcept;
+  - INVOLVES → EcosystemConcept;
+  - TOUCHES → ConsumerConcept;
+  - RiskType AFFECTS Activity.
+  The old instance stub classes (Formulation, Batch, Plant, Distributor, Outlet, …) are now concept nodes.
+- **finance.yaml stays** as the finance spec schema. It is unpopulated except for ProcessGroup, L3ProcessEndpoint, TriggerEvent, ProcessOutput and KPI, whose descriptions are now generic.
+
+**D51 — Layer 2 hierarchy (light depth, owner choice).**
+- 14 ProcessAreas, named in PROJECT_CONTEXT §2 (source-backed).
+- 26 ProcessGroups: the 15 finance groups regrouped plus 11 new.
+- 40 L3 processes: 20 finance plus 20 new, each with one trigger and one output.
+- 64 ENABLED_BY edges.
+- New groups, new L3s, and the area→group placement are drafted. **For owner review:** `pp_pricing` under Order-to-cash and `cf_distributor_performance` under Data-to-insight are arguable.
+
+**D52 — Layers 3–6 concepts.**
+- **Names** come from the design notes' six-layer lists, so they are source-backed:
+  - 19 product and asset concepts;
+  - 18 ecosystem concepts ("Modern trade" is a channel, not a chain);
+  - 23 KPIs (the 11 existing plus 12 from the Layer 5 list) with 14 value outcomes;
+  - 6 risk types (3 source-backed, 3 drafted);
+  - 18 consumer concepts.
+- **Hook links from activities are drafted.**
+- **Concept relationships** cite §5.4/§6.1 where stated; the rest are drafted.
+- **Edge cleanup:** Formulation→Ingredient is CONTAINS only (the duplicate REQUIRES was removed). Recipe is described as the food and beverage form of a formulation.
+- **THREATENS (RiskType→concept) is kept separate from AFFECTS** (RiskType→activity, the Layer-5 hook). AFFECTS is reserved for the hook, so hook coverage can be measured.
+- **No new sub-sectors** (owner choice). Food & beverage, personal care and home care remain.
+
+**D53 — `RELATES_TO_BATCH` is renamed `TRACES_TO_BATCH`.** The old name used the forbidden `RELATES_TO` stem (CLAUDE.md rule 4).
+- **Do-not-merge pairs at concept level:** Brand, Product family, Category and SKU are rows of one concept class. They are curated rows and never pass through entity resolution, so rule 11 can't be violated by merging. If resolution returns, enforce the pairs by row id.
+
+**D54 — Competency questions 5–10 are concept-level** (PROJECT_CONTEXT §12 updated).
+- CQ5: L3 processes enabling outlet execution.
+- CQ6: outlet KPIs and risks.
+- CQ7: manufacturing product and asset subgraph.
+- CQ8: ecosystem participants and channels from Stage 7 to 10.
+- CQ9: Stage-10 consumer concepts, and complaint → batch → plant.
+- CQ10: trade-promotion-management processes across stages.
+All ten pass (`tests/competency/`).
+
+**D55 — Viewer as a concept explorer.**
+- **Layouts:** Layered (spine on top, one band per layer; each concept sits under the mean column of the activities it links to), Rings (concentric by layer), and Force.
+- **Filters:** layer chips, with type and relationship chips under Advanced; hook edges are hidden in the overview and shown on focus.
+- **Activity 360°:** the panel groups neighbours by layer.
+- **CQ1–10 cards.**
+- **Report:** nodes per layer and hook coverage, which `make report` also prints.
+- ValueOutcome (an L1 class) is drawn in the L5 band next to its KPIs.
+

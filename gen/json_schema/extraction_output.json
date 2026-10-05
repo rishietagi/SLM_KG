@@ -41,14 +41,12 @@
               "AssetClass",
               "AssetDisposal",
               "AuditRequest",
-              "AvailabilityObservation",
               "BOM",
               "Balance",
               "BankAccount",
               "BankStatement",
               "BankTransaction",
               "BaselineSales",
-              "Batch",
               "Benchmark",
               "Brand",
               "Budget",
@@ -73,7 +71,7 @@
               "Commentary",
               "ConsolidatedBudget",
               "Constraint",
-              "ConsumerSegment",
+              "ConsumerConcept",
               "Control",
               "ControlExecution",
               "ControlTest",
@@ -104,14 +102,13 @@
               "Deduction",
               "DeferredTax",
               "Deficiency",
-              "DemandForecast",
               "DepreciationEntry",
               "DepreciationMethod",
               "Dimension",
               "Disclosure",
               "Discount",
               "Dispute",
-              "Distributor",
+              "EcosystemConcept",
               "EligibilityRule",
               "Evidence",
               "ExpectedCreditLoss",
@@ -130,7 +127,6 @@
               "ForecastTransaction",
               "ForecastVersion",
               "Formula",
-              "Formulation",
               "GainLoss",
               "GeneralLedger",
               "Geography",
@@ -145,7 +141,6 @@
               "InventoryBalance",
               "InventoryItem",
               "InventoryMovement",
-              "InventoryPosition",
               "InventoryProvision",
               "InventoryWriteOff",
               "Investment",
@@ -162,7 +157,6 @@
               "ListPrice",
               "Loan",
               "Location",
-              "LogisticsProvider",
               "ManagementAction",
               "ManagementReport",
               "ManagementResponse",
@@ -172,15 +166,11 @@
               "MaterialConsumption",
               "MetricDefinition",
               "NRVAssessment",
-              "NeedState",
               "NetPrice",
               "ObsolescenceRisk",
               "Organization",
-              "Outlet",
               "Output",
               "PVMAnalysis",
-              "PackPricePoint",
-              "PackagingMaterial",
               "PaymentFile",
               "PaymentProposal",
               "PaymentTerm",
@@ -188,11 +178,12 @@
               "PlanningAssumption",
               "PlanningCycle",
               "PlanningDriver",
-              "Plant",
               "PriceCondition",
               "Proceeds",
+              "ProcessArea",
               "ProcessGroup",
               "ProcessOutput",
+              "ProductAssetConcept",
               "ProductCost",
               "ProductFamily",
               "ProductProfitability",
@@ -206,7 +197,6 @@
               "PromotionResult",
               "PromotionSettlement",
               "Provision",
-              "PurchaseEvent",
               "PurchaseOrder",
               "Receivable",
               "Recommendation",
@@ -218,9 +208,9 @@
               "RemediationAction",
               "Resolution",
               "ResponsibilityCentre",
-              "Retailer",
               "Revenue",
               "Risk",
+              "RiskType",
               "Role",
               "RootCause",
               "Routing",
@@ -228,7 +218,6 @@
               "SalesInvoice",
               "SalesOrder",
               "Scenario",
-              "SellOutTransaction",
               "SemanticModel",
               "SourceEvidence",
               "SourceSystem",
@@ -251,7 +240,6 @@
               "TaxReturn",
               "TaxTransaction",
               "TemporaryDifference",
-              "Touchpoint",
               "TradePromotion",
               "TradeSpend",
               "TransferPricingPolicy",
@@ -265,7 +253,6 @@
               "ValueOutcome",
               "Variance",
               "VarianceDriver",
-              "Warehouse",
               "WriteOff"
             ]
           },
@@ -346,14 +333,12 @@
               "AssetClass",
               "AssetDisposal",
               "AuditRequest",
-              "AvailabilityObservation",
               "BOM",
               "Balance",
               "BankAccount",
               "BankStatement",
               "BankTransaction",
               "BaselineSales",
-              "Batch",
               "Benchmark",
               "Brand",
               "Budget",
@@ -378,7 +363,7 @@
               "Commentary",
               "ConsolidatedBudget",
               "Constraint",
-              "ConsumerSegment",
+              "ConsumerConcept",
               "Control",
               "ControlExecution",
               "ControlTest",
@@ -409,14 +394,13 @@
               "Deduction",
               "DeferredTax",
               "Deficiency",
-              "DemandForecast",
               "DepreciationEntry",
               "DepreciationMethod",
               "Dimension",
               "Disclosure",
               "Discount",
               "Dispute",
-              "Distributor",
+              "EcosystemConcept",
               "EligibilityRule",
               "Evidence",
               "ExpectedCreditLoss",
@@ -435,7 +419,6 @@
               "ForecastTransaction",
               "ForecastVersion",
               "Formula",
-              "Formulation",
               "GainLoss",
               "GeneralLedger",
               "Geography",
@@ -450,7 +433,6 @@
               "InventoryBalance",
               "InventoryItem",
               "InventoryMovement",
-              "InventoryPosition",
               "InventoryProvision",
               "InventoryWriteOff",
               "Investment",
@@ -467,7 +449,6 @@
               "ListPrice",
               "Loan",
               "Location",
-              "LogisticsProvider",
               "ManagementAction",
               "ManagementReport",
               "ManagementResponse",
@@ -477,15 +458,11 @@
               "MaterialConsumption",
               "MetricDefinition",
               "NRVAssessment",
-              "NeedState",
               "NetPrice",
               "ObsolescenceRisk",
               "Organization",
-              "Outlet",
               "Output",
               "PVMAnalysis",
-              "PackPricePoint",
-              "PackagingMaterial",
               "PaymentFile",
               "PaymentProposal",
               "PaymentTerm",
@@ -493,11 +470,12 @@
               "PlanningAssumption",
               "PlanningCycle",
               "PlanningDriver",
-              "Plant",
               "PriceCondition",
               "Proceeds",
+              "ProcessArea",
               "ProcessGroup",
               "ProcessOutput",
+              "ProductAssetConcept",
               "ProductCost",
               "ProductFamily",
               "ProductProfitability",
@@ -511,7 +489,6 @@
               "PromotionResult",
               "PromotionSettlement",
               "Provision",
-              "PurchaseEvent",
               "PurchaseOrder",
               "Receivable",
               "Recommendation",
@@ -523,9 +500,9 @@
               "RemediationAction",
               "Resolution",
               "ResponsibilityCentre",
-              "Retailer",
               "Revenue",
               "Risk",
+              "RiskType",
               "Role",
               "RootCause",
               "Routing",
@@ -533,7 +510,6 @@
               "SalesInvoice",
               "SalesOrder",
               "Scenario",
-              "SellOutTransaction",
               "SemanticModel",
               "SourceEvidence",
               "SourceSystem",
@@ -556,7 +532,6 @@
               "TaxReturn",
               "TaxTransaction",
               "TemporaryDifference",
-              "Touchpoint",
               "TradePromotion",
               "TradeSpend",
               "TransferPricingPolicy",
@@ -570,7 +545,6 @@
               "ValueOutcome",
               "Variance",
               "VarianceDriver",
-              "Warehouse",
               "WriteOff"
             ]
           },
@@ -579,7 +553,6 @@
           },
           "relationship": {
             "enum": [
-              "ACCOUNT_OF",
               "ACTS_ON",
               "ADDRESSES",
               "AFFECTS",
@@ -609,7 +582,10 @@
               "COMPARES",
               "COMPARES_AGAINST",
               "COMPOSED_OF",
+              "CONCERNS",
+              "CONFORMS_TO",
               "CONSTRAINED_BY",
+              "CONSUMED_IN",
               "CONSUMES",
               "CONTAINS",
               "CONTESTS",
@@ -631,10 +607,12 @@
               "EXPLAINS",
               "EXPLAINS_DIFFERENCE_BETWEEN",
               "EXPOSED_TO",
+              "EXPRESSES",
               "FILED_WITH",
-              "FORECASTS",
+              "FOLLOWS",
               "FULFILLED_THROUGH",
               "FUNDS",
+              "GENERATES",
               "GOVERNED_BY",
               "GOVERNS",
               "HAS",
@@ -645,7 +623,6 @@
               "IMPACTS",
               "IMPAIRS",
               "INCLUDES",
-              "INCURRED_FOR",
               "INFLUENCES",
               "INSTANCE_OF",
               "INVOLVES",
@@ -663,15 +640,20 @@
               "MITIGATES",
               "MODIFIES",
               "MOTIVATED_BY",
-              "OBSERVED_AT",
+              "MOVES_FROM",
+              "MOVES_TO",
               "OCCURRED_DURING",
               "OCCURS_AT",
+              "OCCURS_IN",
+              "OPERATES",
               "OPERATES_IN",
               "ORIGINATES_IN",
               "OWNED_BY",
               "OWNS",
+              "PACKAGED_AS",
               "PAID_FROM",
               "PARENT_OF",
+              "PARTICIPATES_IN",
               "PART_OF",
               "PERFORMED_BY",
               "PERFORMS",
@@ -684,6 +666,8 @@
               "PREPARED_FOR",
               "PRESENTS",
               "PRICED_AT",
+              "PRODUCED_AT",
+              "PRODUCED_ON",
               "PRODUCES",
               "PURSUES",
               "RAISED_BY",
@@ -702,19 +686,22 @@
               "SERVES",
               "SETTLES",
               "STOCKS",
+              "STORED_AT",
               "SUBMITTED_BY",
               "SUMMARIZES",
+              "SUPPLIES",
               "SUPPORTED_BY",
               "SUPPORTED_BY_EVIDENCE",
               "SUPPORTS",
               "TAKEN_AGAINST",
               "TARGETS",
+              "THREATENS",
               "TOUCHES",
               "TRACES",
               "TRACES_TO",
+              "TRACES_TO_BATCH",
               "TRIGGERED_BY",
               "TRIGGERS",
-              "UPLIFTS",
               "USES",
               "VALIDATES",
               "VALID_DURING",
@@ -742,14 +729,12 @@
               "AssetClass",
               "AssetDisposal",
               "AuditRequest",
-              "AvailabilityObservation",
               "BOM",
               "Balance",
               "BankAccount",
               "BankStatement",
               "BankTransaction",
               "BaselineSales",
-              "Batch",
               "Benchmark",
               "Brand",
               "Budget",
@@ -774,7 +759,7 @@
               "Commentary",
               "ConsolidatedBudget",
               "Constraint",
-              "ConsumerSegment",
+              "ConsumerConcept",
               "Control",
               "ControlExecution",
               "ControlTest",
@@ -805,14 +790,13 @@
               "Deduction",
               "DeferredTax",
               "Deficiency",
-              "DemandForecast",
               "DepreciationEntry",
               "DepreciationMethod",
               "Dimension",
               "Disclosure",
               "Discount",
               "Dispute",
-              "Distributor",
+              "EcosystemConcept",
               "EligibilityRule",
               "Evidence",
               "ExpectedCreditLoss",
@@ -831,7 +815,6 @@
               "ForecastTransaction",
               "ForecastVersion",
               "Formula",
-              "Formulation",
               "GainLoss",
               "GeneralLedger",
               "Geography",
@@ -846,7 +829,6 @@
               "InventoryBalance",
               "InventoryItem",
               "InventoryMovement",
-              "InventoryPosition",
               "InventoryProvision",
               "InventoryWriteOff",
               "Investment",
@@ -863,7 +845,6 @@
               "ListPrice",
               "Loan",
               "Location",
-              "LogisticsProvider",
               "ManagementAction",
               "ManagementReport",
               "ManagementResponse",
@@ -873,15 +854,11 @@
               "MaterialConsumption",
               "MetricDefinition",
               "NRVAssessment",
-              "NeedState",
               "NetPrice",
               "ObsolescenceRisk",
               "Organization",
-              "Outlet",
               "Output",
               "PVMAnalysis",
-              "PackPricePoint",
-              "PackagingMaterial",
               "PaymentFile",
               "PaymentProposal",
               "PaymentTerm",
@@ -889,11 +866,12 @@
               "PlanningAssumption",
               "PlanningCycle",
               "PlanningDriver",
-              "Plant",
               "PriceCondition",
               "Proceeds",
+              "ProcessArea",
               "ProcessGroup",
               "ProcessOutput",
+              "ProductAssetConcept",
               "ProductCost",
               "ProductFamily",
               "ProductProfitability",
@@ -907,7 +885,6 @@
               "PromotionResult",
               "PromotionSettlement",
               "Provision",
-              "PurchaseEvent",
               "PurchaseOrder",
               "Receivable",
               "Recommendation",
@@ -919,9 +896,9 @@
               "RemediationAction",
               "Resolution",
               "ResponsibilityCentre",
-              "Retailer",
               "Revenue",
               "Risk",
+              "RiskType",
               "Role",
               "RootCause",
               "Routing",
@@ -929,7 +906,6 @@
               "SalesInvoice",
               "SalesOrder",
               "Scenario",
-              "SellOutTransaction",
               "SemanticModel",
               "SourceEvidence",
               "SourceSystem",
@@ -952,7 +928,6 @@
               "TaxReturn",
               "TaxTransaction",
               "TemporaryDifference",
-              "Touchpoint",
               "TradePromotion",
               "TradeSpend",
               "TransferPricingPolicy",
@@ -966,7 +941,6 @@
               "ValueOutcome",
               "Variance",
               "VarianceDriver",
-              "Warehouse",
               "WriteOff"
             ]
           },
@@ -1042,14 +1016,12 @@
                 "AssetClass",
                 "AssetDisposal",
                 "AuditRequest",
-                "AvailabilityObservation",
                 "BOM",
                 "Balance",
                 "BankAccount",
                 "BankStatement",
                 "BankTransaction",
                 "BaselineSales",
-                "Batch",
                 "Benchmark",
                 "Brand",
                 "Budget",
@@ -1074,7 +1046,7 @@
                 "Commentary",
                 "ConsolidatedBudget",
                 "Constraint",
-                "ConsumerSegment",
+                "ConsumerConcept",
                 "Control",
                 "ControlExecution",
                 "ControlTest",
@@ -1105,14 +1077,13 @@
                 "Deduction",
                 "DeferredTax",
                 "Deficiency",
-                "DemandForecast",
                 "DepreciationEntry",
                 "DepreciationMethod",
                 "Dimension",
                 "Disclosure",
                 "Discount",
                 "Dispute",
-                "Distributor",
+                "EcosystemConcept",
                 "EligibilityRule",
                 "Evidence",
                 "ExpectedCreditLoss",
@@ -1131,7 +1102,6 @@
                 "ForecastTransaction",
                 "ForecastVersion",
                 "Formula",
-                "Formulation",
                 "GainLoss",
                 "GeneralLedger",
                 "Geography",
@@ -1146,7 +1116,6 @@
                 "InventoryBalance",
                 "InventoryItem",
                 "InventoryMovement",
-                "InventoryPosition",
                 "InventoryProvision",
                 "InventoryWriteOff",
                 "Investment",
@@ -1163,7 +1132,6 @@
                 "ListPrice",
                 "Loan",
                 "Location",
-                "LogisticsProvider",
                 "ManagementAction",
                 "ManagementReport",
                 "ManagementResponse",
@@ -1173,15 +1141,11 @@
                 "MaterialConsumption",
                 "MetricDefinition",
                 "NRVAssessment",
-                "NeedState",
                 "NetPrice",
                 "ObsolescenceRisk",
                 "Organization",
-                "Outlet",
                 "Output",
                 "PVMAnalysis",
-                "PackPricePoint",
-                "PackagingMaterial",
                 "PaymentFile",
                 "PaymentProposal",
                 "PaymentTerm",
@@ -1189,11 +1153,12 @@
                 "PlanningAssumption",
                 "PlanningCycle",
                 "PlanningDriver",
-                "Plant",
                 "PriceCondition",
                 "Proceeds",
+                "ProcessArea",
                 "ProcessGroup",
                 "ProcessOutput",
+                "ProductAssetConcept",
                 "ProductCost",
                 "ProductFamily",
                 "ProductProfitability",
@@ -1207,7 +1172,6 @@
                 "PromotionResult",
                 "PromotionSettlement",
                 "Provision",
-                "PurchaseEvent",
                 "PurchaseOrder",
                 "Receivable",
                 "Recommendation",
@@ -1219,9 +1183,9 @@
                 "RemediationAction",
                 "Resolution",
                 "ResponsibilityCentre",
-                "Retailer",
                 "Revenue",
                 "Risk",
+                "RiskType",
                 "Role",
                 "RootCause",
                 "Routing",
@@ -1229,7 +1193,6 @@
                 "SalesInvoice",
                 "SalesOrder",
                 "Scenario",
-                "SellOutTransaction",
                 "SemanticModel",
                 "SourceEvidence",
                 "SourceSystem",
@@ -1252,7 +1215,6 @@
                 "TaxReturn",
                 "TaxTransaction",
                 "TemporaryDifference",
-                "Touchpoint",
                 "TradePromotion",
                 "TradeSpend",
                 "TransferPricingPolicy",
@@ -1266,7 +1228,6 @@
                 "ValueOutcome",
                 "Variance",
                 "VarianceDriver",
-                "Warehouse",
                 "WriteOff"
               ]
             }
@@ -1275,7 +1236,6 @@
             "type": "array",
             "items": {
               "enum": [
-                "ACCOUNT_OF",
                 "ACTS_ON",
                 "ADDRESSES",
                 "AFFECTS",
@@ -1305,7 +1265,10 @@
                 "COMPARES",
                 "COMPARES_AGAINST",
                 "COMPOSED_OF",
+                "CONCERNS",
+                "CONFORMS_TO",
                 "CONSTRAINED_BY",
+                "CONSUMED_IN",
                 "CONSUMES",
                 "CONTAINS",
                 "CONTESTS",
@@ -1327,10 +1290,12 @@
                 "EXPLAINS",
                 "EXPLAINS_DIFFERENCE_BETWEEN",
                 "EXPOSED_TO",
+                "EXPRESSES",
                 "FILED_WITH",
-                "FORECASTS",
+                "FOLLOWS",
                 "FULFILLED_THROUGH",
                 "FUNDS",
+                "GENERATES",
                 "GOVERNED_BY",
                 "GOVERNS",
                 "HAS",
@@ -1341,7 +1306,6 @@
                 "IMPACTS",
                 "IMPAIRS",
                 "INCLUDES",
-                "INCURRED_FOR",
                 "INFLUENCES",
                 "INSTANCE_OF",
                 "INVOLVES",
@@ -1359,15 +1323,20 @@
                 "MITIGATES",
                 "MODIFIES",
                 "MOTIVATED_BY",
-                "OBSERVED_AT",
+                "MOVES_FROM",
+                "MOVES_TO",
                 "OCCURRED_DURING",
                 "OCCURS_AT",
+                "OCCURS_IN",
+                "OPERATES",
                 "OPERATES_IN",
                 "ORIGINATES_IN",
                 "OWNED_BY",
                 "OWNS",
+                "PACKAGED_AS",
                 "PAID_FROM",
                 "PARENT_OF",
+                "PARTICIPATES_IN",
                 "PART_OF",
                 "PERFORMED_BY",
                 "PERFORMS",
@@ -1380,6 +1349,8 @@
                 "PREPARED_FOR",
                 "PRESENTS",
                 "PRICED_AT",
+                "PRODUCED_AT",
+                "PRODUCED_ON",
                 "PRODUCES",
                 "PURSUES",
                 "RAISED_BY",
@@ -1398,19 +1369,22 @@
                 "SERVES",
                 "SETTLES",
                 "STOCKS",
+                "STORED_AT",
                 "SUBMITTED_BY",
                 "SUMMARIZES",
+                "SUPPLIES",
                 "SUPPORTED_BY",
                 "SUPPORTED_BY_EVIDENCE",
                 "SUPPORTS",
                 "TAKEN_AGAINST",
                 "TARGETS",
+                "THREATENS",
                 "TOUCHES",
                 "TRACES",
                 "TRACES_TO",
+                "TRACES_TO_BATCH",
                 "TRIGGERED_BY",
                 "TRIGGERS",
-                "UPLIFTS",
                 "USES",
                 "VALIDATES",
                 "VALID_DURING",
@@ -1428,48 +1402,10 @@
     }
   },
   "x-allowed-pairs": {
-    "ACCOUNT_OF": [
-      [
-        "Customer",
-        "Distributor"
-      ],
-      [
-        "Customer",
-        "Retailer"
-      ]
-    ],
     "ACTS_ON": [
       [
         "ValueChainActivity",
-        "Brand"
-      ],
-      [
-        "ValueChainActivity",
-        "Category"
-      ],
-      [
-        "ValueChainActivity",
-        "SKU"
-      ],
-      [
-        "ValueChainActivity",
-        "Formulation"
-      ],
-      [
-        "ValueChainActivity",
-        "Batch"
-      ],
-      [
-        "ValueChainActivity",
-        "PackagingMaterial"
-      ],
-      [
-        "ValueChainActivity",
-        "Plant"
-      ],
-      [
-        "ValueChainActivity",
-        "Warehouse"
+        "ProductAssetConcept"
       ]
     ],
     "ADDRESSES": [
@@ -1488,7 +1424,7 @@
     ],
     "AFFECTS": [
       [
-        "Risk",
+        "RiskType",
         "ValueChainActivity"
       ],
       [
@@ -1664,6 +1600,10 @@
       [
         "Charge",
         "Benchmark"
+      ],
+      [
+        "ProductAssetConcept",
+        "ProductAssetConcept"
       ]
     ],
     "BECOMES_INPUT_TO": [
@@ -1702,20 +1642,28 @@
         "BusinessUnit"
       ],
       [
-        "Outlet",
-        "Channel"
+        "ProductAssetConcept",
+        "ProductAssetConcept"
       ]
     ],
     "BELONGS_TO_BRAND": [
       [
         "ProductFamily",
         "Brand"
+      ],
+      [
+        "ProductAssetConcept",
+        "ProductAssetConcept"
       ]
     ],
     "BELONGS_TO_CATEGORY": [
       [
         "ProductFamily",
         "Category"
+      ],
+      [
+        "ProductAssetConcept",
+        "ProductAssetConcept"
       ]
     ],
     "CALCULATED_FOR": [
@@ -1808,10 +1756,28 @@
         "CostComponent"
       ]
     ],
+    "CONCERNS": [
+      [
+        "ConsumerConcept",
+        "ProductAssetConcept"
+      ]
+    ],
+    "CONFORMS_TO": [
+      [
+        "ProductAssetConcept",
+        "ProductAssetConcept"
+      ]
+    ],
     "CONSTRAINED_BY": [
       [
         "ValueChainActivity",
         "Constraint"
+      ]
+    ],
+    "CONSUMED_IN": [
+      [
+        "ProductAssetConcept",
+        "ConsumerConcept"
       ]
     ],
     "CONSUMES": [
@@ -1982,18 +1948,26 @@
         "BankTransaction"
       ],
       [
-        "PurchaseEvent",
-        "SKU"
+        "ProcessArea",
+        "ProcessGroup"
+      ],
+      [
+        "ProductAssetConcept",
+        "ProductAssetConcept"
+      ],
+      [
+        "ConsumerConcept",
+        "ProductAssetConcept"
+      ],
+      [
+        "ConsumerConcept",
+        "ConsumerConcept"
       ]
     ],
     "CONTESTS": [
       [
         "Dispute",
         "Deduction"
-      ],
-      [
-        "Dispute",
-        "PromotionClaim"
       ]
     ],
     "CONTROLS": [
@@ -2212,24 +2186,22 @@
         "Risk"
       ]
     ],
+    "EXPRESSES": [
+      [
+        "ConsumerConcept",
+        "ConsumerConcept"
+      ]
+    ],
     "FILED_WITH": [
       [
         "TaxReturn",
         "Regulator"
       ]
     ],
-    "FORECASTS": [
+    "FOLLOWS": [
       [
-        "DemandForecast",
-        "SKU"
-      ],
-      [
-        "DemandForecast",
-        "Geography"
-      ],
-      [
-        "DemandForecast",
-        "Channel"
+        "ConsumerConcept",
+        "ConsumerConcept"
       ]
     ],
     "FULFILLED_THROUGH": [
@@ -2246,6 +2218,12 @@
       [
         "Loan",
         "LegalEntity"
+      ]
+    ],
+    "GENERATES": [
+      [
+        "ConsumerConcept",
+        "ConsumerConcept"
       ]
     ],
     "GOVERNED_BY": [
@@ -2298,18 +2276,18 @@
         "UsefulLife"
       ],
       [
-        "ConsumerSegment",
-        "NeedState"
+        "ProductAssetConcept",
+        "ProductAssetConcept"
+      ],
+      [
+        "ConsumerConcept",
+        "ConsumerConcept"
       ]
     ],
     "HELD_AT": [
       [
         "InventoryBalance",
         "Location"
-      ],
-      [
-        "InventoryPosition",
-        "Distributor"
       ]
     ],
     "HELD_BY": [
@@ -2352,16 +2330,6 @@
         "SupplierInvoice"
       ]
     ],
-    "INCURRED_FOR": [
-      [
-        "TradeSpend",
-        "TradePromotion"
-      ],
-      [
-        "TradeSpend",
-        "SKU"
-      ]
-    ],
     "INFLUENCES": [
       [
         "ValueChainActivity",
@@ -2381,31 +2349,7 @@
     "INVOLVES": [
       [
         "ValueChainActivity",
-        "Supplier"
-      ],
-      [
-        "ValueChainActivity",
-        "Customer"
-      ],
-      [
-        "ValueChainActivity",
-        "Distributor"
-      ],
-      [
-        "ValueChainActivity",
-        "Retailer"
-      ],
-      [
-        "ValueChainActivity",
-        "Outlet"
-      ],
-      [
-        "ValueChainActivity",
-        "Channel"
-      ],
-      [
-        "ValueChainActivity",
-        "LogisticsProvider"
+        "EcosystemConcept"
       ]
     ],
     "ISSUED_BY": [
@@ -2426,10 +2370,6 @@
       [
         "PurchaseOrder",
         "Supplier"
-      ],
-      [
-        "CreditNote",
-        "Customer"
       ]
     ],
     "LOCATED_AT": [
@@ -2444,8 +2384,8 @@
         "Geography"
       ],
       [
-        "Outlet",
-        "Geography"
+        "EcosystemConcept",
+        "EcosystemConcept"
       ]
     ],
     "MAKES": [
@@ -2494,14 +2434,6 @@
       [
         "ChannelProfitability",
         "Channel"
-      ],
-      [
-        "InventoryPosition",
-        "SKU"
-      ],
-      [
-        "Margin",
-        "SKU"
       ]
     ],
     "MEASURES": [
@@ -2512,10 +2444,6 @@
       [
         "KPI",
         "BusinessObjective"
-      ],
-      [
-        "AvailabilityObservation",
-        "SKU"
       ]
     ],
     "MITIGATES": [
@@ -2536,14 +2464,20 @@
     ],
     "MOTIVATED_BY": [
       [
-        "PurchaseEvent",
-        "NeedState"
+        "ConsumerConcept",
+        "ConsumerConcept"
       ]
     ],
-    "OBSERVED_AT": [
+    "MOVES_FROM": [
       [
-        "AvailabilityObservation",
-        "Outlet"
+        "ConsumerConcept",
+        "ProductAssetConcept"
+      ]
+    ],
+    "MOVES_TO": [
+      [
+        "ConsumerConcept",
+        "ProductAssetConcept"
       ]
     ],
     "OCCURRED_DURING": [
@@ -2562,12 +2496,20 @@
     ],
     "OCCURS_AT": [
       [
-        "SellOutTransaction",
-        "Outlet"
-      ],
+        "ConsumerConcept",
+        "ConsumerConcept"
+      ]
+    ],
+    "OCCURS_IN": [
       [
-        "PurchaseEvent",
-        "Outlet"
+        "ConsumerConcept",
+        "ConsumerConcept"
+      ]
+    ],
+    "OPERATES": [
+      [
+        "EcosystemConcept",
+        "ProductAssetConcept"
       ]
     ],
     "OPERATES_IN": [
@@ -2577,10 +2519,6 @@
       ],
       [
         "Supplier",
-        "Geography"
-      ],
-      [
-        "Distributor",
         "Geography"
       ]
     ],
@@ -2622,6 +2560,12 @@
         "L3ProcessEndpoint"
       ]
     ],
+    "PACKAGED_AS": [
+      [
+        "ProductAssetConcept",
+        "ProductAssetConcept"
+      ]
+    ],
     "PAID_FROM": [
       [
         "SupplierPayment",
@@ -2632,6 +2576,12 @@
       [
         "Category",
         "Category"
+      ]
+    ],
+    "PARTICIPATES_IN": [
+      [
+        "ConsumerConcept",
+        "ConsumerConcept"
       ]
     ],
     "PART_OF": [
@@ -2726,8 +2676,20 @@
     ],
     "PRICED_AT": [
       [
-        "SKU",
-        "PackPricePoint"
+        "ProductAssetConcept",
+        "ProductAssetConcept"
+      ]
+    ],
+    "PRODUCED_AT": [
+      [
+        "ProductAssetConcept",
+        "ProductAssetConcept"
+      ]
+    ],
+    "PRODUCED_ON": [
+      [
+        "ProductAssetConcept",
+        "ProductAssetConcept"
       ]
     ],
     "PRODUCES": [
@@ -2934,10 +2896,6 @@
       [
         "HedgeInstrument",
         "CurrencyPair"
-      ],
-      [
-        "SellOutTransaction",
-        "SKU"
       ]
     ],
     "REGISTERED_WITH": [
@@ -2976,6 +2934,10 @@
       [
         "ValueChainActivity",
         "Decision"
+      ],
+      [
+        "ProductAssetConcept",
+        "ProductAssetConcept"
       ]
     ],
     "SELECTS": [
@@ -2986,8 +2948,12 @@
     ],
     "SERVES": [
       [
-        "Distributor",
-        "Outlet"
+        "EcosystemConcept",
+        "EcosystemConcept"
+      ],
+      [
+        "EcosystemConcept",
+        "ConsumerConcept"
       ]
     ],
     "SETTLES": [
@@ -3010,8 +2976,14 @@
     ],
     "STOCKS": [
       [
-        "Outlet",
-        "SKU"
+        "EcosystemConcept",
+        "ProductAssetConcept"
+      ]
+    ],
+    "STORED_AT": [
+      [
+        "ProductAssetConcept",
+        "ProductAssetConcept"
       ]
     ],
     "SUBMITTED_BY": [
@@ -3028,6 +3000,12 @@
       [
         "TaxReturn",
         "TaxLedger"
+      ]
+    ],
+    "SUPPLIES": [
+      [
+        "EcosystemConcept",
+        "ProductAssetConcept"
       ]
     ],
     "SUPPORTED_BY": [
@@ -3070,6 +3048,10 @@
       [
         "Recommendation",
         "Evidence"
+      ],
+      [
+        "ProductAssetConcept",
+        "ProductAssetConcept"
       ]
     ],
     "SUPPORTED_BY_EVIDENCE": [
@@ -3100,18 +3082,20 @@
         "Customer"
       ]
     ],
+    "THREATENS": [
+      [
+        "RiskType",
+        "ProductAssetConcept"
+      ],
+      [
+        "RiskType",
+        "EcosystemConcept"
+      ]
+    ],
     "TOUCHES": [
       [
         "ValueChainActivity",
-        "ConsumerSegment"
-      ],
-      [
-        "ValueChainActivity",
-        "NeedState"
-      ],
-      [
-        "ValueChainActivity",
-        "Touchpoint"
+        "ConsumerConcept"
       ]
     ],
     "TRACES": [
@@ -3124,6 +3108,12 @@
       [
         "DataLineage",
         "SourceSystem"
+      ]
+    ],
+    "TRACES_TO_BATCH": [
+      [
+        "ConsumerConcept",
+        "ProductAssetConcept"
       ]
     ],
     "TRIGGERED_BY": [
@@ -3140,12 +3130,6 @@
       [
         "MarginException",
         "ManagementAction"
-      ]
-    ],
-    "UPLIFTS": [
-      [
-        "TradePromotion",
-        "DemandForecast"
       ]
     ],
     "USES": [

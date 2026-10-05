@@ -79,19 +79,6 @@ class CommonFile(_Strict):
     do_not_merge: list[list[str]] = []
 
 
-class Slice(_Strict):
-    description: str
-    route_keywords: list[str]
-    classes: list[str]
-    relationships: list[str]
-
-
-class SliceFile(_Strict):
-    module: Literal["slices"]
-    description: str | None = None
-    slices: dict[str, Slice]
-
-
 class RelMapEntry(_Strict):
     original: str
     from_: str = Field(alias="from")

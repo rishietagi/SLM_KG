@@ -102,53 +102,11 @@ def cq4(store: GraphStore, stage: int = 5,
 Q5 = """
 MATCH (s:ValueChainStage {stage_number: $stage})-[:CONTAINS]->(a:ValueChainActivity)-[:ENABLED_BY]->(l:L3ProcessEndpoint)
 OPTIONAL MATCH (g:ProcessGroup)-[:CONTAINS]->(l)
-OPTIONAL MATCH (d:FinanceDomain)-[:CONTAINS]->(g)
+OPTIONAL MATCH (d:ProcessArea)-[:CONTAINS]->(g)
 RETURN a.id AS activity_id, a.name AS activity, l.id AS endpoint_id, l.name AS endpoint,
-       g.id AS group_id, g.name AS process_group, d.id AS domain_id, d.name AS domain
+       g.id AS group_id, g.name AS process_group, d.id AS area_id, d.name AS process_area
 ORDER BY endpoint, activity
 """
-
-# Window = promotion period; baseline = the equal-length period immediately before it.
-Q6_PRIMARY = """
-MATCH (p:TradePromotion)-[:TARGETS]->(c:Customer)-[:ACCOUNT_OF]->(d:Distributor)
-MATCH (c)<-[:ISSUED_TO]-(i:SalesInvoice)-[:CONTAINS]->(l:InvoiceLine)-[:REFERENCES]->(k:SKU)<-[:APPLIES_TO]-(p)
-WITH p, l.quantity AS q, i.invoice_date AS dt, p.start_date AS s, p.end_date AS e
-RETURN p.id AS promotion_id, p.name AS promotion,
-       sum(CASE WHEN dt >= s AND dt <= e THEN q ELSE 0.0 END) AS promo_qty,
-       sum(CASE WHEN dt >= s - (e - s) - interval("1 day") AND dt < s THEN q ELSE 0.0 END) AS base_qty
-"""
-
-Q6_SELL_OUT = """
-MATCH (p:TradePromotion)-[:TARGETS]->(c:Customer)-[:ACCOUNT_OF]->(d:Distributor)-[:SERVES]->(o:Outlet)
-MATCH (o)<-[:OCCURS_AT]-(t:SellOutTransaction)-[:REFERENCES]->(k:SKU)<-[:APPLIES_TO]-(p)
-WITH p, t.quantity AS q, t.week_start AS dt, p.start_date AS s, p.end_date AS e
-RETURN p.id AS promotion_id,
-       sum(CASE WHEN dt >= s AND dt <= e THEN q ELSE 0.0 END) AS promo_qty,
-       sum(CASE WHEN dt >= s - (e - s) - interval("1 day") AND dt < s THEN q ELSE 0.0 END) AS base_qty
-"""
-
-Q6_PATH = """
-MATCH (p:TradePromotion)-[:TARGETS]->(c:Customer)-[:ACCOUNT_OF]->(d:Distributor)
-WHERE p.id IN $ids
-OPTIONAL MATCH (p)-[:APPLIES_TO]->(k:SKU)
-RETURN p.id AS p, c.id AS c, d.id AS d, collect(DISTINCT k.id) AS skus
-"""
-
-Q7 = """
-MATCH (cl:PromotionClaim)-[:CLAIMED_AGAINST]->(p:TradePromotion)
-WHERE p.id = $promotion
-OPTIONAL MATCH (cl)-[:SUBMITTED_BY]->(c:Customer)
-OPTIONAL MATCH (cl)-[:REFERENCES]->(inv:SalesInvoice)
-OPTIONAL MATCH (cl)-[:REFERENCES]->(k:SKU)
-OPTIONAL MATCH (cn:CreditNote)-[:SETTLES]->(cl)
-OPTIONAL MATCH (ps:PromotionSettlement)-[:SETTLES]->(cl)
-RETURN cl.id AS claim_id, cl.claim_amount AS claimed, cl.approved_amount AS approved, cl.currency AS currency,
-       cl.status AS status, c.id AS customer_id, inv.id AS invoice_id, k.id AS sku_id,
-       cn.id AS credit_note_id, cn.amount AS credit_note_amount, ps.id AS settlement_id, ps.amount AS settlement_amount,
-       cl.source_reference AS source_reference
-ORDER BY claim_id
-"""
-
 
 def cq5(store: GraphStore, stage: int = 9) -> dict:
     rows = store.query(Q5, {"stage": stage})
@@ -157,50 +115,118 @@ def cq5(store: GraphStore, stage: int = 9) -> dict:
         path.append([r["activity_id"], "ENABLED_BY", r["endpoint_id"]])
         if r["group_id"]:
             path.append([r["group_id"], "CONTAINS", r["endpoint_id"]])
-        if r["domain_id"]:
-            path.append([r["domain_id"], "CONTAINS", r["group_id"]])
-    return {"question": f"Which finance L3 processes enable Stage {stage} (outlet execution) activities?",
+        if r["area_id"]:
+            path.append([r["area_id"], "CONTAINS", r["group_id"]])
+    return {"question": f"Which L3 processes enable Stage {stage} (outlet execution) activities?",
             "rows": rows, "path": path}
 
 
-def _uplift(promo: float, base: float) -> float | None:
-    return None if not base else promo / base - 1
+# ------------------------------------------------------------------ intelligence layers (concept level)
+Q6_KPI = """
+MATCH (s:ValueChainStage {stage_number: $stage})-[:CONTAINS]->(a:ValueChainActivity)-[:CREATES]->(v:ValueOutcome)-[:MEASURED_BY]->(k:KPI)
+RETURN a.id AS activity_id, a.name AS activity, v.id AS outcome_id, v.name AS outcome, k.id AS kpi_id, k.name AS kpi
+ORDER BY kpi
+"""
+Q6_RISK = """
+MATCH (s:ValueChainStage {stage_number: $stage})-[:CONTAINS]->(a:ValueChainActivity)<-[:AFFECTS]-(r:RiskType)
+RETURN r.id AS risk_id, r.name AS risk, a.id AS activity_id, a.name AS activity ORDER BY risk
+"""
+Q7_CONCEPTS = """
+MATCH (s:ValueChainStage {stage_number: $stage})-[:CONTAINS]->(a:ValueChainActivity)-[:ACTS_ON]->(c:ProductAssetConcept)
+RETURN a.id AS activity_id, c.id AS concept_id, c.name AS concept, c.concept_group AS concept_group
+ORDER BY concept
+"""
+Q7_EDGES = """
+MATCH (x:ProductAssetConcept)-[r]->(y:ProductAssetConcept)
+WHERE x.id IN $ids AND y.id IN $ids
+RETURN x.id AS from_id, x.name AS from_name, label(r) AS rel, y.id AS to_id, y.name AS to_name
+ORDER BY from_name, rel
+"""
+Q8 = """
+MATCH (s:ValueChainStage)-[:CONTAINS]->(a:ValueChainActivity)-[:INVOLVES]->(e:EcosystemConcept)
+WHERE s.stage_number >= $first AND s.stage_number <= $last
+RETURN e.id AS concept_id, e.name AS concept, e.concept_kind AS kind,
+       collect(DISTINCT s.stage_number) AS stages, collect(DISTINCT a.id) AS activity_ids
+ORDER BY kind, concept
+"""
+Q9_TOUCH = """
+MATCH (s:ValueChainStage {stage_number: $stage})-[:CONTAINS]->(a:ValueChainActivity)-[:TOUCHES]->(c:ConsumerConcept)
+RETURN c.id AS concept_id, c.name AS concept, c.concept_kind AS kind, collect(DISTINCT a.id) AS activity_ids
+ORDER BY kind, concept
+"""
+Q9_TRACE = """
+MATCH (c:ConsumerConcept)-[:TRACES_TO_BATCH]->(b:ProductAssetConcept)-[:PRODUCED_AT]->(p:ProductAssetConcept)
+WHERE c.id = $concept
+OPTIONAL MATCH (c)-[:CONCERNS]->(k:ProductAssetConcept)
+RETURN c.id AS complaint_id, b.id AS batch_id, b.name AS batch, p.id AS plant_id, p.name AS plant,
+       k.id AS sku_id, k.name AS sku
+"""
+Q10 = """
+MATCH (pa:ProcessArea)-[:CONTAINS]->(g:ProcessGroup)-[:CONTAINS]->(l:L3ProcessEndpoint)<-[:ENABLED_BY]-(a:ValueChainActivity)
+      <-[:CONTAINS]-(s:ValueChainStage)
+WHERE pa.id = $area
+RETURN g.id AS group_id, g.name AS process_group, l.id AS endpoint_id, l.name AS endpoint,
+       a.id AS activity_id, a.name AS activity, s.stage_number AS stage, pa.id AS area_id
+ORDER BY stage, endpoint
+"""
 
 
-def cq6(store: GraphStore, min_primary_uplift: float = 0.30, max_sell_out_uplift: float = 0.10) -> dict:
-    primary = {r["promotion_id"]: r for r in store.query(Q6_PRIMARY)}
-    sell = {r["promotion_id"]: r for r in store.query(Q6_SELL_OUT)}
-    rows = []
-    for pid, r in sorted(primary.items()):
-        so = sell.get(pid, {"promo_qty": 0.0, "base_qty": 0.0})
-        pu, su = _uplift(r["promo_qty"], r["base_qty"]), _uplift(so["promo_qty"], so["base_qty"])
-        flagged = pu is not None and su is not None and pu >= min_primary_uplift and su <= max_sell_out_uplift
-        rows.append({"promotion_id": pid, "promotion": r["promotion"],
-                     "primary_uplift": round(pu, 3) if pu is not None else None,
-                     "sell_out_uplift": round(su, 3) if su is not None else None,
-                     "loaded_without_sell_through": flagged})
-    flagged_ids = [r["promotion_id"] for r in rows if r["loaded_without_sell_through"]]
-    path = []
-    for r in store.query(Q6_PATH, {"ids": flagged_ids}) if flagged_ids else []:
-        path += [[r["p"], "TARGETS", r["c"]], [r["c"], "ACCOUNT_OF", r["d"]]]
-        path += [[r["p"], "APPLIES_TO", k] for k in r["skus"]]
-    return {"question": "Which trade promotions loaded distributors but did not produce outlet sell-through?",
-            "rows": rows, "path": path, "flagged": flagged_ids}
+def cq6(store: GraphStore, stage: int = 9) -> dict:
+    kpis = store.query(Q6_KPI, {"stage": stage})
+    risks = store.query(Q6_RISK, {"stage": stage})
+    path = ([[r["activity_id"], "CREATES", r["outcome_id"]] for r in kpis]
+            + [[r["outcome_id"], "MEASURED_BY", r["kpi_id"]] for r in kpis]
+            + [[r["risk_id"], "AFFECTS", r["activity_id"]] for r in risks])
+    rows = ([{"type": "KPI", "name": r["kpi"], "via": f"{r['activity']} -> {r['outcome']}"} for r in kpis]
+            + [{"type": "Risk", "name": r["risk"], "via": r["activity"]} for r in risks])
+    return {"question": f"Which KPIs measure Stage {stage} outcomes, and which risk types affect those activities?",
+            "rows": rows, "path": path, "kpis": sorted({r["kpi"] for r in kpis}),
+            "risks": sorted({r["risk"] for r in risks})}
 
 
-def cq7(store: GraphStore, promotion: str = "TradePromotion:TP2026-005") -> dict:
-    rows = store.query(Q7, {"promotion": promotion})
+def cq7(store: GraphStore, stage: int = 5) -> dict:
+    acts = store.query(Q7_CONCEPTS, {"stage": stage})
+    ids = sorted({r["concept_id"] for r in acts})
+    edges = store.query(Q7_EDGES, {"ids": ids}) if ids else []
+    path = [[r["from_id"], r["rel"], r["to_id"]] for r in edges] + [[r["activity_id"], "ACTS_ON", r["concept_id"]] for r in acts]
+    rows = [{"from": r["from_name"], "relationship": r["rel"], "to": r["to_name"]} for r in edges]
+    return {"question": f"Which product and asset concepts does Stage {stage} act on, and how do they relate?",
+            "rows": rows, "path": path, "concepts": sorted({r["concept"] for r in acts})}
+
+
+def cq8(store: GraphStore, first: int = 7, last: int = 10) -> dict:
+    rows = store.query(Q8, {"first": first, "last": last})
+    path = [[a, "INVOLVES", r["concept_id"]] for r in rows for a in r["activity_ids"]]
+    return {"question": f"Which ecosystem participants and channels are involved from Stage {first} to Stage {last}?",
+            "rows": [{"concept": r["concept"], "kind": r["kind"], "stages": sorted(r["stages"])} for r in rows],
+            "path": path}
+
+
+def cq9(store: GraphStore, stage: int = 10, concept: str = "ConsumerConcept:complaint") -> dict:
+    touched = store.query(Q9_TOUCH, {"stage": stage})
+    trace = store.query(Q9_TRACE, {"concept": concept})
+    path = [[a, "TOUCHES", r["concept_id"]] for r in touched for a in r["activity_ids"]]
+    for t in trace:
+        path += [[t["complaint_id"], "TRACES_TO_BATCH", t["batch_id"]], [t["batch_id"], "PRODUCED_AT", t["plant_id"]]]
+        if t["sku_id"]:
+            path.append([t["complaint_id"], "CONCERNS", t["sku_id"]])
+    rows = ([{"concept": r["concept"], "kind": r["kind"]} for r in touched]
+            + [{"concept": "Complaint traces to", "kind": f"{t['batch']} -> {t['plant']}"
+                + (f"; concerns {t['sku']}" if t["sku"] else "")} for t in trace])
+    return {"question": f"Which consumer concepts does Stage {stage} touch, and what can a complaint be traced back to?",
+            "rows": rows, "path": path, "touched": [r["concept"] for r in touched], "trace": trace}
+
+
+def cq10(store: GraphStore, area: str = "ProcessArea:trade_promotion_management") -> dict:
+    rows = store.query(Q10, {"area": area})
     path = []
     for r in rows:
-        path.append([r["claim_id"], "CLAIMED_AGAINST", promotion])
-        for rel_, key in (("SUBMITTED_BY", "customer_id"), ("REFERENCES", "invoice_id"), ("REFERENCES", "sku_id")):
-            if r[key]:
-                path.append([r["claim_id"], rel_, r[key]])
-        for key in ("credit_note_id", "settlement_id"):
-            if r[key]:
-                path.append([r[key], "SETTLES", r["claim_id"]])
-    return {"question": f"For promotion {promotion.split(':')[1]}, what was claimed, approved and settled, "
-                        "against which invoices and SKUs?", "rows": rows, "path": path}
+        path += [[r["area_id"], "CONTAINS", r["group_id"]], [r["group_id"], "CONTAINS", r["endpoint_id"]],
+                 [r["activity_id"], "ENABLED_BY", r["endpoint_id"]]]
+    label = area.split(":")[1].replace("_", " ")
+    return {"question": f"Which L2/L3 processes in {label} enable which activities, across which stages?",
+            "rows": [{"process_group": r["process_group"], "l3_process": r["endpoint"], "activity": r["activity"],
+                      "stage": r["stage"]} for r in rows], "path": path}
 
 
-ALL = {1: cq1, 2: cq2, 3: cq3, 4: cq4, 5: cq5, 6: cq6, 7: cq7}
+ALL = {1: cq1, 2: cq2, 3: cq3, 4: cq4, 5: cq5, 6: cq6, 7: cq7, 8: cq8, 9: cq9, 10: cq10}

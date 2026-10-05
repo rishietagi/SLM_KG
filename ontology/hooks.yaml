@@ -1,62 +1,8 @@
 module: hooks
 description: >
-  Cross-layer hook relationships (PROJECT_CONTEXT §5.3), declared in Phase 1 so outer layers only
-  add targets and never restructure the spine. Hook targets not declared in finance.yaml are
-  declared here as stubs; their attributes arrive with their layer.
-
-classes:
-  Formulation:
-    layer: 3
-    stub: true
-    description: Recipe or formula realising a product concept.
-  Batch:
-    layer: 3
-    stub: true
-    description: Production batch or lot.
-  PackagingMaterial:
-    layer: 3
-    stub: true
-    description: Primary, secondary or tertiary packaging material.
-  Plant:
-    layer: 3
-    stub: true
-    description: Manufacturing site (own plant, contract manufacturer or co-packer site).
-  Warehouse:
-    layer: 3
-    stub: true
-    description: Storage and fulfilment location for finished goods.
-  Distributor:
-    layer: 4
-    description: Route-to-market partner buying and redistributing to outlets. Separate from Customer; its buying account is a Customer linked by ACCOUNT_OF (D18, D38).
-    attributes:
-      distributor_type: {type: enum, required: true, values: [distributor, sub_distributor, wholesaler, cnf_agent]}
-  Retailer:
-    layer: 4
-    description: Retail organization or chain selling to consumers. Separate from Customer (a buying account); linked by ACCOUNT_OF (D18, D38).
-    attributes:
-      retailer_type: {type: enum, required: true, values: [modern_trade_chain, ecommerce_marketplace, quick_commerce, d2c]}
-  Outlet:
-    layer: 4
-    description: Individual point of sale (store, dark store or online storefront).
-    attributes:
-      outlet_type:  {type: string, required: true, description: "e.g. kirana, chemist, supermarket, dark_store"}
-      outlet_class: {type: enum, values: [A, B, C], description: "Outlet classification (Stage 9 'Classify outlet')"}
-  LogisticsProvider:
-    layer: 4
-    stub: true
-    description: 3PL, transporter or C&F agent.
-  ConsumerSegment:
-    layer: 6
-    description: Group of consumers with shared characteristics or needs.
-    attributes:
-      segment_basis: {type: string, description: "e.g. life stage, income band, usage"}
-  NeedState:
-    layer: 6
-    description: Underlying consumer need or motivation.
-  Touchpoint:
-    layer: 6
-    stub: true
-    description: Point of interaction between consumer and brand or channel.
+  Cross-layer hook relationships (PROJECT_CONTEXT §5.3). Since the 2026-10-05 scope change (DECISIONS D50)
+  the outer layers hold sector concepts, not instances, so hooks target the concept classes declared in
+  intelligence_layers.yaml. Layer 2 hooks to ProcessGroup / L3ProcessEndpoint (finance.yaml).
 
 relationships:
   ENABLED_BY:
@@ -67,46 +13,31 @@ relationships:
       - {from: ValueChainActivity, to: L3ProcessEndpoint}
 
   ACTS_ON:
-    description: Activity acts on the product or asset.
+    description: Activity creates, changes or uses the product or asset concept.
     hook_layer: 3
     pairs:
-      - {from: ValueChainActivity, to: Brand}
-      - {from: ValueChainActivity, to: Category}
-      - {from: ValueChainActivity, to: SKU}
-      - {from: ValueChainActivity, to: Formulation}
-      - {from: ValueChainActivity, to: Batch}
-      - {from: ValueChainActivity, to: PackagingMaterial}
-      - {from: ValueChainActivity, to: Plant}
-      - {from: ValueChainActivity, to: Warehouse}
+      - {from: ValueChainActivity, to: ProductAssetConcept}
 
   INVOLVES:
-    description: Activity involves the ecosystem participant or channel.
+    description: Activity involves the ecosystem participant, channel or geography concept.
     hook_layer: 4
     pairs:
-      - {from: ValueChainActivity, to: Supplier}
-      - {from: ValueChainActivity, to: Customer}
-      - {from: ValueChainActivity, to: Distributor}
-      - {from: ValueChainActivity, to: Retailer}
-      - {from: ValueChainActivity, to: Outlet}
-      - {from: ValueChainActivity, to: Channel}
-      - {from: ValueChainActivity, to: LogisticsProvider}
+      - {from: ValueChainActivity, to: EcosystemConcept}
 
   MEASURED_BY:
-    description: Subject is measured by the KPI.
+    description: Value outcome is measured by the KPI.
     hook_layer: 5
     pairs:
       - {from: ValueOutcome, to: KPI}
 
   AFFECTS:
-    description: Subject affects the object.
+    description: Risk type affects the activity.
     hook_layer: 5
     pairs:
-      - {from: Risk, to: ValueChainActivity}
+      - {from: RiskType, to: ValueChainActivity}
 
   TOUCHES:
-    description: Activity touches the consumer-layer concept.
+    description: Activity touches the consumer and experience concept.
     hook_layer: 6
     pairs:
-      - {from: ValueChainActivity, to: ConsumerSegment}
-      - {from: ValueChainActivity, to: NeedState}
-      - {from: ValueChainActivity, to: Touchpoint}
+      - {from: ValueChainActivity, to: ConsumerConcept}

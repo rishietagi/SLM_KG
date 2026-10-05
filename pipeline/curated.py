@@ -1,4 +1,4 @@
-"""Both lanes -> typed parquet: curated reference YAML + resolved extracted staging (lanes stay labelled)."""
+"""Curated lane: reference YAML -> typed parquet (one file per node table and per rel FROM-TO pair)."""
 from __future__ import annotations
 
 import datetime
@@ -48,30 +48,12 @@ def _table(rows: list[dict], cols: list[tuple[str, str]], lead: list[tuple[str, 
     return pa.Table.from_arrays(arrays, names=[c for c, _ in allcols])
 
 
-def extracted_rows() -> tuple[list[dict], list[dict]]:
-    """Resolved extracted lane (staging/resolved) as node/edge rows in the same shape as curated rows."""
-    from pipeline.staging import RESOLVED, read_jsonl
-    from validate.staging_checks import edge_row, node_row
-
-    if not (RESOLVED / "entities.jsonl").exists():
-        return [], []
-    nodes = [{**node_row(e), "aliases": e.get("aliases") or [], "_class": e["entity_type"]}
-             for e in read_jsonl(RESOLVED / "entities.jsonl")]
-    edges = [edge_row(e) for e in read_jsonl(RESOLVED / "edges.jsonl")]
-    return nodes, edges
-
-
-def write_parquet(onto: Ontology | None = None, out_dir: Path = PARQUET_DIR, include_extracted: bool = True) -> ParquetSet:
-    """Curated lane (+ resolved extracted lane) -> one parquet file per node table and per rel FROM-TO pair."""
+def write_parquet(onto: Ontology | None = None, out_dir: Path = PARQUET_DIR) -> ParquetSet:
     onto = onto or load_ontology()
     data = load_reference()
     if data.errors:
         raise ValueError("reference data has errors; run `make validate`")
     nodes, edges = list(data.nodes.values()), list(data.edges)
-    if include_extracted:
-        x_nodes, x_edges = extracted_rows()
-        nodes += x_nodes
-        edges += x_edges
     shutil.rmtree(out_dir, ignore_errors=True)
     (out_dir / "nodes").mkdir(parents=True)
     (out_dir / "edges").mkdir(parents=True)

@@ -1,0 +1,115 @@
+# Layer 4 ecosystem and channel concepts (names: design notes Layer 4 list). Edges: PROJECT_CONTEXT §5.4; uncited ones drafted.
+class: EcosystemConcept
+defaults:
+  source_system: curated_reference
+  lane: curated
+  extraction_confidence: 1.0
+  reviewed: false
+  drafted_beyond_source: false
+  source_reference: "docs/source/cpg_value_chain_design.md#layer-4-ecosystem-and-channel"
+rows:
+  - id: "EcosystemConcept:ingredient_supplier"
+    name: "Ingredient supplier"
+    concept_kind: participant
+    edges:
+      SUPPLIES:
+        - {to: "ProductAssetConcept:ingredient", source_reference: "docs/PROJECT_CONTEXT.md#54-the-11-stages"}
+  - id: "EcosystemConcept:packaging_supplier"
+    name: "Packaging supplier"
+    concept_kind: participant
+    edges:
+      SUPPLIES:
+        - {to: "ProductAssetConcept:packaging_specification", source_reference: "docs/PROJECT_CONTEXT.md#54-the-11-stages"}
+  - id: "EcosystemConcept:contract_manufacturer"
+    name: "Contract manufacturer"
+    concept_kind: participant
+    aliases: ["third-party manufacturer"]
+    edges:
+      OPERATES:
+        - {to: "ProductAssetConcept:plant", drafted_beyond_source: true}
+  - id: "EcosystemConcept:co_packer"
+    name: "Co-packer"
+    concept_kind: participant
+    aliases: ["contract packer"]
+    edges:
+      OPERATES:
+        - {to: "ProductAssetConcept:plant", drafted_beyond_source: true}
+  - id: "EcosystemConcept:third_party_logistics"
+    name: "Third-party logistics provider"
+    concept_kind: participant
+    aliases: ["3PL"]
+  - id: "EcosystemConcept:cnf_agent"
+    name: "Carrying and forwarding agent"
+    concept_kind: participant
+    aliases: ["C&F agent", "CFA"]
+  - id: "EcosystemConcept:distributor"
+    name: "Distributor"
+    concept_kind: participant
+    edges:
+      SERVES:
+        - {to: "EcosystemConcept:outlet", source_reference: "docs/PROJECT_CONTEXT.md#54-the-11-stages"}
+        - {to: "EcosystemConcept:sub_distributor", drafted_beyond_source: true}
+  - id: "EcosystemConcept:sub_distributor"
+    name: "Sub-distributor"
+    concept_kind: participant
+    aliases: ["sub-stockist"]
+  - id: "EcosystemConcept:wholesaler"
+    name: "Wholesaler"
+    concept_kind: participant
+    edges:
+      SERVES:
+        - {to: "EcosystemConcept:outlet", drafted_beyond_source: true}
+  - id: "EcosystemConcept:retailer"
+    name: "Retailer"
+    concept_kind: participant
+  - id: "EcosystemConcept:outlet"
+    name: "Outlet"
+    concept_kind: participant
+    aliases: ["store", "point of sale"]
+    edges:
+      LOCATED_IN:
+        - {to: "EcosystemConcept:micro_market", source_reference: "docs/PROJECT_CONTEXT.md#54-the-11-stages"}
+      STOCKS:
+        - {to: "ProductAssetConcept:sku", source_reference: "docs/PROJECT_CONTEXT.md#54-the-11-stages"}
+  - id: "EcosystemConcept:modern_trade_chain"
+    name: "Modern trade"
+    concept_kind: channel
+    aliases: ["modern trade chains", "organised retail", "MT"]
+    edges:
+      SERVES:
+        - {to: "ConsumerConcept:consumer_segment", source_reference: "docs/PROJECT_CONTEXT.md#54-the-11-stages"}
+  - id: "EcosystemConcept:ecommerce_marketplace"
+    name: "E-commerce marketplace"
+    concept_kind: channel
+    aliases: ["online marketplace"]
+    edges:
+      SERVES:
+        - {to: "ConsumerConcept:consumer_segment", source_reference: "docs/PROJECT_CONTEXT.md#54-the-11-stages"}
+  - id: "EcosystemConcept:quick_commerce_platform"
+    name: "Quick-commerce platform"
+    concept_kind: channel
+    aliases: ["q-commerce", "quick commerce"]
+    edges:
+      SERVES:
+        - {to: "ConsumerConcept:consumer_segment", source_reference: "docs/PROJECT_CONTEXT.md#54-the-11-stages"}
+  - id: "EcosystemConcept:d2c_channel"
+    name: "D2C channel"
+    concept_kind: channel
+    aliases: ["direct to consumer"]
+    edges:
+      SERVES:
+        - {to: "ConsumerConcept:consumer_segment", source_reference: "docs/PROJECT_CONTEXT.md#54-the-11-stages"}
+  - id: "EcosystemConcept:food_service_customer"
+    name: "Food-service customer"
+    concept_kind: participant
+    aliases: ["HoReCa", "out-of-home"]
+  - id: "EcosystemConcept:geography"
+    name: "Geography"
+    concept_kind: geography
+    aliases: ["region", "market"]
+  - id: "EcosystemConcept:micro_market"
+    name: "Micro-market"
+    concept_kind: geography
+    edges:
+      LOCATED_IN:
+        - {to: "EcosystemConcept:geography", drafted_beyond_source: true}

@@ -1,0 +1,52 @@
+# Layer-3 hook: activity ACTS_ON product/asset concept (links drafted).
+relationship: ACTS_ON
+defaults:
+  source_system: curated_reference
+  lane: curated
+  extraction_confidence: 1.0
+  reviewed: false
+  drafted_beyond_source: true
+  source_reference: "docs/PROJECT_CONTEXT.md#53-cross-layer-hook-relationships"
+rows:
+  - {from: "ValueChainActivity:s02_set_brand_role", to: "ProductAssetConcept:brand"}
+  - {from: "ValueChainActivity:s02_rationalize_portfolio", to: "ProductAssetConcept:brand"}
+  - {from: "ValueChainActivity:s02_define_category_strategy", to: "ProductAssetConcept:category"}
+  - {from: "ValueChainActivity:s01_estimate_category_opportunity", to: "ProductAssetConcept:category"}
+  - {from: "ValueChainActivity:s02_identify_portfolio_gaps", to: "ProductAssetConcept:product_family"}
+  - {from: "ValueChainActivity:s02_rationalize_portfolio", to: "ProductAssetConcept:product_family"}
+  - {from: "ValueChainActivity:s03_develop_formulation", to: "ProductAssetConcept:formulation"}
+  - {from: "ValueChainActivity:s05_batch_formulate", to: "ProductAssetConcept:formulation"}
+  - {from: "ValueChainActivity:s03_develop_formulation", to: "ProductAssetConcept:recipe"}
+  - {from: "ValueChainActivity:s03_select_ingredient_alternatives", to: "ProductAssetConcept:ingredient"}
+  - {from: "ValueChainActivity:s04_approve_ingredients_packaging", to: "ProductAssetConcept:ingredient"}
+  - {from: "ValueChainActivity:s05_receive_release_materials", to: "ProductAssetConcept:ingredient"}
+  - {from: "ValueChainActivity:s03_regulatory_review", to: "ProductAssetConcept:allergen"}
+  - {from: "ValueChainActivity:s05_package_label", to: "ProductAssetConcept:allergen"}
+  - {from: "ValueChainActivity:s04_translate_material_requirements", to: "ProductAssetConcept:packaging_specification"}
+  - {from: "ValueChainActivity:s04_approve_ingredients_packaging", to: "ProductAssetConcept:packaging_specification"}
+  - {from: "ValueChainActivity:s11_recover_packaging", to: "ProductAssetConcept:packaging_specification"}
+  - {from: "ValueChainActivity:s02_define_price_pack_architecture", to: "ProductAssetConcept:pack_price_point"}
+  - {from: "ValueChainActivity:s08_set_pricing_terms", to: "ProductAssetConcept:pack_price_point"}
+  - {from: "ValueChainActivity:s03_approve_product_specification", to: "ProductAssetConcept:sku"}
+  - {from: "ValueChainActivity:s08_capture_order", to: "ProductAssetConcept:sku"}
+  - {from: "ValueChainActivity:s09_execute_assortment", to: "ProductAssetConcept:sku"}
+  - {from: "ValueChainActivity:s05_batch_formulate", to: "ProductAssetConcept:batch"}
+  - {from: "ValueChainActivity:s05_release_quarantine_batch", to: "ProductAssetConcept:batch"}
+  - {from: "ValueChainActivity:s11_recall_batch", to: "ProductAssetConcept:batch"}
+  - {from: "ValueChainActivity:s05_process_fill_form", to: "ProductAssetConcept:manufacturing_line"}
+  - {from: "ValueChainActivity:s05_record_yield_loss_downtime", to: "ProductAssetConcept:manufacturing_line"}
+  - {from: "ValueChainActivity:s05_create_production_plan", to: "ProductAssetConcept:plant"}
+  - {from: "ValueChainActivity:s06_capacity_planning", to: "ProductAssetConcept:plant"}
+  - {from: "ValueChainActivity:s07_receive_finished_goods", to: "ProductAssetConcept:warehouse"}
+  - {from: "ValueChainActivity:s07_put_away", to: "ProductAssetConcept:warehouse"}
+  - {from: "ValueChainActivity:s05_package_label", to: "ProductAssetConcept:finished_good"}
+  - {from: "ValueChainActivity:s07_receive_finished_goods", to: "ProductAssetConcept:finished_good"}
+  - {from: "ValueChainActivity:s03_stability_shelf_life_tests", to: "ProductAssetConcept:shelf_life"}
+  - {from: "ValueChainActivity:s07_monitor_freshness_expiry", to: "ProductAssetConcept:shelf_life"}
+  - {from: "ValueChainActivity:s11_identify_damaged_expired", to: "ProductAssetConcept:shelf_life"}
+  - {from: "ValueChainActivity:s03_approve_product_specification", to: "ProductAssetConcept:quality_specification"}
+  - {from: "ValueChainActivity:s05_finished_product_testing", to: "ProductAssetConcept:quality_specification"}
+  - {from: "ValueChainActivity:s03_define_product_claims", to: "ProductAssetConcept:product_claim"}
+  - {from: "ValueChainActivity:s01_analyze_competition", to: "ProductAssetConcept:product_claim"}
+  - {from: "ValueChainActivity:s03_regulatory_review", to: "ProductAssetConcept:certification"}
+  - {from: "ValueChainActivity:s04_qualify_suppliers", to: "ProductAssetConcept:certification"}

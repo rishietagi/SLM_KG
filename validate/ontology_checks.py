@@ -63,13 +63,6 @@ def check_ontology(onto: Ontology) -> list[str]:
 
     errors += _check_rel_map(onto)
 
-    # slices only reference declared classes/relationships
-    if onto.slices:
-        for name, sl in onto.slices.slices.items():
-            errors += [f"slice {name}: undeclared class {c}" for c in sl.classes if c not in classes]
-            errors += [f"slice {name}: undeclared relationship {r}" for r in sl.relationships
-                       if r not in onto.relationships]
-
     # gen/ freshness
     stamp = ROOT / "gen" / ".ontology_hash"
     current = ontology_hash()

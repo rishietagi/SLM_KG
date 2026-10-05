@@ -59,7 +59,7 @@ def test_naming_drift(onto):
 
 def test_hook_layer_is_per_pair(onto):
     affects = {(p.from_, p.to): p.hook_layer for p in onto.relationships["AFFECTS"].pairs}
-    assert affects[("Risk", "ValueChainActivity")] == 5
+    assert affects[("RiskType", "ValueChainActivity")] == 5
     assert affects[("Risk", "FinancialAccount")] is None  # finance pair, not a hook
 
 

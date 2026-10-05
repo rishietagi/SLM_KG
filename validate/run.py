@@ -1,4 +1,4 @@
-"""`make validate`: ontology integrity + reference data + orphans + staging. Non-zero exit on any error."""
+"""`make validate`: ontology integrity + reference data + orphans. Non-zero exit on any error."""
 from __future__ import annotations
 
 from collections import Counter
@@ -46,21 +46,6 @@ def run() -> int:
     classes = {i: r["_class"] for i, r in data.nodes.items()}
     orphans = find_orphans(classes, [(e["from_id"], e["to_id"]) for e in data.edges if e["to_id"] in classes])
     section(f"orphans (curated lane) - {len(orphans)}", [f"{o} ({classes[o]})" for o in orphans])
-
-    from validate.staging_checks import check_staging
-
-    st = check_staging(onto)
-    if st.total:
-        rate = len(st.rejected) / st.total
-        section(f"staging - {st.total} records: {len(st.entities)} entities, {len(st.relationships)} relationships "
-                f"accepted; {len(st.rejected)} rejected ({rate:.2%}); {len(st.unresolved)} unresolved",
-                [f"rejection rate {rate:.1%} above 5%"] if rate > 0.05 else [])
-        for reason, n in st.reasons.most_common(8):
-            print(f"    rejected: {reason} x{n}")
-        for w, n in st.warnings.most_common(5):
-            print(f"    warn: {w} x{n} (spec-required, not stated; D44)")
-    else:
-        section("staging - empty (run `make stage` / `make extract`)", [])
 
     drafted = sum(1 for r in data.nodes.values() if r.get("drafted_beyond_source"))
     unreviewed = sum(1 for r in data.nodes.values() if not r.get("reviewed"))

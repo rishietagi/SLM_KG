@@ -1,0 +1,64 @@
+# Finance L2 process groups for the commercial thread. Drafted (no L3 catalogue available, owner chose
+# "make your own"); groups covering the five processes PROJECT_CONTEXT §6 names are noted.
+class: ProcessGroup
+defaults:
+  source_system: curated_reference
+  lane: curated
+  extraction_confidence: 1.0
+  reviewed: false
+  drafted_beyond_source: true
+  source_reference: "docs/PROJECT_CONTEXT.md#2-the-six-layer-model"
+rows:
+  - {id: "ProcessGroup:pbf_volume_to_value", name: Volume-to-value forecasting, description: "Converting demand plans into financial forecasts.",
+     edges: {CONTAINS: ["L3ProcessEndpoint:l3_value_demand_plan"]}}
+  - {id: "ProcessGroup:r2r_revenue_recording", name: Secondary sales recording, description: "Recording secondary sales and sell-out for reporting.",
+     edges: {CONTAINS: ["L3ProcessEndpoint:l3_record_secondary_sales"]}}
+  - {id: "ProcessGroup:o2c_billing", name: Credit and billing, description: "Credit release and customer invoicing.",
+     edges: {CONTAINS: ["L3ProcessEndpoint:l3_check_credit", "L3ProcessEndpoint:l3_issue_invoice"]}}
+  - {id: "ProcessGroup:o2c_collections", name: Cash application and collections,
+     edges: {CONTAINS: ["L3ProcessEndpoint:l3_apply_cash"]}}
+  - {id: "ProcessGroup:o2c_deductions", name: Deductions and disputes,
+     edges: {CONTAINS: ["L3ProcessEndpoint:l3_resolve_deductions"]}}
+  - {id: "ProcessGroup:cf_distributor_performance", name: Distributor and channel performance,
+     edges: {CONTAINS: ["L3ProcessEndpoint:l3_measure_distributor_performance"]}}
+  - {id: "ProcessGroup:gtn_trade_planning", name: Trade promotion planning and budgeting,
+     edges: {CONTAINS: ["L3ProcessEndpoint:l3_set_trade_budget", "L3ProcessEndpoint:l3_approve_promotion"]}}
+  - {id: "ProcessGroup:gtn_accrual", name: Trade promotion accrual, review_note: "Process named in PROJECT_CONTEXT §6.",
+     edges: {CONTAINS: ["L3ProcessEndpoint:l3_accrue_trade_promotion", "L3ProcessEndpoint:l3_close_trade_accruals"]}}
+  - {id: "ProcessGroup:gtn_claims", name: Claim validation and settlement, review_note: "Claim settlement is named in PROJECT_CONTEXT §6.",
+     edges: {CONTAINS: ["L3ProcessEndpoint:l3_validate_scheme_claims", "L3ProcessEndpoint:l3_settle_claims"]}}
+  - {id: "ProcessGroup:gtn_evaluation", name: Post-event promotion evaluation,
+     edges: {CONTAINS: ["L3ProcessEndpoint:l3_evaluate_promotion_roi"]}}
+  - {id: "ProcessGroup:pp_pricing", name: Price management,
+     edges: {CONTAINS: ["L3ProcessEndpoint:l3_maintain_price_conditions"]}}
+  - {id: "ProcessGroup:pp_profitability", name: Profitability analysis, review_note: "Profitability is named in PROJECT_CONTEXT §6.",
+     edges: {CONTAINS: ["L3ProcessEndpoint:l3_analyse_profitability"]}}
+  - {id: "ProcessGroup:pc_costing", name: Product costing, review_note: "Product costing is named in PROJECT_CONTEXT §6.",
+     edges: {CONTAINS: ["L3ProcessEndpoint:l3_calculate_standard_cost", "L3ProcessEndpoint:l3_analyse_manufacturing_variance"]}}
+  - {id: "ProcessGroup:ia_valuation", name: Inventory valuation and provisioning, review_note: "Inventory provisioning is named in PROJECT_CONTEXT §6.",
+     edges: {CONTAINS: ["L3ProcessEndpoint:l3_provision_inventory"]}}
+  - {id: "ProcessGroup:p2p_purchase_to_pay", name: Purchase to pay,
+     edges: {CONTAINS: ["L3ProcessEndpoint:l3_match_and_pay_supplier"]}}
+  # --- non-finance process groups (scope change, D51) ---
+  - {id: "ProcessGroup:i2l_product_development", name: "Concept and product development",
+     edges: {CONTAINS: ["L3ProcessEndpoint:l3_develop_test_concept", "L3ProcessEndpoint:l3_stage_gate_launch"]}}
+  - {id: "ProcessGroup:f2p_demand_planning", name: "Demand planning",
+     edges: {CONTAINS: ["L3ProcessEndpoint:l3_generate_baseline_forecast", "L3ProcessEndpoint:l3_run_consensus_review"]}}
+  - {id: "ProcessGroup:f2p_supply_planning", name: "Supply planning",
+     edges: {CONTAINS: ["L3ProcessEndpoint:l3_build_supply_plan"]}}
+  - {id: "ProcessGroup:s2c_strategic_sourcing", name: "Strategic sourcing",
+     edges: {CONTAINS: ["L3ProcessEndpoint:l3_qualify_supplier", "L3ProcessEndpoint:l3_award_sourcing_contract"]}}
+  - {id: "ProcessGroup:ptp_production_execution", name: "Production scheduling and execution",
+     edges: {CONTAINS: ["L3ProcessEndpoint:l3_schedule_production", "L3ProcessEndpoint:l3_confirm_production_order"]}}
+  - {id: "ProcessGroup:q2r_quality_release", name: "Quality control and release",
+     edges: {CONTAINS: ["L3ProcessEndpoint:l3_test_product_quality", "L3ProcessEndpoint:l3_release_batch"]}}
+  - {id: "ProcessGroup:w2d_warehouse_transport", name: "Warehouse and transport operations",
+     edges: {CONTAINS: ["L3ProcessEndpoint:l3_pick_pack_dispatch", "L3ProcessEndpoint:l3_plan_execute_transport"]}}
+  - {id: "ProcessGroup:c2c_consumer_marketing", name: "Consumer marketing",
+     edges: {CONTAINS: ["L3ProcessEndpoint:l3_plan_consumer_campaign", "L3ProcessEndpoint:l3_measure_campaign_conversion"]}}
+  - {id: "ProcessGroup:h2r_field_workforce", name: "Field sales workforce",
+     edges: {CONTAINS: ["L3ProcessEndpoint:l3_onboard_sales_reps", "L3ProcessEndpoint:l3_manage_sales_incentives"]}}
+  - {id: "ProcessGroup:r2c_compliance", name: "Product and regulatory compliance",
+     edges: {CONTAINS: ["L3ProcessEndpoint:l3_manage_regulatory_compliance", "L3ProcessEndpoint:l3_manage_product_recall"]}}
+  - {id: "ProcessGroup:d2i_market_insight", name: "Market and consumer insight",
+     edges: {CONTAINS: ["L3ProcessEndpoint:l3_analyse_market_panel_data"]}}

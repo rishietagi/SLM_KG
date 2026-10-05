@@ -1,0 +1,220 @@
+# Finance L3 process endpoints for the commercial thread (drafted; DECISIONS D41). Each has one
+# TriggerEvent and one ProcessOutput. Endpoints realising the five processes named in PROJECT_CONTEXT §6
+# (trade promotion accrual, claim settlement, product costing, inventory provisioning, profitability)
+# carry a review_note saying so.
+class: L3ProcessEndpoint
+defaults:
+  source_system: curated_reference
+  lane: curated
+  extraction_confidence: 1.0
+  reviewed: false
+  drafted_beyond_source: true
+  status: draft
+  source_reference: "docs/PROJECT_CONTEXT.md#6-layer-2-finance-ontology-overlay"
+rows:
+  - id: "L3ProcessEndpoint:l3_value_demand_plan"
+    name: Convert consensus demand to financial forecast
+    trigger_description: Consensus demand approved
+    output_description: Financial forecast by SKU and channel
+    edges: {TRIGGERED_BY: ["TriggerEvent:te_consensus_demand_approved"], PRODUCES: ["ProcessOutput:po_financial_forecast"]}
+  - id: "L3ProcessEndpoint:l3_record_secondary_sales"
+    name: Record secondary sales and sell-out
+    trigger_description: Distributor sell-out data received
+    output_description: Secondary sales record
+    edges: {TRIGGERED_BY: ["TriggerEvent:te_sell_out_received"], PRODUCES: ["ProcessOutput:po_secondary_sales_record"]}
+  - id: "L3ProcessEndpoint:l3_check_credit"
+    name: Check customer credit on order
+    trigger_description: Customer order captured
+    output_description: Order released or credit-blocked
+    edges: {TRIGGERED_BY: ["TriggerEvent:te_order_captured"], PRODUCES: ["ProcessOutput:po_credit_decision"]}
+  - id: "L3ProcessEndpoint:l3_issue_invoice"
+    name: Issue customer invoice
+    trigger_description: Delivery confirmed
+    output_description: Sales invoice
+    edges: {TRIGGERED_BY: ["TriggerEvent:te_delivery_confirmed"], PRODUCES: ["ProcessOutput:po_sales_invoice"]}
+  - id: "L3ProcessEndpoint:l3_apply_cash"
+    name: Apply customer receipts
+    trigger_description: Customer payment received
+    output_description: Receivable cleared
+    edges: {TRIGGERED_BY: ["TriggerEvent:te_payment_received"], PRODUCES: ["ProcessOutput:po_receivable_cleared"]}
+  - id: "L3ProcessEndpoint:l3_resolve_deductions"
+    name: Resolve customer deductions
+    trigger_description: Short payment with deduction received
+    output_description: Deduction resolved or disputed
+    edges: {TRIGGERED_BY: ["TriggerEvent:te_short_payment"], PRODUCES: ["ProcessOutput:po_deduction_resolution"]}
+  - id: "L3ProcessEndpoint:l3_measure_distributor_performance"
+    name: Measure distributor and channel performance
+    trigger_description: Month end
+    output_description: Distributor scorecard
+    edges: {TRIGGERED_BY: ["TriggerEvent:te_month_end"], PRODUCES: ["ProcessOutput:po_distributor_scorecard"]}
+  - id: "L3ProcessEndpoint:l3_set_trade_budget"
+    name: Set annual trade promotion budget
+    trigger_description: Annual operating plan approved
+    output_description: Approved trade budget by brand and channel
+    edges: {TRIGGERED_BY: ["TriggerEvent:te_annual_plan_approved"], PRODUCES: ["ProcessOutput:po_trade_budget"]}
+  - id: "L3ProcessEndpoint:l3_approve_promotion"
+    name: Approve promotion financials
+    trigger_description: Promotion proposal submitted
+    output_description: Approved promotion with funded budget
+    edges: {TRIGGERED_BY: ["TriggerEvent:te_promotion_proposed"], PRODUCES: ["ProcessOutput:po_approved_promotion"]}
+  - id: "L3ProcessEndpoint:l3_accrue_trade_promotion"
+    name: Accrue trade promotion liability
+    review_note: "Realises 'trade promotion accrual' named in PROJECT_CONTEXT §6."
+    trigger_description: Promoted sales invoiced
+    output_description: Promotion accrual posted
+    edges: {TRIGGERED_BY: ["TriggerEvent:te_promoted_sales_invoiced"], PRODUCES: ["ProcessOutput:po_promotion_accrual"]}
+  - id: "L3ProcessEndpoint:l3_close_trade_accruals"
+    name: True up trade accruals at period end
+    trigger_description: Period end
+    output_description: Trued-up trade accruals
+    edges: {TRIGGERED_BY: ["TriggerEvent:te_period_end"], PRODUCES: ["ProcessOutput:po_trued_up_accruals"]}
+  - id: "L3ProcessEndpoint:l3_validate_scheme_claims"
+    name: Validate trade scheme claims
+    trigger_description: Scheme claim received from customer
+    output_description: Claim approved, partly approved or rejected
+    edges: {TRIGGERED_BY: ["TriggerEvent:te_claim_received"], PRODUCES: ["ProcessOutput:po_claim_decision"]}
+  - id: "L3ProcessEndpoint:l3_settle_claims"
+    name: Settle approved claims
+    review_note: "Realises 'claim settlement' named in PROJECT_CONTEXT §6."
+    trigger_description: Claim approved
+    output_description: Credit note or settlement issued
+    edges: {TRIGGERED_BY: ["TriggerEvent:te_claim_approved"], PRODUCES: ["ProcessOutput:po_claim_settlement"]}
+  - id: "L3ProcessEndpoint:l3_evaluate_promotion_roi"
+    name: Evaluate post-event promotion ROI
+    trigger_description: Promotion period closed
+    output_description: Promotion result (incremental volume, revenue, margin)
+    edges: {TRIGGERED_BY: ["TriggerEvent:te_promotion_closed"], PRODUCES: ["ProcessOutput:po_promotion_result"]}
+  - id: "L3ProcessEndpoint:l3_maintain_price_conditions"
+    name: Maintain price conditions
+    trigger_description: Price change approved
+    output_description: Price condition record
+    edges: {TRIGGERED_BY: ["TriggerEvent:te_price_change_approved"], PRODUCES: ["ProcessOutput:po_price_condition"]}
+  - id: "L3ProcessEndpoint:l3_analyse_profitability"
+    name: Analyse SKU, customer and channel profitability
+    review_note: "Realises 'profitability' named in PROJECT_CONTEXT §6."
+    trigger_description: Period close completed
+    output_description: Profitability report
+    edges: {TRIGGERED_BY: ["TriggerEvent:te_period_close_completed"], PRODUCES: ["ProcessOutput:po_profitability_report"]}
+  - id: "L3ProcessEndpoint:l3_calculate_standard_cost"
+    name: Calculate standard product cost
+    review_note: "Realises 'product costing' named in PROJECT_CONTEXT §6."
+    trigger_description: New SKU released or annual cost roll
+    output_description: Standard cost by SKU
+    edges: {TRIGGERED_BY: ["TriggerEvent:te_cost_roll"], PRODUCES: ["ProcessOutput:po_standard_cost"]}
+  - id: "L3ProcessEndpoint:l3_analyse_manufacturing_variance"
+    name: Analyse manufacturing cost variance
+    trigger_description: Production order closed
+    output_description: Manufacturing variance analysis
+    edges: {TRIGGERED_BY: ["TriggerEvent:te_production_order_closed"], PRODUCES: ["ProcessOutput:po_variance_analysis"]}
+  - id: "L3ProcessEndpoint:l3_provision_inventory"
+    name: Provision slow-moving and expired inventory
+    review_note: "Realises 'inventory provisioning' named in PROJECT_CONTEXT §6."
+    trigger_description: Inventory ageing review
+    output_description: Inventory provision
+    edges: {TRIGGERED_BY: ["TriggerEvent:te_ageing_review"], PRODUCES: ["ProcessOutput:po_inventory_provision"]}
+  - id: "L3ProcessEndpoint:l3_match_and_pay_supplier"
+    name: Match and pay supplier invoices
+    trigger_description: Supplier invoice received
+    output_description: Supplier payment
+    edges: {TRIGGERED_BY: ["TriggerEvent:te_supplier_invoice_received"], PRODUCES: ["ProcessOutput:po_supplier_payment"]}
+  # --- non-finance L3 processes (scope change, D51) ---
+  - id: "L3ProcessEndpoint:l3_develop_test_concept"
+    name: "Develop and test product concept"
+    trigger_description: "Innovation brief issued"
+    output_description: "Validated product concept"
+    edges: {TRIGGERED_BY: ["TriggerEvent:te_develop_test_concept"], PRODUCES: ["ProcessOutput:po_develop_test_concept"]}
+  - id: "L3ProcessEndpoint:l3_stage_gate_launch"
+    name: "Approve launch at stage gate"
+    trigger_description: "Launch-ready specification submitted"
+    output_description: "Launch decision"
+    edges: {TRIGGERED_BY: ["TriggerEvent:te_stage_gate_launch"], PRODUCES: ["ProcessOutput:po_stage_gate_launch"]}
+  - id: "L3ProcessEndpoint:l3_generate_baseline_forecast"
+    name: "Generate statistical baseline forecast"
+    trigger_description: "Planning cycle opened"
+    output_description: "Baseline forecast"
+    edges: {TRIGGERED_BY: ["TriggerEvent:te_generate_baseline_forecast"], PRODUCES: ["ProcessOutput:po_generate_baseline_forecast"]}
+  - id: "L3ProcessEndpoint:l3_run_consensus_review"
+    name: "Run consensus demand review"
+    trigger_description: "Baseline and uplift forecasts ready"
+    output_description: "Consensus demand"
+    edges: {TRIGGERED_BY: ["TriggerEvent:te_run_consensus_review"], PRODUCES: ["ProcessOutput:po_run_consensus_review"]}
+  - id: "L3ProcessEndpoint:l3_build_supply_plan"
+    name: "Build constrained supply plan"
+    trigger_description: "Consensus demand approved"
+    output_description: "Constrained supply plan"
+    edges: {TRIGGERED_BY: ["TriggerEvent:te_build_supply_plan"], PRODUCES: ["ProcessOutput:po_build_supply_plan"]}
+  - id: "L3ProcessEndpoint:l3_qualify_supplier"
+    name: "Qualify supplier"
+    trigger_description: "New material requirement raised"
+    output_description: "Qualified supplier"
+    edges: {TRIGGERED_BY: ["TriggerEvent:te_qualify_supplier"], PRODUCES: ["ProcessOutput:po_qualify_supplier"]}
+  - id: "L3ProcessEndpoint:l3_award_sourcing_contract"
+    name: "Run sourcing event and award contract"
+    trigger_description: "Sourcing need approved"
+    output_description: "Awarded contract"
+    edges: {TRIGGERED_BY: ["TriggerEvent:te_award_sourcing_contract"], PRODUCES: ["ProcessOutput:po_award_sourcing_contract"]}
+  - id: "L3ProcessEndpoint:l3_schedule_production"
+    name: "Schedule production"
+    trigger_description: "Supply plan released"
+    output_description: "Production schedule"
+    edges: {TRIGGERED_BY: ["TriggerEvent:te_schedule_production"], PRODUCES: ["ProcessOutput:po_schedule_production"]}
+  - id: "L3ProcessEndpoint:l3_confirm_production_order"
+    name: "Execute and confirm production order"
+    trigger_description: "Production order released"
+    output_description: "Confirmed production order"
+    edges: {TRIGGERED_BY: ["TriggerEvent:te_confirm_production_order"], PRODUCES: ["ProcessOutput:po_confirm_production_order"]}
+  - id: "L3ProcessEndpoint:l3_test_product_quality"
+    name: "Perform in-process and finished-goods testing"
+    trigger_description: "Batch in process"
+    output_description: "Quality test results"
+    edges: {TRIGGERED_BY: ["TriggerEvent:te_test_product_quality"], PRODUCES: ["ProcessOutput:po_test_product_quality"]}
+  - id: "L3ProcessEndpoint:l3_release_batch"
+    name: "Release or quarantine batch"
+    trigger_description: "Test results available"
+    output_description: "Batch release decision"
+    edges: {TRIGGERED_BY: ["TriggerEvent:te_release_batch"], PRODUCES: ["ProcessOutput:po_release_batch"]}
+  - id: "L3ProcessEndpoint:l3_pick_pack_dispatch"
+    name: "Pick, pack and dispatch orders"
+    trigger_description: "Order allocated"
+    output_description: "Dispatched shipment"
+    edges: {TRIGGERED_BY: ["TriggerEvent:te_pick_pack_dispatch"], PRODUCES: ["ProcessOutput:po_pick_pack_dispatch"]}
+  - id: "L3ProcessEndpoint:l3_plan_execute_transport"
+    name: "Plan and execute transport"
+    trigger_description: "Shipment ready"
+    output_description: "Delivered shipment"
+    edges: {TRIGGERED_BY: ["TriggerEvent:te_plan_execute_transport"], PRODUCES: ["ProcessOutput:po_plan_execute_transport"]}
+  - id: "L3ProcessEndpoint:l3_plan_consumer_campaign"
+    name: "Plan and execute consumer campaign"
+    trigger_description: "Campaign brief approved"
+    output_description: "Live campaign"
+    edges: {TRIGGERED_BY: ["TriggerEvent:te_plan_consumer_campaign"], PRODUCES: ["ProcessOutput:po_plan_consumer_campaign"]}
+  - id: "L3ProcessEndpoint:l3_measure_campaign_conversion"
+    name: "Measure campaign conversion"
+    trigger_description: "Campaign period closed"
+    output_description: "Conversion report"
+    edges: {TRIGGERED_BY: ["TriggerEvent:te_measure_campaign_conversion"], PRODUCES: ["ProcessOutput:po_measure_campaign_conversion"]}
+  - id: "L3ProcessEndpoint:l3_onboard_sales_reps"
+    name: "Recruit and onboard field sales representatives"
+    trigger_description: "Territory vacancy"
+    output_description: "Onboarded representative"
+    edges: {TRIGGERED_BY: ["TriggerEvent:te_onboard_sales_reps"], PRODUCES: ["ProcessOutput:po_onboard_sales_reps"]}
+  - id: "L3ProcessEndpoint:l3_manage_sales_incentives"
+    name: "Manage field sales incentives"
+    trigger_description: "Sales targets set"
+    output_description: "Incentive payout"
+    edges: {TRIGGERED_BY: ["TriggerEvent:te_manage_sales_incentives"], PRODUCES: ["ProcessOutput:po_manage_sales_incentives"]}
+  - id: "L3ProcessEndpoint:l3_manage_regulatory_compliance"
+    name: "Manage regulatory registration and labelling compliance"
+    trigger_description: "New or changed product"
+    output_description: "Compliant registration and label"
+    edges: {TRIGGERED_BY: ["TriggerEvent:te_manage_regulatory_compliance"], PRODUCES: ["ProcessOutput:po_manage_regulatory_compliance"]}
+  - id: "L3ProcessEndpoint:l3_manage_product_recall"
+    name: "Manage product recall"
+    trigger_description: "Quality issue escalated"
+    output_description: "Recall closure report"
+    edges: {TRIGGERED_BY: ["TriggerEvent:te_manage_product_recall"], PRODUCES: ["ProcessOutput:po_manage_product_recall"]}
+  - id: "L3ProcessEndpoint:l3_analyse_market_panel_data"
+    name: "Analyse market, retail audit and panel data"
+    trigger_description: "Data refresh received"
+    output_description: "Market insight pack"
+    edges: {TRIGGERED_BY: ["TriggerEvent:te_analyse_market_panel_data"], PRODUCES: ["ProcessOutput:po_analyse_market_panel_data"]}

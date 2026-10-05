@@ -15,3 +15,11 @@ rows:
   - {from: "ValueChainActivity:s06_consensus_forecast",      to: "ValueOutcome:forecast_quality"}
   - {from: "ValueChainActivity:s08_set_pricing_terms",       to: "ValueOutcome:gross_margin"}
   - {from: "ValueChainActivity:s07_deliver",                 to: "ValueOutcome:service_level"}
+  - {from: "ValueChainActivity:s08_capture_order", to: "ValueOutcome:primary_sales_volume"}
+  - {from: "ValueChainActivity:s07_monitor_freshness_expiry", to: "ValueOutcome:inventory_health"}
+  - {from: "ValueChainActivity:s06_set_inventory_target", to: "ValueOutcome:inventory_health"}
+  - {from: "ValueChainActivity:s05_record_yield_loss_downtime", to: "ValueOutcome:manufacturing_efficiency"}
+  - {from: "ValueChainActivity:s05_finished_product_testing", to: "ValueOutcome:product_quality"}
+  - {from: "ValueChainActivity:s08_set_pricing_terms", to: "ValueOutcome:net_revenue_realisation"}
+  - {from: "ValueChainActivity:s06_set_inventory_target", to: "ValueOutcome:working_capital_efficiency"}
+  - {from: "ValueChainActivity:s08_negotiate_customer_agreement", to: "ValueOutcome:working_capital_efficiency"}

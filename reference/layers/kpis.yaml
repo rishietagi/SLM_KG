@@ -1,0 +1,62 @@
+# KPI definitions (curated). Names come from the Layer 5 list in the design notes; definitions,
+# formulas and owners are drafted (D42).
+class: KPI
+defaults:
+  source_system: curated_reference
+  lane: curated
+  extraction_confidence: 1.0
+  reviewed: false
+  drafted_beyond_source: true
+  source_reference: "docs/source/cpg_value_chain_design.md#layer-5-performance-and-risk"
+  aggregation_method: sum-then-ratio
+  reporting_frequency: monthly
+  owner: Commercial Finance
+rows:
+  - {id: "KPI:sell_through_rate", name: Sell-through rate, unit: "%",
+     business_definition: "Share of units shipped to a distributor that sold out to outlets in the period.",
+     formula: "sell_out_units / primary_units"}
+  - {id: "KPI:numeric_distribution", name: Numeric distribution, unit: "%", owner: Sales Operations,
+     business_definition: "Share of outlets in the universe that stocked the SKU.", formula: "outlets_stocking / outlet_universe"}
+  - {id: "KPI:weighted_distribution", name: Weighted distribution, unit: "%", owner: Sales Operations,
+     business_definition: "Category sales share of outlets that stocked the SKU.", formula: "category_sales_of_stocking_outlets / total_category_sales"}
+  - {id: "KPI:on_shelf_availability", name: On-shelf availability, unit: "%", owner: Sales Operations,
+     business_definition: "Share of outlet visits where the SKU was on shelf.", formula: "visits_on_shelf / visits"}
+  - {id: "KPI:trade_spend_roi", name: Trade-spend ROI, unit: ratio,
+     business_definition: "Incremental gross margin generated per unit of trade spend.", formula: "incremental_margin / trade_spend"}
+  - {id: "KPI:incremental_volume", name: Incremental volume, unit: units,
+     business_definition: "Promoted-period volume above baseline.", formula: "actual_units - baseline_units"}
+  - {id: "KPI:claim_settlement_cycle_time", name: Claim settlement cycle time, unit: days, aggregation_method: average,
+     business_definition: "Days from claim receipt to settlement.", formula: "avg(settlement_date - claim_date)"}
+  - {id: "KPI:claim_approval_rate", name: Claim approval rate, unit: "%",
+     business_definition: "Approved claim value as a share of claimed value.", formula: "approved_amount / claim_amount"}
+  - {id: "KPI:forecast_accuracy", name: Forecast accuracy, unit: "%", owner: Demand Planning,
+     business_definition: "One minus weighted absolute percentage error of the consensus forecast.", formula: "1 - sum(|actual - forecast|) / sum(actual)"}
+  - {id: "KPI:gross_margin_pct", name: Gross margin %, unit: "%",
+     business_definition: "Net revenue less cost of goods, over net revenue.", formula: "(net_revenue - cogs) / net_revenue"}
+  - {id: "KPI:otif", name: On-time in-full, unit: "%", owner: Supply Chain,
+     business_definition: "Share of orders delivered on time and complete.", formula: "orders_otif / orders"}
+  # --- remaining Layer 5 performance concepts (scope change, D52) ---
+  - {id: "KPI:primary_sales", name: "Primary sales", unit: "value",
+     business_definition: "Company sales invoiced to distributors and direct customers.", formula: "sum(invoiced_net_value)"}
+  - {id: "KPI:secondary_sales", name: "Secondary sales", unit: "value",
+     business_definition: "Sales from distributors to outlets.", formula: "sum(distributor_to_outlet_value)"}
+  - {id: "KPI:sell_out_volume", name: "Sell-out", unit: "units",
+     business_definition: "Units sold by outlets to consumers.", formula: "sum(outlet_units_sold)"}
+  - {id: "KPI:inventory_freshness", name: "Inventory and freshness", unit: "days",
+     business_definition: "Days of cover and share of stock within its freshness window.", formula: "stock / avg_daily_sales; fresh_stock / stock"}
+  - {id: "KPI:yield", name: "Yield", unit: "%",
+     business_definition: "Good output as a share of theoretical output.", formula: "good_output / theoretical_output"}
+  - {id: "KPI:waste", name: "Waste", unit: "%",
+     business_definition: "Material lost or scrapped as a share of input.", formula: "scrap / input"}
+  - {id: "KPI:oee", name: "OEE", unit: "%",
+     business_definition: "Overall equipment effectiveness: availability x performance x quality.", formula: "availability * performance * quality"}
+  - {id: "KPI:quality_non_conformance", name: "Quality and non-conformance", unit: "%",
+     business_definition: "Share of batches or lots failing specification.", formula: "non_conforming_batches / batches"}
+  - {id: "KPI:revenue_gross_to_net", name: "Revenue and gross-to-net", unit: "%",
+     business_definition: "Net revenue after discounts, rebates and trade spend, as a share of gross revenue.", formula: "net_revenue / gross_revenue"}
+  - {id: "KPI:price_realization", name: "Price realization", unit: "%",
+     business_definition: "Realised net price versus list price.", formula: "net_price / list_price"}
+  - {id: "KPI:contribution_margin", name: "Contribution margin", unit: "%",
+     business_definition: "Net revenue less variable costs, over net revenue.", formula: "(net_revenue - variable_cost) / net_revenue"}
+  - {id: "KPI:working_capital", name: "Working capital", unit: "days",
+     business_definition: "Cash conversion cycle: inventory days plus receivable days less payable days.", formula: "DIO + DSO - DPO"}

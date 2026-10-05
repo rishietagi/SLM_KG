@@ -6,22 +6,24 @@ This document is the full design context for the Consumer Markets SLM knowledge 
 
 ## 1. Purpose and scope
 
-We are building **one evolving knowledge graph** for the CPG (FMCG) sector that will ground a sector-specialised small language model (SLM). The graph is organised in six intelligence layers. The innermost layer, the CPG value chain, is the spine. Every outer layer enriches the same nodes rather than forming a separate graph.
+We are building **one evolving knowledge graph** for the CPG sector (consumer packaged goods; FMCG is one part of it) that will ground a sector-specialised small language model (SLM).
 
-The SLM must eventually answer multi-hop questions that document-only RAG cannot, for example:
+> **Scope (owner decision 2026-10-05, DECISIONS D50):** the graph is a sector **intelligence layer**: the value chain, functional processes (L1/L2/L3), product and asset concepts, ecosystem and channel, performance and risk, and consumer and experience, all at concept level. It holds **no transactional or party data** (no invoices, orders, claims, sell-out, client companies or people). The graph is organised in six intelligence layers. The innermost layer, the CPG value chain, is the spine. Every outer layer enriches the same nodes rather than forming a separate graph.
 
-> Which trade promotions generated distributor loading but failed to produce outlet-level sell-through or repeat consumer purchase?
+The SLM must answer multi-hop questions about how the sector works that document-only RAG cannot, for example:
 
-That question traverses:
-`TradePromotion → CustomerOrder → DistributorInventory → OutletAvailability → SellOutTransaction → PurchaseEvent → RepeatPurchase → PromotionSpend → Margin`
+> Which L3 processes enable outlet execution, which KPIs measure it, which risks threaten it, and which consumer moments does it lead to?
+
+That question traverses all six layers through the value-chain spine:
+`L3ProcessEndpoint ← ENABLED_BY ← ValueChainActivity → CREATES → ValueOutcome → MEASURED_BY → KPI`, `RiskType → AFFECTS → ValueChainActivity`, `ValueChainActivity → TOUCHES → ConsumerConcept`.
 
 **Primary acceptance criterion:** successful multi-hop retrieval. Raw node count is not a success measure. A previous platform assessment found nodes generated without the relationships needed for connected queries, so connectedness is tested from day one.
 
-**Scope of this build (quick MVP):**
+**Scope of this build:**
 - Layer 1 (value chain) fully modelled as a curated reference graph.
-- Layer 2 finance processes overlaid from the existing Finance L3 ontology.
-- Only the MVP commercial thread (Section 9) populated with instance data across Layers 3–6.
-- Deeper enrichment of Layers 3–6 comes after the MVP.
+- Layer 2: 14 functional process areas (L1) → process groups (L2) → L3 processes, including the finance processes from the Finance L3 ontology.
+- Layers 3–6: sector concepts (product and asset, ecosystem and channel, KPIs and risk types, consumer and experience) linked to the spine by hooks and to each other by the §5.4 relationships.
+- Deeper enrichment (more L3 processes, more concepts, sub-sector variation) comes later, layer by layer.
 
 ---
 
@@ -263,6 +265,8 @@ Other fixes:
 
 ## 9. MVP boundary — the commercial thread
 
+> **Superseded by D50 (2026-10-05).** The MVP is now "all six layers at concept level"; no instance data is loaded. The section below is kept for history.
+
 ```
 Consumer insight → demand forecast → SKU and pack → distributor → outlet
 → promotion → availability → sell-out → margin → consumer response
@@ -285,7 +289,9 @@ Priority relationships: BELONGS_TO_*, TARGETS, APPLIES_TO, FORECASTS, STOCKS, LO
 2. Human review (owner marks `reviewed: true`).
 3. Validate against ontology → write parquet → load.
 
-### 10.2 Extracted lane (instance data)
+### 10.2 Extracted lane (instance data) — deferred (D50)
+
+Not in the current scope; kept as the design for any future document-derived knowledge.
 1. **Chunk** source documents; record file/page/section for provenance.
 2. **Route** each chunk to the relevant ontology slice (e.g., order-to-cash, trade promotion) so the model only sees the classes it needs.
 3. **Extract** with an LLM forced to return output matching a JSON schema generated from the ontology (tool/function call with schema, not "please return JSON"). The LLM client is pluggable (`extract/llm_client.py`) so it can point at an approved endpoint.
@@ -318,13 +324,13 @@ Layer 1 (Phase 1):
 3. Which activities depend on the consensus demand forecast?
 4. How does Stage 5 differ between food & beverage and home care?
 
-Cross-layer (Phases 2–3):
-5. Which finance L3 processes enable outlet execution activities?
-6. Which trade promotions loaded distributors but did not produce outlet sell-through?
-7. For promotion X, what was claimed, approved and settled, against which invoices and SKUs?
-8. Which micro-markets show low on-shelf availability for SKUs under active promotion?
-9. Which SKUs have declining margin driven by rising trade spend?
-10. Which consumer complaints trace back to a specific batch and plant?
+Cross-layer (concept level, D54):
+5. Which L3 processes enable outlet execution activities? (L2)
+6. Which KPIs measure outlet-execution outcomes, and which risk types affect those activities? (L5)
+7. Which product and asset concepts does manufacturing act on, and how do they relate to each other? (L3)
+8. Which ecosystem participants and channels are involved from warehouse to consumer purchase (Stages 7–10)? (L4)
+9. Which consumer concepts does Stage 10 touch, and what can a complaint be traced back to (complaint → batch → plant)? (L6 → L3)
+10. Which L2/L3 processes in trade-promotion management enable which activities across stages? (L2, cross-stage)
 
 ---
 
@@ -341,17 +347,16 @@ Three phases. Each starts in plan mode and ends with its exit criteria green.
 - Validators + orphan check; Claude Code hook, subagents and extraction skill set up.
 - **Exit:** `make validate` green, zero undeclared classes, Layer-1 graph loaded, competency questions 1–4 pass.
 
-### Phase 2 — Finance overlay and MVP extraction
-- Ingest Finance L3 endpoints; map to value-chain activities with `ENABLED_BY`.
-- Seeded synthetic CPG dataset generator with planted patterns.
-- Extraction pipeline (chunk → route → extract → validate → resolve → load), run on synthetic documents.
-- **Exit:** MVP entities loaded with provenance, orphan rate within target, competency questions 5–7 pass.
+### Phase 2 — Six-layer intelligence graph and viewer (revised 2026-10-05, D50)
+- Layer 2: 14 process areas → L2 groups → ~40 L3 processes, mapped to activities with `ENABLED_BY`.
+- Layers 3–6: concept classes and curated concept nodes from the six-layer lists, hook edges to activities, §5.4 concept relationships.
+- Concept-level competency questions 5–10; viewer as a concept explorer (layered / rings / force views, activity 360°).
+- **Exit:** all six layers populated, 0 orphans, competency questions 1–10 pass, viewer finished.
 
 ### Phase 3 — Retrieval and SLM readiness
 - Hybrid retrieval module + simple CLI (`kg ask "..."`) that returns answer paths with provenance.
-- Remaining competency questions as tests.
-- Training-pair generator → `exports/training/v0.jsonl`; graph export for the in-house console.
-- **Exit:** competency questions 1–10 pass on synthetic data, training set v0 exported, export round-trips.
+- Training-pair generator → `exports/training/v0.jsonl` (definition, adjacency, cross-layer path and sub-sector Q&A from the graph); graph export for the in-house console.
+- **Exit:** competency questions 1–10 pass, training set v0 exported, export round-trips.
 
 After Phase 3: deepen Layers 3–6 one at a time using the same pattern (competency questions → ontology additions through hooks → ingestion → tests).
 

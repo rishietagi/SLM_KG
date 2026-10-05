@@ -16,12 +16,12 @@ classes:
     spec_ref: docs/source/finance_extraction_spec.md
   ProcessGroup:
     layer: 2
-    description: "L2 grouping of related Finance processes."
+    description: "L2 grouping of related processes (finance and, since D50, all functional processes under a ProcessArea)."
     source_key: processGroupID
     spec_ref: docs/source/finance_extraction_spec.md
   L3ProcessEndpoint:
     layer: 2
-    description: "Executable Finance process beginning with a trigger and producing a defined output."
+    description: "Executable L3 process beginning with a trigger and producing a defined output (finance and other functional processes)."
     source_key: processEndpointID
     spec_ref: docs/source/finance_extraction_spec.md
     attributes:
@@ -467,7 +467,7 @@ classes:
       status:  {type: string, required: true}
   Forecast:
     layer: 2
-    description: "Expected future financial result. Distinct from DemandForecast (volume, Stage 6)."
+    description: "Expected future financial result."
     source_key: forecastID
     spec_ref: docs/source/finance_extraction_spec.md
     attributes:

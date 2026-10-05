@@ -1,0 +1,40 @@
+# Level-1 functional processes (Layer 2). Names from PROJECT_CONTEXT §2 and the design notes' Layer 2 list.
+class: ProcessArea
+defaults:
+  source_system: curated_reference
+  lane: curated
+  extraction_confidence: 1.0
+  reviewed: false
+  drafted_beyond_source: false
+  source_reference: "docs/source/cpg_value_chain_design.md#layer-2-functional-processes"
+edge_defaults:
+  CONTAINS: {drafted_beyond_source: true}
+rows:
+  - {id: "ProcessArea:idea_to_launch", name: "Idea-to-launch", process_code: I2L,
+     edges: {CONTAINS: ["ProcessGroup:i2l_product_development"]}}
+  - {id: "ProcessArea:forecast_to_plan", name: "Forecast-to-plan", process_code: F2P,
+     edges: {CONTAINS: ["ProcessGroup:f2p_demand_planning", "ProcessGroup:f2p_supply_planning", "ProcessGroup:pbf_volume_to_value"]}}
+  - {id: "ProcessArea:source_to_contract", name: "Source-to-contract", process_code: S2C,
+     edges: {CONTAINS: ["ProcessGroup:s2c_strategic_sourcing"]}}
+  - {id: "ProcessArea:procure_to_pay", name: "Procure-to-pay", process_code: P2P,
+     edges: {CONTAINS: ["ProcessGroup:p2p_purchase_to_pay"]}}
+  - {id: "ProcessArea:plan_to_produce", name: "Plan-to-produce", process_code: PTP,
+     edges: {CONTAINS: ["ProcessGroup:ptp_production_execution"]}}
+  - {id: "ProcessArea:quality_to_release", name: "Quality-to-release", process_code: Q2R,
+     edges: {CONTAINS: ["ProcessGroup:q2r_quality_release"]}}
+  - {id: "ProcessArea:order_to_cash", name: "Order-to-cash", process_code: O2C,
+     edges: {CONTAINS: ["ProcessGroup:o2c_billing", "ProcessGroup:o2c_collections", "ProcessGroup:o2c_deductions", "ProcessGroup:pp_pricing"]}}
+  - {id: "ProcessArea:warehouse_to_delivery", name: "Warehouse-to-delivery", process_code: W2D,
+     edges: {CONTAINS: ["ProcessGroup:w2d_warehouse_transport"]}}
+  - {id: "ProcessArea:campaign_to_conversion", name: "Campaign-to-conversion", process_code: C2C,
+     edges: {CONTAINS: ["ProcessGroup:c2c_consumer_marketing"]}}
+  - {id: "ProcessArea:trade_promotion_management", name: "Trade-promotion management", process_code: TPM,
+     edges: {CONTAINS: ["ProcessGroup:gtn_trade_planning", "ProcessGroup:gtn_accrual", "ProcessGroup:gtn_claims", "ProcessGroup:gtn_evaluation"]}}
+  - {id: "ProcessArea:record_to_report", name: "Record-to-report", process_code: R2R,
+     edges: {CONTAINS: ["ProcessGroup:r2r_revenue_recording", "ProcessGroup:pc_costing", "ProcessGroup:ia_valuation", "ProcessGroup:pp_profitability"]}}
+  - {id: "ProcessArea:hire_to_retire", name: "Hire-to-retire", process_code: H2R,
+     edges: {CONTAINS: ["ProcessGroup:h2r_field_workforce"]}}
+  - {id: "ProcessArea:risk_to_compliance", name: "Risk-to-compliance", process_code: R2C,
+     edges: {CONTAINS: ["ProcessGroup:r2c_compliance"]}}
+  - {id: "ProcessArea:data_to_insight", name: "Data-to-insight", process_code: D2I,
+     edges: {CONTAINS: ["ProcessGroup:d2i_market_insight", "ProcessGroup:cf_distributor_performance"]}}

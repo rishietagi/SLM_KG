@@ -1,6 +1,6 @@
 {
   "additionalProperties": false,
-  "description": "Expected future financial result. Distinct from DemandForecast (volume, Stage 6). (layer 2)",
+  "description": "Expected future financial result. (layer 2)",
   "properties": {
     "id": {
       "title": "Id",

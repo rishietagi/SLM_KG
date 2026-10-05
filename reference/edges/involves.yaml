@@ -1,0 +1,44 @@
+# Layer-4 hook: activity INVOLVES ecosystem concept (links drafted).
+relationship: INVOLVES
+defaults:
+  source_system: curated_reference
+  lane: curated
+  extraction_confidence: 1.0
+  reviewed: false
+  drafted_beyond_source: true
+  source_reference: "docs/PROJECT_CONTEXT.md#53-cross-layer-hook-relationships"
+rows:
+  - {from: "ValueChainActivity:s04_qualify_suppliers", to: "EcosystemConcept:ingredient_supplier"}
+  - {from: "ValueChainActivity:s04_place_purchase_order", to: "EcosystemConcept:ingredient_supplier"}
+  - {from: "ValueChainActivity:s04_qualify_suppliers", to: "EcosystemConcept:packaging_supplier"}
+  - {from: "ValueChainActivity:s04_approve_ingredients_packaging", to: "EcosystemConcept:packaging_supplier"}
+  - {from: "ValueChainActivity:s05_create_production_plan", to: "EcosystemConcept:contract_manufacturer"}
+  - {from: "ValueChainActivity:s05_create_production_plan", to: "EcosystemConcept:co_packer"}
+  - {from: "ValueChainActivity:s05_package_label", to: "EcosystemConcept:co_packer"}
+  - {from: "ValueChainActivity:s07_plan_transport", to: "EcosystemConcept:third_party_logistics"}
+  - {from: "ValueChainActivity:s07_deliver", to: "EcosystemConcept:third_party_logistics"}
+  - {from: "ValueChainActivity:s07_receive_finished_goods", to: "EcosystemConcept:cnf_agent"}
+  - {from: "ValueChainActivity:s07_dispatch_shipment", to: "EcosystemConcept:cnf_agent"}
+  - {from: "ValueChainActivity:s08_manage_distributor_performance", to: "EcosystemConcept:distributor"}
+  - {from: "ValueChainActivity:s08_capture_order", to: "EcosystemConcept:distributor"}
+  - {from: "ValueChainActivity:s07_deliver", to: "EcosystemConcept:distributor"}
+  - {from: "ValueChainActivity:s08_design_route_to_market", to: "EcosystemConcept:sub_distributor"}
+  - {from: "ValueChainActivity:s08_design_route_to_market", to: "EcosystemConcept:wholesaler"}
+  - {from: "ValueChainActivity:s09_capture_order", to: "EcosystemConcept:wholesaler"}
+  - {from: "ValueChainActivity:s08_joint_business_plan", to: "EcosystemConcept:retailer"}
+  - {from: "ValueChainActivity:s08_negotiate_customer_agreement", to: "EcosystemConcept:retailer"}
+  - {from: "ValueChainActivity:s09_classify_outlet", to: "EcosystemConcept:outlet"}
+  - {from: "ValueChainActivity:s09_visit_outlet", to: "EcosystemConcept:outlet"}
+  - {from: "ValueChainActivity:s09_check_osa", to: "EcosystemConcept:outlet"}
+  - {from: "ValueChainActivity:s08_joint_business_plan", to: "EcosystemConcept:modern_trade_chain"}
+  - {from: "ValueChainActivity:s09_verify_planogram_display", to: "EcosystemConcept:modern_trade_chain"}
+  - {from: "ValueChainActivity:s08_design_route_to_market", to: "EcosystemConcept:ecommerce_marketplace"}
+  - {from: "ValueChainActivity:s10_purchase_product", to: "EcosystemConcept:ecommerce_marketplace"}
+  - {from: "ValueChainActivity:s08_design_route_to_market", to: "EcosystemConcept:quick_commerce_platform"}
+  - {from: "ValueChainActivity:s10_purchase_product", to: "EcosystemConcept:quick_commerce_platform"}
+  - {from: "ValueChainActivity:s08_design_route_to_market", to: "EcosystemConcept:d2c_channel"}
+  - {from: "ValueChainActivity:s10_recommend_review", to: "EcosystemConcept:d2c_channel"}
+  - {from: "ValueChainActivity:s08_segment_customers", to: "EcosystemConcept:food_service_customer"}
+  - {from: "ValueChainActivity:s01_identify_geo_variation", to: "EcosystemConcept:geography"}
+  - {from: "ValueChainActivity:s01_identify_geo_variation", to: "EcosystemConcept:micro_market"}
+  - {from: "ValueChainActivity:s09_plan_sales_beat", to: "EcosystemConcept:micro_market"}

@@ -27,13 +27,24 @@ def collect(store: GraphStore) -> dict:
     for nid, cls in classes.items():
         per_class[cls].append(degree[nid])
 
+    layer_of = {nid: onto.classes[c].layer for nid, c in classes.items()}
+    activities = {i for i, c in classes.items() if c == "ValueChainActivity"}
+    out_by, in_by = defaultdict(set), defaultdict(set)
+    for e in edges:
+        out_by[e["rel"]].add(e["a"])
+        in_by[e["rel"]].add(e["b"])
+    hooks = {"L2 ENABLED_BY": out_by["ENABLED_BY"], "L3 ACTS_ON": out_by["ACTS_ON"], "L4 INVOLVES": out_by["INVOLVES"],
+             "L5 CREATES outcome": out_by["CREATES"], "L5 risk AFFECTS": in_by["AFFECTS"], "L6 TOUCHES": out_by["TOUCHES"]}
+    hook_coverage = {k: (len(v & activities), len(activities)) for k, v in hooks.items()}
+
     # outer layer = any class with layer > 1; path to a ValueChainActivity via the spine
     outer = [i for i, c in classes.items() if onto.classes[c].layer > 1]
     outer_reachable = [i for i in outer if i not in set(orphans)]
 
-    staging = ROOT / "staging"
     return {
         "nodes": len(nodes),
+        "nodes_by_layer": dict(sorted(Counter(layer_of.values()).items())),
+        "hook_coverage": hook_coverage,
         "edges": len(edges),
         "orphans": orphans,
         "orphans_by_lane": Counter(lanes[o] for o in orphans),
@@ -44,27 +55,7 @@ def collect(store: GraphStore) -> dict:
         "unreviewed_nodes": sum(1 for n in nodes if not n["reviewed"]),
         "drafted_nodes": sum(1 for n in nodes if n["drafted"]),
         "drafted_edges": sum(1 for e in edges if e["drafted"]),
-        "rejected": _records(staging / "rejected"),
-        "rejected_by_reason": _rejection_reasons(staging / "rejected"),
-        "unresolved": _records(staging / "unresolved"),
-        "review": _records(staging / "review"),
-        "staged": _records(staging / "extracted"),
     }
-
-
-def _records(directory) -> int:
-    return sum(sum(1 for line in p.open(encoding="utf-8") if line.strip()) for p in directory.glob("*.jsonl"))
-
-
-def _rejection_reasons(directory) -> dict:
-    import json
-
-    out: Counter = Counter()
-    for p in directory.glob("*.jsonl"):
-        for line in p.open(encoding="utf-8"):
-            if line.strip():
-                out.update({r.split(":")[0] for r in json.loads(line)["reasons"]})
-    return dict(out)
 
 
 def render(m: dict) -> str:
@@ -77,13 +68,10 @@ def render(m: dict) -> str:
         f"nodes {m['nodes']}  edges {m['edges']}  (curated {curated}, extracted {extracted})",
         "",
         f"orphans, curated lane      : {curated_orphans} / {curated}   (target 0)",
-        f"orphans, extracted lane    : {m['orphans_by_lane'].get('extracted', 0)} / {extracted}   (target < 5%)",
-        f"outer-layer nodes reaching a ValueChainActivity: {m['outer'][0]} / {m['outer'][1]}"
-        + ("   (no outer-layer instances until Phase 2)" if m["outer"][1] == 0 else ""),
-        f"validation rejections      : {m['rejected']} of {m['staged']} staged records"
-        + (f"  {m['rejected_by_reason']}" if m["rejected_by_reason"] else ""),
-        f"unresolved items           : {m['unresolved']}",
-        f"resolution review queue    : {m['review']}",
+        f"layer 2-6 nodes reaching a ValueChainActivity: {m['outer'][0]} / {m['outer'][1]}",
+
+        "nodes per layer            : " + ", ".join(f"L{k} {v}" for k, v in m["nodes_by_layer"].items()),
+        "activities with hooks      : " + ", ".join(f"{k} {a}/{n}" for k, (a, n) in m["hook_coverage"].items()),
         f"awaiting review            : {m['unreviewed_nodes']} nodes; drafted beyond source: "
         f"{m['drafted_nodes']} nodes, {m['drafted_edges']} edges",
         "",

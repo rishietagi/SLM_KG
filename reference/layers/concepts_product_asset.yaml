@@ -1,0 +1,132 @@
+# Layer 3 product and asset concepts (names: design notes Layer 3 list). Edges: PROJECT_CONTEXT §5.4 / §6.1; uncited ones drafted.
+class: ProductAssetConcept
+defaults:
+  source_system: curated_reference
+  lane: curated
+  extraction_confidence: 1.0
+  reviewed: false
+  drafted_beyond_source: false
+  source_reference: "docs/source/cpg_value_chain_design.md#layer-3-product-and-asset"
+rows:
+  - id: "ProductAssetConcept:brand"
+    name: "Brand"
+    concept_group: portfolio
+    aliases: ["brand"]
+  - id: "ProductAssetConcept:category"
+    name: "Category"
+    concept_group: portfolio
+    aliases: ["product category"]
+  - id: "ProductAssetConcept:product_family"
+    name: "Product family"
+    concept_group: portfolio
+    aliases: ["product line"]
+    edges:
+      BELONGS_TO_BRAND:
+        - {to: "ProductAssetConcept:brand", source_reference: "docs/PROJECT_CONTEXT.md#61-known-defects-in-the-finance-spec-and-proposed-resolutions"}
+      BELONGS_TO_CATEGORY:
+        - {to: "ProductAssetConcept:category", source_reference: "docs/PROJECT_CONTEXT.md#61-known-defects-in-the-finance-spec-and-proposed-resolutions"}
+  - id: "ProductAssetConcept:formulation"
+    name: "Formulation"
+    concept_group: product_definition
+    aliases: ["formula"]
+    edges:
+      CONTAINS:
+        - {to: "ProductAssetConcept:ingredient", source_reference: "docs/PROJECT_CONTEXT.md#54-the-11-stages"}
+  - id: "ProductAssetConcept:recipe"
+    name: "Recipe"
+    description: "Food and beverage form of a formulation: ingredients plus process steps (mixing, cooking, baking). Formulation is the general term across sub-sectors."
+    concept_group: product_definition
+    edges:
+      CONTAINS:
+        - {to: "ProductAssetConcept:ingredient", drafted_beyond_source: true}
+  - id: "ProductAssetConcept:ingredient"
+    name: "Ingredient"
+    concept_group: material_packaging
+    aliases: ["raw material"]
+    edges:
+      CONTAINS:
+        - {to: "ProductAssetConcept:allergen", drafted_beyond_source: true}
+      CONFORMS_TO:
+        - {to: "ProductAssetConcept:quality_specification", source_reference: "docs/PROJECT_CONTEXT.md#54-the-11-stages"}
+  - id: "ProductAssetConcept:allergen"
+    name: "Allergen"
+    concept_group: quality_compliance
+  - id: "ProductAssetConcept:packaging_specification"
+    name: "Packaging specification"
+    concept_group: material_packaging
+    aliases: ["packaging material", "pack spec"]
+  - id: "ProductAssetConcept:pack_price_point"
+    name: "Pack and price point"
+    concept_group: portfolio
+    aliases: ["pack-price point", "PPP"]
+  - id: "ProductAssetConcept:sku"
+    name: "SKU"
+    concept_group: product_definition
+    aliases: ["stock-keeping unit", "item"]
+    edges:
+      BASED_ON:
+        - {to: "ProductAssetConcept:formulation", source_reference: "docs/PROJECT_CONTEXT.md#54-the-11-stages"}
+      REQUIRES:
+        - {to: "ProductAssetConcept:packaging_specification", source_reference: "docs/PROJECT_CONTEXT.md#54-the-11-stages"}
+      HAS:
+        - {to: "ProductAssetConcept:shelf_life", source_reference: "docs/PROJECT_CONTEXT.md#54-the-11-stages"}
+        - {to: "ProductAssetConcept:quality_specification", source_reference: "docs/PROJECT_CONTEXT.md#54-the-11-stages"}
+      BELONGS_TO:
+        - {to: "ProductAssetConcept:product_family", source_reference: "docs/source/finance_extraction_spec.md#3-canonical-relationships"}
+      PRICED_AT:
+        - {to: "ProductAssetConcept:pack_price_point", drafted_beyond_source: true}
+      CONSUMED_IN:
+        - {to: "ConsumerConcept:consumption_occasion", source_reference: "docs/PROJECT_CONTEXT.md#54-the-11-stages"}
+  - id: "ProductAssetConcept:batch"
+    name: "Batch and lot"
+    concept_group: manufacturing
+    aliases: ["batch", "lot"]
+    edges:
+      BASED_ON:
+        - {to: "ProductAssetConcept:formulation", source_reference: "docs/PROJECT_CONTEXT.md#54-the-11-stages"}
+      PRODUCED_AT:
+        - {to: "ProductAssetConcept:plant", source_reference: "docs/PROJECT_CONTEXT.md#54-the-11-stages"}
+      PRODUCED_ON:
+        - {to: "ProductAssetConcept:manufacturing_line", source_reference: "docs/PROJECT_CONTEXT.md#54-the-11-stages"}
+      PACKAGED_AS:
+        - {to: "ProductAssetConcept:sku", source_reference: "docs/PROJECT_CONTEXT.md#54-the-11-stages"}
+  - id: "ProductAssetConcept:manufacturing_line"
+    name: "Manufacturing line"
+    concept_group: manufacturing
+    aliases: ["production line"]
+  - id: "ProductAssetConcept:plant"
+    name: "Plant"
+    concept_group: manufacturing
+    aliases: ["factory", "manufacturing site"]
+    edges:
+      HAS:
+        - {to: "ProductAssetConcept:certification", drafted_beyond_source: true}
+  - id: "ProductAssetConcept:warehouse"
+    name: "Warehouse"
+    concept_group: logistics
+    aliases: ["distribution centre", "DC"]
+  - id: "ProductAssetConcept:finished_good"
+    name: "Finished good"
+    concept_group: product_definition
+    aliases: ["FG"]
+    edges:
+      STORED_AT:
+        - {to: "ProductAssetConcept:warehouse", source_reference: "docs/PROJECT_CONTEXT.md#54-the-11-stages"}
+  - id: "ProductAssetConcept:shelf_life"
+    name: "Shelf life"
+    concept_group: quality_compliance
+    aliases: ["best-before"]
+  - id: "ProductAssetConcept:quality_specification"
+    name: "Quality specification"
+    concept_group: quality_compliance
+    aliases: ["product specification"]
+  - id: "ProductAssetConcept:product_claim"
+    name: "Product claim"
+    concept_group: quality_compliance
+    aliases: ["on-pack claim"]
+    edges:
+      SUPPORTED_BY:
+        - {to: "ProductAssetConcept:certification", drafted_beyond_source: true}
+  - id: "ProductAssetConcept:certification"
+    name: "Certification"
+    concept_group: quality_compliance

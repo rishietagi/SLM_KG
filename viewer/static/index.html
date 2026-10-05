@@ -30,6 +30,7 @@
   .cy { background-image: radial-gradient(rgba(148,163,184,.18) 1px, transparent 1px); background-size: 22px 22px; }
   .fade-in { animation: fade .25s ease; }
   @keyframes fade { from { opacity: 0; transform: translateY(4px); } to { opacity: 1; transform: none; } }
+  details > summary { list-style: none; } details > summary::-webkit-details-marker { display: none; }
 </style>
 </head>
 <body class="h-full bg-slate-50 text-slate-800 dark:bg-slate-950 dark:text-slate-200 font-sans antialiased">
@@ -39,11 +40,11 @@
   <header class="flex flex-wrap items-center gap-x-6 gap-y-2 border-b border-slate-200 bg-white/80 px-5 py-3 backdrop-blur dark:border-slate-800 dark:bg-slate-900/70">
     <div class="flex items-center gap-3">
       <div class="grid h-9 w-9 place-items-center rounded-xl bg-gradient-to-br from-indigo-500 via-sky-500 to-emerald-500 shadow-lg shadow-indigo-500/20">
-        <svg viewBox="0 0 24 24" class="h-5 w-5 text-white" fill="none" stroke="currentColor" stroke-width="2"><circle cx="5" cy="12" r="2.5"/><circle cx="19" cy="5" r="2.5"/><circle cx="19" cy="19" r="2.5"/><path d="M7.3 11l9.4-5M7.3 13l9.4 5"/></svg>
+        <svg viewBox="0 0 24 24" class="h-5 w-5 text-white" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="2.5"/><circle cx="12" cy="12" r="6.5" opacity=".7"/><circle cx="12" cy="12" r="10" opacity=".4"/></svg>
       </div>
       <div>
         <h1 class="text-[15px] font-semibold leading-tight tracking-tight">CPG Intelligence Graph</h1>
-        <p class="text-xs text-slate-500 dark:text-slate-400">Value-chain spine · six-layer ontology · Phase 1</p>
+        <p class="text-xs text-slate-500 dark:text-slate-400">Sector intelligence layer · value chain + five enrichment layers</p>
       </div>
     </div>
     <nav class="relative flex items-center gap-1 text-sm font-medium text-slate-500 dark:text-slate-400" role="tablist">
@@ -63,32 +64,33 @@
   <main id="tab-graph" class="flex min-h-0 flex-1">
     <aside class="scroll-thin w-72 shrink-0 overflow-y-auto border-r border-slate-200 bg-white p-4 dark:border-slate-800 dark:bg-slate-900">
       <div class="relative">
-        <input id="gSearch" placeholder="Search nodes…" class="w-full rounded-lg border border-slate-200 bg-slate-50 py-2 pl-9 pr-3 text-sm outline-none ring-indigo-500/40 placeholder:text-slate-400 focus:ring-2 dark:border-slate-700 dark:bg-slate-800">
+        <input id="gSearch" placeholder="Search activities, processes, concepts…" class="w-full rounded-lg border border-slate-200 bg-slate-50 py-2 pl-9 pr-3 text-sm outline-none ring-indigo-500/40 placeholder:text-slate-400 focus:ring-2 dark:border-slate-700 dark:bg-slate-800">
         <svg class="pointer-events-none absolute left-3 top-2.5 h-4 w-4 text-slate-400" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="7"/><path d="M20 20l-3.5-3.5"/></svg>
         <div id="gResults" class="absolute z-20 mt-1 hidden max-h-72 w-full overflow-y-auto rounded-lg border border-slate-200 bg-white shadow-xl dark:border-slate-700 dark:bg-slate-800 scroll-thin"></div>
       </div>
 
-      <h3 class="mb-2 mt-5 text-[11px] font-semibold uppercase tracking-wider text-slate-400">Competency questions</h3>
-      <div id="cqList" class="space-y-2"></div>
-
-      <h3 class="mb-2 mt-5 text-[11px] font-semibold uppercase tracking-wider text-slate-400">Node types</h3>
-      <div id="typeChips" class="flex flex-wrap gap-1.5"></div>
-
-      <h3 class="mb-2 mt-5 text-[11px] font-semibold uppercase tracking-wider text-slate-400">Relationships</h3>
-      <div id="relChips" class="flex flex-wrap gap-1.5"></div>
+      <h3 class="mb-2 mt-5 text-[11px] font-semibold uppercase tracking-wider text-slate-400">Layers</h3>
+      <div id="layerChips" class="space-y-1.5"></div>
 
       <h3 class="mb-2 mt-5 text-[11px] font-semibold uppercase tracking-wider text-slate-400">View</h3>
-      <div class="space-y-2 text-sm">
-        <label class="flex items-center justify-between gap-2"><span>Layout</span>
-          <select id="layoutSel" class="rounded-md border border-slate-200 bg-slate-50 px-2 py-1 text-sm dark:border-slate-700 dark:bg-slate-800">
-            <option value="columns">Value-chain columns</option>
-            <option value="force">Force-directed</option>
-          </select>
-        </label>
+      <div class="grid grid-cols-3 gap-1 rounded-lg bg-slate-100 p-1 text-xs font-medium dark:bg-slate-800" id="layoutBtns"></div>
+      <div class="mt-2 space-y-2 text-sm">
+        <label class="flex cursor-pointer items-center justify-between gap-2"><span>Show hook edges</span><input id="hookToggle" type="checkbox" class="h-4 w-4 accent-indigo-500"></label>
         <label class="flex cursor-pointer items-center justify-between gap-2"><span>Mark drafted rows</span><input id="draftToggle" type="checkbox" checked class="h-4 w-4 accent-amber-500"></label>
         <button id="fitBtn" class="w-full rounded-lg border border-slate-200 px-3 py-1.5 text-sm hover:bg-slate-100 dark:border-slate-700 dark:hover:bg-slate-800">Reset view</button>
       </div>
-      <p class="mt-5 text-xs leading-relaxed text-slate-400">Click a node to reveal its neighbourhood (including hidden types). Dashed amber = drafted beyond source, awaiting review.</p>
+
+      <h3 class="mb-2 mt-5 text-[11px] font-semibold uppercase tracking-wider text-slate-400">Competency questions</h3>
+      <div id="cqList" class="space-y-1.5"></div>
+
+      <details class="mt-5 rounded-lg border border-slate-200 p-3 dark:border-slate-700">
+        <summary class="cursor-pointer text-[11px] font-semibold uppercase tracking-wider text-slate-400">Advanced filters ▾</summary>
+        <h4 class="mb-1.5 mt-3 text-[11px] font-medium text-slate-400">Node types</h4>
+        <div id="typeChips" class="flex flex-wrap gap-1.5"></div>
+        <h4 class="mb-1.5 mt-3 text-[11px] font-medium text-slate-400">Relationships</h4>
+        <div id="relChips" class="flex flex-wrap gap-1.5"></div>
+      </details>
+      <p class="mt-4 text-xs leading-relaxed text-slate-400">Click any node for its 360° view across layers. Dashed amber = drafted beyond the source documents, awaiting review.</p>
     </aside>
 
     <section class="relative min-w-0 flex-1">
@@ -97,9 +99,7 @@
       <div id="gLoading" class="absolute inset-0 grid place-items-center text-sm text-slate-400">Loading graph…</div>
     </section>
 
-    <aside id="gPanel" class="scroll-thin w-[420px] shrink-0 overflow-y-auto border-l border-slate-200 bg-white p-5 dark:border-slate-800 dark:bg-slate-900">
-      <div class="text-sm text-slate-400">Select a node, or run a competency question.</div>
-    </aside>
+    <aside id="gPanel" class="scroll-thin w-[420px] shrink-0 overflow-y-auto border-l border-slate-200 bg-white p-5 dark:border-slate-800 dark:bg-slate-900"></aside>
   </main>
 
   <!-- ============================== SCHEMA TAB ============================== -->
@@ -109,7 +109,7 @@
       <h3 class="mb-2 mt-5 text-[11px] font-semibold uppercase tracking-wider text-slate-400">Scope</h3>
       <div id="scopeBtns" class="grid grid-cols-3 gap-1 rounded-lg bg-slate-100 p-1 text-xs font-medium dark:bg-slate-800"></div>
       <h3 class="mb-2 mt-5 text-[11px] font-semibold uppercase tracking-wider text-slate-400">Layers</h3>
-      <div id="layerChips" class="space-y-1.5"></div>
+      <div id="sLayerChips" class="space-y-1.5"></div>
       <h3 class="mb-2 mt-5 flex items-center justify-between text-[11px] font-semibold uppercase tracking-wider text-slate-400">Relationships <span id="relCount" class="font-normal normal-case tracking-normal"></span></h3>
       <div id="relList" class="scroll-thin max-h-[40vh] space-y-0.5 overflow-y-auto pr-1 text-[13px]"></div>
     </aside>
@@ -131,72 +131,67 @@
 <script>
 // ------------------------------------------------------------------ constants
 const LAYER = {
-  1: { name: 'Value chain', c: '#6366f1' }, 2: { name: 'Functional processes', c: '#0ea5e9' },
-  3: { name: 'Product and asset', c: '#10b981' }, 4: { name: 'Ecosystem and channel', c: '#f59e0b' },
-  5: { name: 'Performance and risk', c: '#f43f5e' }, 6: { name: 'Consumer and experience', c: '#8b5cf6' },
+  1: { name: 'Value chain', short: 'Value chain', c: '#6366f1', q: 'What value is created, and where does it flow?' },
+  2: { name: 'Functional processes', short: 'Processes', c: '#0ea5e9', q: 'How is work executed?' },
+  3: { name: 'Product and asset', short: 'Product & asset', c: '#10b981', q: 'What is planned, produced and sold?' },
+  4: { name: 'Ecosystem and channel', short: 'Ecosystem & channel', c: '#f59e0b', q: 'Who participates, through which routes?' },
+  5: { name: 'Performance and risk', short: 'Performance & risk', c: '#f43f5e', q: 'What is happening, where to intervene?' },
+  6: { name: 'Consumer and experience', short: 'Consumer & experience', c: '#8b5cf6', q: 'Why is demand changing?' },
 };
 const TYPES = {
-  CPGValueChain:      { label: 'Value chain',  c: '#4f46e5', shape: 'star',             size: 46, on: true },
-  ValueChainStage:    { label: 'Stage',        c: '#6366f1', shape: 'round-rectangle',  size: 40, on: true },
-  ValueChainActivity: { label: 'Activity',     c: '#818cf8', shape: 'round-rectangle',  size: 26, on: true },
-  Output:             { label: 'Output',       c: '#10b981', shape: 'ellipse',          size: 18, on: true },
-  Input:              { label: 'Input',        c: '#14b8a6', shape: 'diamond',          size: 20, on: true },
-  BusinessEvent:      { label: 'Event',        c: '#f59e0b', shape: 'triangle',         size: 20, on: true },
-  Decision:           { label: 'Decision',     c: '#f43f5e', shape: 'hexagon',          size: 22, on: true },
-  DecisionOption:     { label: 'Option',       c: '#fb7185', shape: 'ellipse',          size: 12, on: false },
-  SubSector:          { label: 'Sub-sector',   c: '#8b5cf6', shape: 'octagon',          size: 30, on: true },
-  SourceEvidence:     { label: 'Evidence',     c: '#64748b', shape: 'tag',              size: 16, on: false },
-  // Layer 2/5 curated finance overlay
-  FinanceDomain:      { label: 'Finance domain', c: '#0284c7', shape: 'round-rectangle', size: 30, on: true },
-  ProcessGroup:       { label: 'Process group', c: '#0ea5e9', shape: 'round-rectangle',  size: 24, on: true },
-  L3ProcessEndpoint:  { label: 'L3 process',   c: '#38bdf8', shape: 'hexagon',          size: 20, on: true },
-  TriggerEvent:       { label: 'Trigger',      c: '#7dd3fc', shape: 'triangle',         size: 14, on: false },
-  ProcessOutput:      { label: 'Process output', c: '#bae6fd', shape: 'ellipse',        size: 14, on: false },
-  ValueOutcome:       { label: 'Value outcome', c: '#fb7185', shape: 'ellipse',         size: 18, on: true },
-  KPI:                { label: 'KPI',          c: '#e11d48', shape: 'diamond',          size: 20, on: true },
-  // Extracted instances (shown in a band below the value chain)
-  TradePromotion:     { label: 'Promotion',    c: '#f97316', shape: 'star',             size: 26, on: true },
-  PromotionClaim:     { label: 'Claim',        c: '#ea580c', shape: 'round-rectangle',  size: 18, on: true },
-  CreditNote:         { label: 'Credit note',  c: '#c2410c', shape: 'tag',              size: 16, on: true },
-  PromotionSettlement:{ label: 'Settlement',   c: '#9a3412', shape: 'tag',              size: 16, on: true },
-  Distributor:        { label: 'Distributor',  c: '#f59e0b', shape: 'round-rectangle',  size: 20, on: true },
-  Retailer:           { label: 'Retailer',     c: '#fbbf24', shape: 'round-rectangle',  size: 20, on: true },
-  Customer:           { label: 'Customer',     c: '#d97706', shape: 'ellipse',          size: 18, on: true },
-  Outlet:             { label: 'Outlet',       c: '#fcd34d', shape: 'ellipse',          size: 10, on: false },
-  Brand:              { label: 'Brand',        c: '#047857', shape: 'star',             size: 24, on: true },
-  Category:           { label: 'Category',     c: '#10b981', shape: 'octagon',          size: 22, on: true },
-  SKU:                { label: 'SKU',          c: '#059669', shape: 'ellipse',          size: 14, on: true },
+  CPGValueChain:       { label: 'Value chain',     c: '#4f46e5', shape: 'star',            size: 46, on: true },
+  ValueChainStage:     { label: 'Stage',           c: '#6366f1', shape: 'round-rectangle', size: 40, on: true },
+  ValueChainActivity:  { label: 'Activity',        c: '#818cf8', shape: 'round-rectangle', size: 26, on: true },
+  Output:              { label: 'Output',          c: '#a5b4fc', shape: 'ellipse',         size: 14, on: false },
+  Input:               { label: 'Input',           c: '#a5b4fc', shape: 'diamond',         size: 14, on: false },
+  BusinessEvent:       { label: 'Event',           c: '#a5b4fc', shape: 'triangle',        size: 14, on: false },
+  Decision:            { label: 'Decision',        c: '#a5b4fc', shape: 'hexagon',         size: 14, on: false },
+  DecisionOption:      { label: 'Option',          c: '#c7d2fe', shape: 'ellipse',         size: 10, on: false },
+  SubSector:           { label: 'Sub-sector',      c: '#8b5cf6', shape: 'octagon',         size: 28, on: false },
+  SourceEvidence:      { label: 'Evidence',        c: '#64748b', shape: 'tag',             size: 14, on: false },
+  ProcessArea:         { label: 'Process area (L1)', c: '#0369a1', shape: 'round-rectangle', size: 30, on: true },
+  ProcessGroup:        { label: 'Process group (L2)', c: '#0ea5e9', shape: 'round-rectangle', size: 22, on: true },
+  L3ProcessEndpoint:   { label: 'L3 process',      c: '#7dd3fc', shape: 'hexagon',         size: 18, on: true },
+  TriggerEvent:        { label: 'Trigger',         c: '#bae6fd', shape: 'triangle',        size: 12, on: false },
+  ProcessOutput:       { label: 'Process output',  c: '#bae6fd', shape: 'ellipse',         size: 12, on: false },
+  ProductAssetConcept: { label: 'Product & asset', c: '#10b981', shape: 'diamond',         size: 22, on: true },
+  EcosystemConcept:    { label: 'Ecosystem & channel', c: '#f59e0b', shape: 'ellipse',     size: 22, on: true },
+  ValueOutcome:        { label: 'Value outcome',   c: '#fb7185', shape: 'ellipse',         size: 16, on: true },
+  KPI:                 { label: 'KPI',             c: '#f43f5e', shape: 'diamond',         size: 18, on: true },
+  RiskType:            { label: 'Risk type',       c: '#be123c', shape: 'triangle',        size: 22, on: true },
+  ConsumerConcept:     { label: 'Consumer & experience', c: '#8b5cf6', shape: 'octagon',   size: 22, on: true },
 };
-// Any other class: coloured by its layer, hidden until switched on.
-function ensureType(cls, layer) {
-  TYPES[cls] ||= { label: cls, c: LAYER[layer]?.c || '#94a3b8', shape: 'ellipse', size: 14, on: false };
-  return TYPES[cls];
-}
-function ensureRel(rel) { RELS[rel] ||= { c: '#94a3b8', on: false }; return RELS[rel]; }
+const HOOKS = ['ENABLED_BY', 'ACTS_ON', 'INVOLVES', 'TOUCHES', 'AFFECTS', 'CREATES'];
 const RELS = {
-  PRECEDES: { c: '#6366f1', on: true }, CONTAINS: { c: '#94a3b8', on: false }, DEPENDS_ON: { c: '#f97316', on: true },
-  BECOMES_INPUT_TO: { c: '#10b981', on: false }, PRODUCES: { c: '#34d399', on: false }, CONSUMES: { c: '#14b8a6', on: false },
-  TRIGGERED_BY: { c: '#f59e0b', on: false }, REQUIRES: { c: '#f43f5e', on: false }, SELECTS: { c: '#fb7185', on: false },
-  VARIES_IN: { c: '#8b5cf6', on: false }, BASED_ON: { c: '#64748b', on: false }, SUPPORTED_BY_EVIDENCE: { c: '#64748b', on: false },
-  ENABLED_BY: { c: '#0ea5e9', on: true }, CREATES: { c: '#fb7185', on: false }, MEASURED_BY: { c: '#e11d48', on: false },
-  ACTS_ON: { c: '#a78bfa', on: false }, INVOLVES: { c: '#a78bfa', on: false }, TOUCHES: { c: '#a78bfa', on: false },
-  TARGETS: { c: '#f97316', on: true }, APPLIES_TO: { c: '#fb923c', on: true }, ACCOUNT_OF: { c: '#f59e0b', on: true },
-  CLAIMED_AGAINST: { c: '#ea580c', on: true }, SETTLES: { c: '#9a3412', on: true }, SUBMITTED_BY: { c: '#d97706', on: false },
+  PRECEDES: { c: '#6366f1', on: true }, CONTAINS: { c: '#94a3b8', on: true }, DEPENDS_ON: { c: '#f97316', on: false },
+  BECOMES_INPUT_TO: { c: '#a5b4fc', on: false }, PRODUCES: { c: '#a5b4fc', on: false }, CONSUMES: { c: '#a5b4fc', on: false },
+  TRIGGERED_BY: { c: '#a5b4fc', on: false }, REQUIRES: { c: '#a5b4fc', on: false }, SELECTS: { c: '#c7d2fe', on: false },
+  VARIES_IN: { c: '#8b5cf6', on: false }, BASED_ON: { c: '#10b981', on: true }, SUPPORTED_BY_EVIDENCE: { c: '#64748b', on: false },
+  ENABLED_BY: { c: '#0ea5e9', on: false }, ACTS_ON: { c: '#10b981', on: false }, INVOLVES: { c: '#f59e0b', on: false },
+  TOUCHES: { c: '#8b5cf6', on: false }, AFFECTS: { c: '#be123c', on: false }, CREATES: { c: '#fb7185', on: false },
+  MEASURED_BY: { c: '#f43f5e', on: true }, THREATENS: { c: '#be123c', on: true },
 };
+function ensureType(cls, layer) { TYPES[cls] ||= { label: cls, c: LAYER[layer]?.c || '#94a3b8', shape: 'ellipse', size: 14, on: false }; TYPES[cls].layer ??= layer; return TYPES[cls]; }
+function ensureRel(rel) { RELS[rel] ||= { c: '#94a3b8', on: true }; return RELS[rel]; }
 const CQS = [
-  { n: 1, title: 'Trade scheme creation', sub: 'Which stage, and its neighbours?' },
-  { n: 2, title: 'Stage 3 → Stage 4', sub: 'Outputs that become inputs' },
-  { n: 3, title: 'Consensus forecast', sub: 'Activities that depend on it' },
-  { n: 4, title: 'Stage 5 by sub-sector', sub: 'Food & beverage vs home care' },
-  { n: 5, title: 'Finance enablers', sub: 'L3 processes behind outlet execution' },
-  { n: 6, title: 'Loaded, no sell-through', sub: 'Promotions that only filled distributors' },
-  { n: 7, title: 'TP2026-005 claim trail', sub: 'Claimed, approved, settled, invoices, SKUs' },
+  { n: 1, layer: 1, title: 'Trade scheme creation', sub: 'Stage, upstream and downstream' },
+  { n: 2, layer: 1, title: 'Stage 3 → Stage 4', sub: 'Outputs that become inputs' },
+  { n: 3, layer: 1, title: 'Consensus forecast', sub: 'Activities that depend on it' },
+  { n: 4, layer: 1, title: 'Stage 5 by sub-sector', sub: 'Food & beverage vs home care' },
+  { n: 5, layer: 2, title: 'Outlet execution enablers', sub: 'L3 processes behind Stage 9' },
+  { n: 6, layer: 5, title: 'Outlet KPIs and risks', sub: 'What measures and threatens Stage 9' },
+  { n: 7, layer: 3, title: 'Manufacturing concepts', sub: 'What Stage 5 acts on, and how it relates' },
+  { n: 8, layer: 4, title: 'Warehouse to consumer', sub: 'Participants and channels, Stages 7–10' },
+  { n: 9, layer: 6, title: 'Consumer touch & trace', sub: 'Stage 10 concepts; complaint → batch → plant' },
+  { n: 10, layer: 2, title: 'Trade-promotion management', sub: 'L2/L3 processes across stages' },
 ];
 
-const S = { graph: null, schema: null, cyG: null, cyS: null, scope: 'spine', layers: new Set([1,2,3,4,5,6]), report: null };
+const S = { graph: null, schema: null, cyG: null, cyS: null, layout: 'layered', layersOn: { 1: true, 2: true, 3: true, 4: true, 5: true, 6: true },
+            scope: 'layers', sLayers: new Set([1, 2, 3, 4, 5, 6]), report: null, byId: {}, stageOf: {}, parentOf: {} };
 const $ = (id) => document.getElementById(id);
 const isDark = () => document.documentElement.classList.contains('dark');
 const esc = (s) => String(s ?? '').replace(/[&<>"']/g, (c) => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c]));
+const layerOf = (cls) => TYPES[cls]?.layer || 1;
 
 async function api(path) {
   const r = await fetch(path);
@@ -223,8 +218,8 @@ $('themeBtn').addEventListener('click', () => {
 });
 
 // ------------------------------------------------------------------ shared UI bits
-function badge(text, color, extra = '') {
-  return `<span class="inline-flex items-center gap-1 rounded-full px-2 py-0.5 text-[11px] font-medium ${extra}" style="background:${color}1f;color:${color}">${esc(text)}</span>`;
+function badge(text, color) {
+  return `<span class="inline-flex items-center gap-1 rounded-full px-2 py-0.5 text-[11px] font-medium" style="background:${color}1f;color:${color}">${esc(text)}</span>`;
 }
 function chip(label, color, on, onClick, count) {
   const b = document.createElement('button');
@@ -234,12 +229,20 @@ function chip(label, color, on, onClick, count) {
   b.addEventListener('click', () => { b.dataset.on = String(b.dataset.on !== 'true'); onClick(b.dataset.on === 'true'); });
   return b;
 }
-function kv(k, v) {
-  return `<div class="grid grid-cols-[120px_1fr] gap-2 py-1.5 text-[13px]"><div class="text-slate-400">${esc(k)}</div><div class="break-words">${v}</div></div>`;
+function segmented(container, items, current, onPick) {
+  container.innerHTML = '';
+  items.forEach(([k, label]) => {
+    const b = document.createElement('button');
+    b.textContent = label;
+    b.className = 'rounded-md px-2 py-1.5 ' + (k === current ? 'bg-white shadow-sm text-indigo-600 dark:bg-slate-700 dark:text-indigo-300' : 'text-slate-500');
+    b.addEventListener('click', () => { segmented(container, items, k, onPick); onPick(k); });
+    container.appendChild(b);
+  });
 }
+function kv(k, v) { return `<div class="grid grid-cols-[120px_1fr] gap-2 py-1.5 text-[13px]"><div class="text-slate-400">${esc(k)}</div><div class="break-words">${v}</div></div>`; }
 function fmt(v) {
   if (Array.isArray(v)) return v.map((x) => `<span class="mr-1 inline-block rounded bg-slate-100 px-1.5 py-0.5 text-xs dark:bg-slate-800">${esc(x)}</span>`).join('');
-  if (typeof v === 'string' && /^[A-Z][A-Za-z]+:[a-z0-9_]+$/.test(v)) return `<a href="#" class="text-indigo-500 hover:underline" data-goto="${esc(v)}">${esc(v.split(':')[1])}</a>`;
+  if (typeof v === 'string' && /^[A-Z][A-Za-z0-9]+:[a-z0-9_]+$/.test(v)) return `<a href="#" class="text-indigo-500 hover:underline" data-goto="${esc(v)}">${esc(S.byId[v]?.name || v.split(':')[1])}</a>`;
   return esc(v);
 }
 function sourceLink(ref) {
@@ -248,6 +251,19 @@ function sourceLink(ref) {
   const href = path.startsWith('docs/') ? `/docs-src/${path.slice(5)}` : null;
   return href ? `<a class="text-indigo-500 hover:underline" target="_blank" href="${href}">${esc(path)}</a>${anchor ? `<span class="text-slate-400"> #${esc(anchor)}</span>` : ''}` : esc(ref);
 }
+function welcomePanel() {
+  const counts = {};
+  (S.graph?.nodes || []).forEach((n) => (counts[n.layer] = (counts[n.layer] || 0) + 1));
+  $('gPanel').innerHTML = `<div class="fade-in">
+    <h2 class="text-lg font-semibold">Six layers, one graph</h2>
+    <p class="mt-1 text-[13px] leading-relaxed text-slate-500 dark:text-slate-400">The CPG value chain is the spine. Each outer layer enriches the same activities through declared hooks — no company or transaction data, only sector knowledge.</p>
+    <div class="mt-4 space-y-2">${Object.entries(LAYER).map(([l, v]) => `
+      <div class="flex items-start gap-3 rounded-xl border border-slate-200 p-3 dark:border-slate-800">
+        <span class="mt-0.5 grid h-7 w-7 shrink-0 place-items-center rounded-lg text-xs font-bold text-white" style="background:${v.c}">L${l}</span>
+        <div class="min-w-0"><div class="flex items-baseline justify-between gap-2"><span class="text-[13px] font-semibold">${v.name}</span><span class="text-xs tabular-nums text-slate-400">${counts[l] || 0} nodes</span></div>
+        <div class="text-xs text-slate-400">${v.q}</div></div></div>`).join('')}</div>
+    <p class="mt-4 text-xs text-slate-400">Tip: click an activity to see its 360° view — the processes that enable it, the concepts it acts on, who is involved, how it is measured, what threatens it and which consumer moments it touches.</p></div>`;
+}
 
 // ------------------------------------------------------------------ stats header
 async function loadStats() {
@@ -255,8 +271,8 @@ async function loadStats() {
     const r = await api('/api/report'); S.report = r;
     const orph = r.orphans_by_lane.curated || 0;
     $('stats').innerHTML = [
-      ['Nodes', r.nodes, '#6366f1'], ['Edges', r.edges, '#0ea5e9'],
-      ['Curated orphans', orph, orph ? '#f43f5e' : '#10b981'], ['Awaiting review', r.unreviewed_nodes, '#f59e0b'],
+      ['Nodes', r.nodes, '#6366f1'], ['Edges', r.edges, '#0ea5e9'], ['Layers', Object.keys(r.nodes_by_layer).length, '#10b981'],
+      ['Orphans', orph, orph ? '#f43f5e' : '#10b981'], ['Awaiting review', r.unreviewed_nodes, '#f59e0b'],
     ].map(([k, v, c]) => `<span class="inline-flex items-center gap-1.5 rounded-full border border-slate-200 bg-white px-2.5 py-1 dark:border-slate-700 dark:bg-slate-800"><span class="h-1.5 w-1.5 rounded-full" style="background:${c}"></span><span class="text-slate-500 dark:text-slate-400">${k}</span><b class="font-semibold">${v}</b></span>`).join('');
   } catch (e) { showError(e.message); }
 }
@@ -269,233 +285,281 @@ function graphStyle() {
     { selector: 'node', style: {
       'background-color': (n) => TYPES[n.data('cls')]?.c || '#94a3b8', shape: (n) => TYPES[n.data('cls')]?.shape || 'ellipse',
       width: (n) => TYPES[n.data('cls')]?.size || 16, height: (n) => TYPES[n.data('cls')]?.size || 16,
-      label: 'data(label)', color: fg, 'font-size': 10, 'font-family': 'Inter', 'text-wrap': 'wrap', 'text-max-width': 150,
+      label: 'data(label)', color: fg, 'font-size': 10, 'font-family': 'Inter', 'text-wrap': 'wrap', 'text-max-width': 110,
       'text-valign': 'bottom', 'text-margin-y': 4, 'min-zoomed-font-size': 7, 'border-width': 0,
       'text-outline-color': dark ? '#020617' : '#f8fafc', 'text-outline-width': 2 } },
-    { selector: 'node[cls="ValueChainActivity"]', style: { width: 180, height: 30, 'text-valign': 'center', 'text-margin-y': 0, 'text-max-width': 168, 'font-size': 10.5,
+    { selector: 'node[cls="ValueChainActivity"]', style: { width: 170, height: 28, 'text-valign': 'center', 'text-margin-y': 0, 'text-max-width': 160, 'font-size': 10,
       'background-color': dark ? '#1e1b4b' : '#eef2ff', 'border-width': 1.5, 'border-color': '#818cf8', color: fg, 'text-outline-width': 0 } },
     { selector: 'node[cls="ValueChainStage"]:parent', style: {
       shape: 'round-rectangle', 'background-color': dark ? '#312e81' : '#e0e7ff', 'background-opacity': dark ? 0.35 : 0.55,
-      'border-width': 1.5, 'border-color': '#6366f1', 'border-opacity': 0.6, padding: 14, label: 'data(label)',
-      'text-valign': 'top', 'text-halign': 'center', 'text-margin-y': -6, 'font-size': 12.5, 'font-weight': 600, color: dark ? '#c7d2fe' : '#3730a3',
-      'text-max-width': 210, 'text-outline-width': 0 } },
+      'border-width': 1.5, 'border-color': '#6366f1', 'border-opacity': 0.6, padding: 12, label: 'data(label)',
+      'text-valign': 'top', 'text-halign': 'center', 'text-margin-y': -6, 'font-size': 12, 'font-weight': 600, color: dark ? '#c7d2fe' : '#3730a3',
+      'text-max-width': 200, 'text-outline-width': 0 } },
+    { selector: 'node[cls="ProcessArea"]', style: { width: 'label', height: 26, padding: 8, 'text-valign': 'center', 'text-margin-y': 0, color: '#fff', 'font-weight': 600, 'text-outline-width': 0, 'text-max-width': 140 } },
+    { selector: 'node[cls="_band"]', style: { 'background-opacity': 0, width: 1, height: 1, label: 'data(label)', 'text-halign': 'right', 'text-valign': 'center',
+      'font-size': 44, 'font-weight': 700, color: (n) => LAYER[n.data('layer')].c, 'text-outline-width': 0, 'text-max-width': 700, 'min-zoomed-font-size': 0, events: 'no' } },
     { selector: 'node[cls="CPGValueChain"]', style: { 'font-size': 13, 'font-weight': 700 } },
     { selector: 'edge', style: {
-      width: 1.3, 'curve-style': 'bezier', 'line-color': (e) => RELS[e.data('rel')]?.c || '#94a3b8',
-      'target-arrow-color': (e) => RELS[e.data('rel')]?.c || '#94a3b8', 'target-arrow-shape': 'triangle', 'arrow-scale': 0.8, opacity: 0.75,
-      label: '', 'font-size': 8, color: muted, 'text-rotation': 'autorotate', 'text-background-color': dark ? '#020617' : '#ffffff', 'text-background-opacity': 0.8 } },
+      width: 1.2, 'curve-style': 'bezier', 'line-color': (e) => RELS[e.data('rel')]?.c || '#94a3b8',
+      'target-arrow-color': (e) => RELS[e.data('rel')]?.c || '#94a3b8', 'target-arrow-shape': 'triangle', 'arrow-scale': 0.7, opacity: 0.6,
+      label: '', 'font-size': 8, color: muted, 'text-rotation': 'autorotate', 'text-background-color': dark ? '#020617' : '#ffffff', 'text-background-opacity': 0.85 } },
     { selector: 'edge[rel="PRECEDES"]', style: { width: 3.5, 'curve-style': 'straight', opacity: 0.9 } },
-    { selector: 'edge[rel="DEPENDS_ON"]', style: { 'curve-style': 'unbundled-bezier', 'control-point-distances': 40 } },
     { selector: '.hidden', style: { display: 'none' } },
     { selector: '.hidden.focus', style: { display: 'element' } },
-    { selector: '.faded', style: { opacity: 0.12, 'text-opacity': 0.15 } },
-    { selector: 'edge.focus', style: { opacity: 1, width: 2.2, label: 'data(rel)' } },
+    { selector: '.faded', style: { opacity: 0.08, 'text-opacity': 0.12 } },
+    { selector: 'edge.focus', style: { opacity: 1, width: 2, label: 'data(rel)' } },
     { selector: 'node:selected', style: { 'border-width': 3, 'border-color': '#f59e0b', 'overlay-opacity': 0 } },
     { selector: '.cq', style: { opacity: 1, 'text-opacity': 1 } },
     { selector: 'node.cq', style: { 'border-width': 3, 'border-color': '#22d3ee' } },
-    { selector: 'edge.cq', style: { width: 3.2, 'line-color': '#22d3ee', 'target-arrow-color': '#22d3ee', label: 'data(rel)', color: '#22d3ee', 'z-index': 99 } },
+    { selector: 'edge.cq', style: { width: 3, 'line-color': '#22d3ee', 'target-arrow-color': '#22d3ee', label: 'data(rel)', color: '#22d3ee', 'z-index': 99 } },
   ];
   if ($('draftToggle').checked) {
-    st.splice(5, 0,
+    st.splice(7, 0,
       { selector: 'node[?drafted][cls!="ValueChainStage"]', style: { 'border-width': 2, 'border-style': 'dashed', 'border-color': '#f59e0b' } },
       { selector: 'edge[?drafted]', style: { 'line-style': 'dashed', 'line-dash-pattern': [6, 4] } });
   }
   return st;
 }
 
-function stageOf(g) {
-  // Assign each node a column (stage number; 0 = root/inputs, 12 = sub-sectors).
-  const byId = Object.fromEntries(g.nodes.map((n) => [n.id, n]));
-  const col = {}, parent = {};
-  g.nodes.forEach((n) => { if (n.cls === 'ValueChainStage') col[n.id] = n.stage_number; if (n.cls === 'CPGValueChain') col[n.id] = 0; if (n.cls === 'SubSector') col[n.id] = 12; });
-  const pick = (rel, from, fn) => g.edges.filter((e) => e.rel === rel).forEach((e) => fn(e, byId[e.source], byId[e.target]));
-  pick('CONTAINS', null, (e, s, t) => { if (s?.cls === 'ValueChainStage' && t?.cls === 'ValueChainActivity') { col[t.id] = s.stage_number; parent[t.id] = s.id; } });
-  pick('PRODUCES', null, (e, s, t) => { if (col[t.id] == null) col[t.id] = col[s.id]; });
-  pick('TRIGGERED_BY', null, (e, s, t) => { if (col[t.id] == null || col[s.id] < col[t.id]) col[t.id] = col[s.id]; });
-  pick('REQUIRES', null, (e, s, t) => { if (col[t.id] == null) col[t.id] = col[s.id]; });
-  pick('CONSUMES', null, (e, s, t) => { if (col[t.id] == null || col[s.id] < col[t.id]) col[t.id] = col[s.id]; });
-  pick('SELECTS', null, (e, s, t) => { col[t.id] = col[s.id]; });
-  pick('SUPPORTED_BY_EVIDENCE', null, (e, s, t) => { if (s.cls === 'ValueChainStage') col[t.id] = s.stage_number; });
-  pick('BASED_ON', null, (e, s, t) => { if (col[t.id] == null) col[t.id] = col[s.id]; });
-  // finance overlay: endpoint under its first enabling activity, then its group and domain, trigger and output
-  pick('ENABLED_BY', null, (e, s, t) => { if (t && (col[t.id] == null || col[s.id] < col[t.id])) col[t.id] = col[s.id]; });
-  pick('CONTAINS', null, (e, s, t) => { if (s?.cls === 'ProcessGroup' && col[s.id] == null) col[s.id] = col[t.id]; });
-  pick('CONTAINS', null, (e, s, t) => { if (s?.cls === 'FinanceDomain' && col[s.id] == null) col[s.id] = col[t.id]; });
-  pick('TRIGGERED_BY', null, (e, s, t) => { if (s?.cls === 'L3ProcessEndpoint') col[t.id] = col[s.id]; });
-  pick('PRODUCES', null, (e, s, t) => { if (s?.cls === 'L3ProcessEndpoint') col[t.id] = col[s.id]; });
-  pick('CREATES', null, (e, s, t) => { if (col[t.id] == null) col[t.id] = col[s.id]; });
-  pick('MEASURED_BY', null, (e, s, t) => { if (col[t.id] == null) col[t.id] = col[s.id]; });
-  g.nodes.forEach((n) => { if (n.lane === 'extracted') col[n.id] = -1; else if (col[n.id] == null) col[n.id] = 0; });
-  return { col, parent };
-}
-
 function initGraph(g) {
-  const { col, parent } = stageOf(g);
+  g.nodes.forEach((n) => { ensureType(n.cls, n.layer); S.byId[n.id] = n; });
+  g.edges.forEach((e) => ensureRel(e.rel));
+  // stage of each activity; parent stage for compound nesting
+  g.edges.forEach((e) => {
+    const s = S.byId[e.source], t = S.byId[e.target];
+    if (e.rel === 'CONTAINS' && s?.cls === 'ValueChainStage' && t?.cls === 'ValueChainActivity') { S.stageOf[t.id] = s.stage_number; S.parentOf[t.id] = s.id; }
+  });
+  g.nodes.forEach((n) => { if (n.cls === 'ValueChainStage') S.stageOf[n.id] = n.stage_number; });
   const els = [];
   g.nodes.forEach((n) => {
     const label = n.cls === 'ValueChainStage' ? `${n.stage_number} · ${n.name}` : n.name;
-    ensureType(n.cls, n.layer);
-    els.push({ group: 'nodes', data: { id: n.id, label, cls: n.cls, col: col[n.id], seq: n.sequence ?? 0, drafted: !!n.drafted, parent: parent[n.id], lane: n.lane } });
+    els.push({ group: 'nodes', data: { id: n.id, label, cls: n.cls, layer: n.layer, seq: n.sequence ?? 0, drafted: !!n.drafted, parent: S.parentOf[n.id] } });
   });
   g.edges.forEach((e) => {
-    if (e.rel === 'CONTAINS' && parent[e.target] === e.source) return; // shown as compound nesting
-    ensureRel(e.rel);
+    if (e.rel === 'CONTAINS' && S.parentOf[e.target] === e.source) return; // shown as nesting
     els.push({ group: 'edges', data: { id: e.id, source: e.source, target: e.target, rel: e.rel, drafted: !!e.drafted } });
   });
-  S.cyG = cytoscape({ container: $('cyGraph'), elements: els, style: graphStyle(), wheelSensitivity: 0.25, minZoom: 0.08, maxZoom: 3 });
+  [2, 3, 4, 5, 6].forEach((l) => els.push({ group: 'nodes', data: { id: `_band:${l}`, cls: '_band', layer: l, label: `L${l} · ${LAYER[l].name}` }, selectable: false, grabbable: false }));
+  S.cyG = cytoscape({ container: $('cyGraph'), elements: els, style: graphStyle(), wheelSensitivity: 0.25, minZoom: 0.05, maxZoom: 3 });
   $('gLoading').remove();
 
-  // chips
+  // layer chips
+  const perLayer = {}; g.nodes.forEach((n) => (perLayer[n.layer] = (perLayer[n.layer] || 0) + 1));
+  Object.entries(LAYER).forEach(([l, v]) => {
+    const c = chip(`L${l} · ${v.short}`, v.c, true, (on) => { S.layersOn[l] = on; applyFilters(true); }, perLayer[l] || 0);
+    c.classList.add('w-full', 'justify-start'); $('layerChips').appendChild(c);
+  });
+  // advanced chips
   const counts = {}; g.nodes.forEach((n) => (counts[n.cls] = (counts[n.cls] || 0) + 1));
-  Object.entries(TYPES).forEach(([cls, t]) => { if (!counts[cls]) return; $('typeChips').appendChild(chip(t.label, t.c, t.on, (on) => { t.on = on; applyFilters(true); }, counts[cls])); });
+  Object.entries(TYPES).forEach(([cls, t]) => { if (counts[cls]) $('typeChips').appendChild(chip(t.label, t.c, t.on, (on) => { t.on = on; applyFilters(true); }, counts[cls])); });
   const rc = {}; g.edges.forEach((e) => (rc[e.rel] = (rc[e.rel] || 0) + 1));
-  Object.entries(RELS).forEach(([rel, r]) => { if (!rc[rel]) return; $('relChips').appendChild(chip(rel, r.c, r.on, (on) => { r.on = on; applyFilters(false); }, rc[rel])); });
-  const hidden = Object.entries(g.hidden_counts || {});
-  if (hidden.length) {
-    const note = document.createElement('p');
-    note.className = 'mt-3 text-xs leading-relaxed text-slate-400';
-    note.innerHTML = 'Not loaded up front: ' + hidden.map(([c, n]) => `${esc(c)} <b>${n.toLocaleString()}</b>`).join(', ') + '. Use <i>Expand neighbours</i> on a node to pull them in.';
-    $('relChips').after(note);
-  }
-  $('gLegend').innerHTML = Object.entries(TYPES).filter(([c]) => counts[c] && TYPES[c].on).map(([c, t]) => `<span class="inline-flex items-center gap-1 rounded-full bg-white/85 px-2 py-0.5 shadow-sm dark:bg-slate-900/85"><span class="h-2 w-2 rounded-full" style="background:${t.c}"></span>${t.label}</span>`).join('');
+  Object.keys(rc).sort().forEach((rel) => { const r = RELS[rel]; $('relChips').appendChild(chip(rel, r.c, r.on, (on) => { r.on = on; applyFilters(false); }, rc[rel])); });
+  $('hookToggle').addEventListener('change', (ev) => { HOOKS.forEach((h) => { if (RELS[h]) RELS[h].on = ev.target.checked; }); syncRelChips(); applyFilters(false); });
+  $('gLegend').innerHTML = Object.entries(LAYER).map(([l, v]) => `<span class="inline-flex items-center gap-1 rounded-full bg-white/85 px-2 py-0.5 shadow-sm dark:bg-slate-900/85"><span class="h-2 w-2 rounded-full" style="background:${v.c}"></span>L${l} ${v.short}</span>`).join('');
 
-  // CQ cards
+  segmented($('layoutBtns'), [['layered', 'Layered'], ['rings', 'Rings'], ['force', 'Force']], S.layout, (k) => { S.layout = k; runLayout(true); });
+
   CQS.forEach((q) => {
     const b = document.createElement('button');
-    b.className = 'group w-full rounded-xl border border-slate-200 bg-gradient-to-br from-white to-slate-50 p-2.5 text-left hover:border-cyan-400 hover:shadow-md dark:border-slate-700 dark:from-slate-800 dark:to-slate-900';
-    b.innerHTML = `<div class="flex items-center gap-2"><span class="grid h-6 w-6 place-items-center rounded-md bg-cyan-500/15 text-xs font-bold text-cyan-600 dark:text-cyan-300">Q${q.n}</span><span class="text-[13px] font-medium">${q.title}</span></div><div class="mt-0.5 pl-8 text-xs text-slate-400">${q.sub}</div>`;
+    b.className = 'w-full rounded-lg border border-slate-200 px-2.5 py-2 text-left hover:border-cyan-400 hover:bg-cyan-50/40 dark:border-slate-700 dark:hover:bg-cyan-500/5';
+    b.innerHTML = `<div class="flex items-center gap-2"><span class="grid h-5 min-w-[28px] place-items-center rounded px-1 text-[10px] font-bold text-white" style="background:${LAYER[q.layer].c}">Q${q.n}</span><span class="text-[12.5px] font-medium leading-tight">${q.title}</span></div><div class="mt-0.5 pl-9 text-[11px] text-slate-400">${q.sub}</div>`;
     b.addEventListener('click', () => runCQ(q.n));
     $('cqList').appendChild(b);
   });
 
-  S.cyG.on('tap', 'node', (ev) => { if (!ev.target.isParent() || ev.target.data('cls') === 'ValueChainStage') focusNode(ev.target.id()); });
-  S.cyG.on('tap', (ev) => { if (ev.target === S.cyG) clearFocus(); });
-  $('layoutSel').addEventListener('change', () => runLayout(true));
+  S.cyG.on('tap', 'node', (ev) => { const n = ev.target; if (n.data('cls') === '_band') return; if (!n.isParent() || n.data('cls') === 'ValueChainStage') focusNode(n.id()); });
+  S.cyG.on('tap', (ev) => { if (ev.target === S.cyG) { clearFocus(); welcomePanel(); } });
   $('draftToggle').addEventListener('change', () => S.cyG.style(graphStyle()));
-  $('fitBtn').addEventListener('click', () => { clearFocus(); S.cyG.animate({ fit: { eles: S.cyG.elements(':visible'), padding: 40 } }, { duration: 300 }); });
+  $('fitBtn').addEventListener('click', () => { clearFocus(); welcomePanel(); S.cyG.animate({ fit: { eles: S.cyG.elements(':visible'), padding: 40 } }, { duration: 300 }); });
   setupSearch(g);
+  welcomePanel();
   applyFilters(true, false);
 }
 
+function syncRelChips() {
+  [...$('relChips').children].forEach((b) => { const rel = b.textContent.replace(/\d+$/, '').trim(); if (RELS[rel]) b.dataset.on = String(RELS[rel].on); });
+}
+
+function nodeVisible(n) {
+  const cls = n.data('cls');
+  if (cls === '_band') return S.layout === 'layered' && S.layersOn[n.data('layer')];
+  return S.layersOn[n.data('layer')] && TYPES[cls]?.on;
+}
 function applyFilters(relayout, animate = true) {
   const cy = S.cyG;
   cy.batch(() => {
-    cy.nodes().forEach((n) => n.toggleClass('hidden', !TYPES[n.data('cls')]?.on));
+    cy.nodes().forEach((n) => n.toggleClass('hidden', !nodeVisible(n)));
     cy.edges().forEach((e) => e.toggleClass('hidden', !RELS[e.data('rel')]?.on));
   });
   if (relayout) runLayout(animate);
 }
 
-// Value-chain columns, wrapped in two rows (stages 1-6, then 7-11 + sub-sectors) so the overview stays legible.
-// Activities start at the same y in every stage; events/inputs stack above, outputs/decisions below.
-function columnPositions() {
-  const cy = S.cyG, W = 290, ROW_H = 1500, ACT_H = 44, pos = {};
-  const ABOVE = ['BusinessEvent', 'Input'];
-  const BELOW = ['Output', 'Decision', 'DecisionOption', 'SourceEvidence', 'L3ProcessEndpoint', 'ProcessGroup', 'FinanceDomain',
-                 'TriggerEvent', 'ProcessOutput', 'ValueOutcome', 'KPI'];
-  const cols = {};
-  const byLabel = (a, b) => String(a.data('label')).localeCompare(String(b.data('label')));
-  cy.nodes().filter((n) => !n.hasClass('hidden') || n.hasClass('focus')).forEach((n) => {
-    if (n.data('cls') !== 'ValueChainStage' && n.data('col') !== -2) (cols[n.data('col')] ||= []).push(n);
+// ---- layouts ---------------------------------------------------------------
+function setCompound(on) {
+  S.cyG.batch(() => S.cyG.nodes('[cls="ValueChainActivity"]').forEach((n) => {
+    const want = on ? S.parentOf[n.id()] : null;
+    if ((n.data('parent') || null) !== (want || null)) n.move({ parent: want ?? null });
+  }));
+}
+
+// Layered: value-chain columns on top; one band per layer below, each concept under the
+// mean column of the activities it is linked to (directly, or through its children).
+function layeredPositions() {
+  const cy = S.cyG, W = 240, ACT = 40, pos = {}, x = {};
+  const vis = (n) => !n.hasClass('hidden') || n.hasClass('focus');
+  // spine
+  cy.nodes('[cls="ValueChainActivity"]').forEach((n) => {
+    const c = S.stageOf[n.id()] || 1;
+    x[n.id()] = (c - 1) * W;
+    pos[n.id()] = { x: x[n.id()], y: n.data('seq') * ACT };
   });
-  // extracted instances: one row band per class under the value chain
-  let yBand = 2 * ROW_H + 250;
-  const band = cols['-1'] || [];
-  delete cols['-1'];
-  const order = Object.keys(TYPES);
-  [...new Set(band.map((n) => n.data('cls')))].sort((a, b) => order.indexOf(a) - order.indexOf(b)).forEach((cls) => {
-    const list = band.filter((n) => n.data('cls') === cls).sort(byLabel);
-    list.forEach((n, i) => { pos[n.id()] = { x: (i % 18) * 105, y: yBand + Math.floor(i / 18) * 70 }; });
-    yBand += Math.ceil(list.length / 18) * 70 + 90;
+  let yTop = 12 * ACT + 40;
+  // L1 extras under their stage if switched on
+  const l1x = ['BusinessEvent', 'Input', 'Output', 'Decision', 'DecisionOption', 'SourceEvidence'];
+  const nb = (n) => n.connectedEdges().connectedNodes().not(n);
+  const extra = {};
+  cy.nodes().filter((n) => l1x.includes(n.data('cls')) && vis(n)).forEach((n) => {
+    const acts = nb(n).filter((m) => x[m.id()] != null);
+    const st = n.data('cls') === 'SourceEvidence' ? nb(n).filter('[cls="ValueChainStage"]') : null;
+    const c = acts.length ? Math.round(acts.map((m) => x[m.id()]).reduce((a, b) => a + b, 0) / acts.length / W)
+      : (st && st.length ? (S.stageOf[st[0].id()] || 1) - 1 : 0);
+    (extra[c] ||= []).push(n);
   });
-  Object.entries(cols).forEach(([c, nodes]) => {
-    c = +c;
-    const row = c <= 6 ? 0 : 1, x0 = (row ? c - 6 : c) * W, y0 = row * ROW_H;
-    const of = (cls) => nodes.filter((n) => n.data('cls') === cls);
-    [...of('CPGValueChain'), ...of('SubSector')].sort(byLabel).forEach((n, i) => { pos[n.id()] = { x: x0, y: y0 + 160 + i * 120 }; });
-    of('ValueChainActivity').sort((a, b) => a.data('seq') - b.data('seq')).forEach((n, i) => { pos[n.id()] = { x: x0, y: y0 + i * ACT_H }; });
-    let yUp = y0 - 90;
-    ABOVE.forEach((cls) => {
-      const list = of(cls).sort(byLabel);
-      list.forEach((n, i) => { pos[n.id()] = { x: x0 + (i % 2 ? 60 : -60), y: yUp - Math.floor(i / 2) * 46 }; });
-      if (list.length) yUp -= Math.ceil(list.length / 2) * 46 + 24;
+  let extraH = 0;
+  Object.entries(extra).forEach(([c, list]) => {
+    list.sort((a, b) => a.data('cls').localeCompare(b.data('cls')) || String(a.data('label')).localeCompare(String(b.data('label'))));
+    list.forEach((n, i) => { pos[n.id()] = { x: c * W + (i % 2 ? 55 : -55), y: yTop + Math.floor(i / 2) * 44 }; });
+    extraH = Math.max(extraH, Math.ceil(list.length / 2) * 44);
+  });
+  yTop += extraH + (extraH ? 60 : 0);
+  cy.nodes('[cls="CPGValueChain"]').forEach((n) => { pos[n.id()] = { x: -W * 0.9, y: 4 * ACT }; });
+  cy.nodes('[cls="SubSector"]').forEach((n, i) => { pos[n.id()] = { x: 11 * W, y: 2 * ACT + i * 100 }; });
+
+  // concept x = mean x of linked activities; then propagate to nodes linked only through others
+  // ValueOutcome is a Layer-1 class but sits with the KPIs that measure it
+  const concept = cy.nodes().filter((n) => (n.data('layer') >= 2 || n.data('cls') === 'ValueOutcome') && n.data('cls') !== '_band');
+  concept.forEach((n) => { const xs = nb(n).map((m) => x[m.id()]).filter((v) => v != null); if (xs.length) x[n.id()] = xs.reduce((a, b) => a + b, 0) / xs.length; });
+  for (let pass = 0; pass < 4; pass++) {
+    concept.forEach((n) => {
+      if (x[n.id()] != null) return;
+      const xs = nb(n).map((m) => x[m.id()]).filter((v) => v != null);
+      if (xs.length) x[n.id()] = xs.reduce((a, b) => a + b, 0) / xs.length;
     });
-    let yDown = y0 + 11 * ACT_H + 70;
-    BELOW.forEach((cls) => {
-      const list = of(cls).sort(byLabel);
-      list.forEach((n, i) => { pos[n.id()] = { x: x0 + (i % 2 ? 60 : -60), y: yDown + Math.floor(i / 2) * 46 }; });
-      if (list.length) yDown += Math.ceil(list.length / 2) * 46 + 30;
+  }
+  const ROWS = [[2, ['ProcessArea']], [2, ['ProcessGroup']], [2, ['L3ProcessEndpoint']], [2, ['TriggerEvent', 'ProcessOutput']],
+                [3, ['ProductAssetConcept']], [4, ['EcosystemConcept']], [5, ['ValueOutcome']], [5, ['KPI']], [5, ['RiskType']],
+                [6, ['ConsumerConcept']]];
+  let y = yTop + 80, lastLayer = 0;
+  ROWS.forEach(([layer, classes]) => {
+    const row = concept.filter((n) => classes.includes(n.data('cls')) && vis(n));
+    if (!row.length) return;
+    if (layer !== lastLayer) {
+      y += lastLayer ? 90 : 0;
+      cy.nodes(`[id="_band:${layer}"]`).forEach((b) => { pos[b.id()] = { x: -W * 3.4, y }; });
+      lastLayer = layer;
+    }
+    const sorted = row.sort((a, b) => (x[a.id()] ?? 0) - (x[b.id()] ?? 0));
+    const gap = classes[0] === 'ProcessArea' ? 150 : 92;
+    let cursor = -Infinity;
+    sorted.forEach((n, i) => {
+      const px = Math.max(x[n.id()] ?? 0, cursor + gap);
+      cursor = px;
+      pos[n.id()] = { x: px, y: y + (classes[0] === 'ProcessArea' ? 0 : (i % 2) * 34) };
     });
+    y += classes[0] === 'ProcessArea' ? 80 : 110;
   });
   return pos;
 }
 
 function runLayout(animate) {
-  const cy = S.cyG, vis = cy.elements().filter((e) => !e.hasClass('hidden') || e.hasClass('focus'));
-  const mode = $('layoutSel').value;
-  const opts = mode === 'columns'
-    ? { name: 'preset', positions: (n) => columnPositions()[n.id()] || n.position(), fit: true, padding: 40, animate, animationDuration: 350 }
-    : { name: 'fcose', quality: 'proof', animate, animationDuration: 500, nodeRepulsion: 9000, idealEdgeLength: 90, nestingFactor: 0.6, packComponents: true, fit: true, padding: 40 };
-  if (mode === 'columns') { const p = columnPositions(); cy.nodes().forEach((n) => { if (p[n.id()]) n.data('_p', p[n.id()]); }); opts.positions = (n) => n.data('_p') || n.position(); }
-  vis.layout(opts).run();
+  const cy = S.cyG;
+  applyFiltersSilently();
+  const vis = cy.elements().filter((e) => !e.hasClass('hidden') || e.hasClass('focus'));
+  let opts;
+  if (S.layout === 'layered') {
+    setCompound(true);
+    const p = layeredPositions();
+    opts = { name: 'preset', positions: (n) => p[n.id()] || n.position(), fit: true, padding: 40, animate, animationDuration: 350 };
+  } else if (S.layout === 'rings') {
+    setCompound(false);
+    opts = { name: 'concentric', fit: true, padding: 30, animate, animationDuration: 450, minNodeSpacing: 6, startAngle: -Math.PI / 2,
+             concentric: (n) => (n.data('cls') === 'ValueChainStage' ? 9 : 8 - n.data('layer')), levelWidth: () => 1,
+             avoidOverlap: true, spacingFactor: 0.9 };
+  } else {
+    setCompound(true);
+    opts = { name: 'fcose', quality: 'proof', animate, animationDuration: 500, nodeRepulsion: 9000, idealEdgeLength: 90, nestingFactor: 0.6, packComponents: true, fit: true, padding: 40 };
+  }
+  cy.elements().filter((e) => !e.hasClass('hidden') || e.hasClass('focus')).layout(opts).run();
+}
+function applyFiltersSilently() {
+  S.cyG.nodes('[cls="_band"]').forEach((n) => n.toggleClass('hidden', !nodeVisible(n)));
 }
 
-function clearFocus() {
-  S.cyG.elements().removeClass('focus faded cq');
-  S.cyG.$(':selected').unselect();
-}
+function clearFocus() { S.cyG.elements().removeClass('focus faded cq'); S.cyG.$(':selected').unselect(); }
 
-async function focusNode(id) {
+function focusNode(id) {
   const cy = S.cyG, n = cy.getElementById(id);
   if (!n.length) return;
   cy.elements().removeClass('focus faded cq');
   let hood = n.closedNeighborhood();
-  if (n.data('cls') === 'ValueChainStage') hood = hood.union(n.children()).union(n.children().connectedEdges().filter((e) => !e.hasClass('hidden')));
+  if (n.data('cls') === 'ValueChainStage') hood = hood.union(n.children()).union(n.children().connectedEdges()).union(n.children().connectedEdges().connectedNodes());
   hood.addClass('focus');
-  hood.connectedNodes().addClass('focus');
-  cy.elements().not(hood).not(hood.connectedNodes()).not(hood.parents()).addClass('faded');
+  cy.elements().not(hood).not(hood.parents()).addClass('faded');
   n.select();
-  if (hood.nodes().some((x) => x.hasClass('hidden')) && $('layoutSel').value === 'columns') runLayout(true);
-  cy.animate({ center: { eles: n }, zoom: Math.max(cy.zoom(), 0.75) }, { duration: 300 });
+  if (hood.nodes().some((x) => x.hasClass('hidden')) && S.layout === 'layered') runLayout(true);
+  cy.animate({ fit: { eles: hood.nodes().filter((x) => x.data('cls') !== '_band'), padding: 80 } }, { duration: 350 });
   renderNodePanel(id);
 }
 
+// ---- 360 panel ------------------------------------------------------------
 async function renderNodePanel(id) {
   const p = $('gPanel');
   p.innerHTML = '<div class="text-sm text-slate-400">Loading…</div>';
   try {
     const d = await api('/api/node/' + encodeURIComponent(id));
     const t = TYPES[d.cls] || { c: '#94a3b8', label: d.cls };
+    const L = d.class_info.layer;
     const pr = d.provenance;
-    const flags = [badge(pr.lane || 'n/a', '#0ea5e9'), pr.reviewed ? badge('reviewed', '#10b981') : badge('awaiting review', '#64748b'),
-      pr.drafted_beyond_source ? badge('drafted beyond source', '#f59e0b') : ''].join(' ');
-    const props = Object.entries(d.properties).filter(([k]) => !['id', 'name'].includes(k));
-    const groups = {};
-    d.neighbors.forEach((nb) => { (groups[`${nb.direction === 'out' ? '→' : '←'} ${nb.rel}`] ||= []).push(nb); });
+    const flags = [pr.reviewed ? badge('reviewed', '#10b981') : badge('awaiting review', '#64748b'),
+      pr.drafted_beyond_source ? badge('drafted beyond source', '#f59e0b') : badge('source-backed', '#0ea5e9')].join(' ');
+    const props = Object.entries(d.properties).filter(([k]) => !['id', 'name', 'sequence', 'stage_number'].includes(k));
+    // group neighbours by their layer
+    const byLayer = {};
+    d.neighbors.forEach((nb) => { if (!nb.id) return; (byLayer[layerOf(nb.cls)] ||= []).push(nb); });
+    const isActivity = d.cls === 'ValueChainActivity';
+    const title = isActivity ? 'Activity 360°' : (L >= 2 ? 'Where this touches the value chain' : 'Relationships');
+    const section = (l, list) => {
+      const groups = {};
+      list.forEach((nb) => { (groups[`${nb.direction === 'out' ? '→' : '←'} ${nb.rel}`] ||= []).push(nb); });
+      return `<div class="rounded-xl border border-slate-200 dark:border-slate-800">
+        <div class="flex items-center gap-2 border-b border-slate-100 px-3 py-2 dark:border-slate-800"><span class="grid h-5 w-7 place-items-center rounded text-[10px] font-bold text-white" style="background:${LAYER[l].c}">L${l}</span><span class="text-[12px] font-semibold">${LAYER[l].name}</span><span class="ml-auto text-[11px] text-slate-400">${list.length}</span></div>
+        <div class="space-y-2 p-2">${Object.entries(groups).map(([g, items]) => `
+          <div><div class="px-1 text-[10.5px] font-medium uppercase tracking-wide text-slate-400">${esc(g)}</div>
+          ${items.map((nb) => `<button data-goto="${esc(nb.id)}" class="flex w-full items-start gap-2 rounded-md px-1.5 py-1 text-left text-[13px] hover:bg-slate-100 dark:hover:bg-slate-800">
+            <span class="mt-1.5 h-2 w-2 shrink-0 rounded-full" style="background:${TYPES[nb.cls]?.c || '#94a3b8'}"></span>
+            <span class="min-w-0 flex-1"><span class="block leading-snug">${esc(nb.name)}</span>
+            ${Object.entries(nb.props).filter(([k]) => k !== 'drafted_beyond_source').map(([k, v]) => `<span class="block text-xs text-slate-400"><b class="font-medium">${esc(k)}:</b> ${esc(v)}</span>`).join('')}</span>
+            ${nb.cls === 'ValueChainActivity' && S.stageOf[nb.id] ? `<span class="shrink-0 rounded bg-indigo-500/10 px-1.5 text-[10px] font-semibold text-indigo-500">S${S.stageOf[nb.id]}</span>` : ''}
+            ${nb.props.drafted_beyond_source ? '<span class="shrink-0 text-[10px] text-amber-500">drafted</span>' : ''}</button>`).join('')}</div>`).join('')}</div></div>`;
+    };
+    const order = isActivity ? [2, 3, 4, 5, 6, 1] : [1, 2, 3, 4, 5, 6];
     p.innerHTML = `<div class="fade-in">
-      <div class="flex items-center gap-2">${badge(t.label, t.c)}<span class="text-[11px] text-slate-400">layer ${d.class_info.layer}</span></div>
+      <div class="flex flex-wrap items-center gap-2">${badge(t.label, t.c)}<span class="rounded px-1.5 py-0.5 text-[10px] font-bold text-white" style="background:${LAYER[L].c}">L${L} · ${LAYER[L].short}</span>
+        ${isActivity && S.stageOf[id] ? `<span class="text-[11px] text-slate-400">Stage ${S.stageOf[id]} · ${esc(S.byId[S.parentOf[id]]?.name || '')}</span>` : ''}</div>
       <h2 class="mt-2 text-lg font-semibold leading-snug">${esc(d.properties.name)}</h2>
-      <div class="mt-1 font-mono text-[11px] text-slate-400 break-all">${esc(d.id)}</div>
+      ${d.properties.description ? `<p class="mt-1 text-[13px] text-slate-500 dark:text-slate-400">${esc(d.properties.description)}</p>` : ''}
       <div class="mt-3 flex flex-wrap gap-1.5">${flags}</div>
       ${pr.review_note ? `<div class="mt-3 rounded-lg border border-amber-300/60 bg-amber-50 px-3 py-2 text-xs text-amber-800 dark:border-amber-500/30 dark:bg-amber-500/10 dark:text-amber-200">${esc(pr.review_note)}</div>` : ''}
-      <div class="mt-4 divide-y divide-slate-100 dark:divide-slate-800">${props.map(([k, v]) => kv(k, fmt(v))).join('')}</div>
+      ${props.filter(([k]) => k !== 'description').length ? `<div class="mt-3 divide-y divide-slate-100 dark:divide-slate-800">${props.filter(([k]) => k !== 'description').map(([k, v]) => kv(k, fmt(v))).join('')}</div>` : ''}
+      <h3 class="mb-2 mt-5 text-[11px] font-semibold uppercase tracking-wider text-slate-400">${title}</h3>
+      <div class="space-y-2.5">${order.filter((l) => byLayer[l]?.length).map((l) => section(l, byLayer[l])).join('') || '<div class="text-xs text-slate-400">No relationships.</div>'}</div>
       <h3 class="mb-1 mt-5 text-[11px] font-semibold uppercase tracking-wider text-slate-400">Provenance</h3>
-      <div class="divide-y divide-slate-100 dark:divide-slate-800">${kv('source', sourceLink(pr.source_reference))}${kv('system', esc(pr.source_system))}${kv('confidence', esc(pr.extraction_confidence))}</div>
-      <div class="mb-2 mt-5 flex items-center justify-between"><h3 class="text-[11px] font-semibold uppercase tracking-wider text-slate-400">Relationships</h3>
-        <button data-expand="${esc(d.id)}" class="rounded-md border border-slate-200 px-2 py-1 text-xs hover:bg-slate-100 dark:border-slate-700 dark:hover:bg-slate-800">Expand neighbours</button></div>
-      <div class="space-y-3">${Object.entries(groups).map(([g, list]) => `
-        <div><div class="mb-1 text-xs font-medium" style="color:${RELS[list[0].rel]?.c || '#94a3b8'}">${esc(g)} <span class="text-slate-400">${list.length}</span></div>
-          <div class="space-y-1">${list.map((nb) => !nb.id ? `<div class="px-2 py-1 text-xs text-slate-400">${esc(nb.name)}</div>` : `<button data-goto="${esc(nb.id)}" class="flex w-full items-start gap-2 rounded-lg px-2 py-1.5 text-left text-[13px] hover:bg-slate-100 dark:hover:bg-slate-800">
-            <span class="mt-1.5 h-2 w-2 shrink-0 rounded-full" style="background:${TYPES[nb.cls]?.c || '#94a3b8'}"></span>
-            <span class="min-w-0"><span class="block">${esc(nb.name)}</span>${Object.entries(nb.props).filter(([k]) => k !== 'drafted_beyond_source').map(([k, v]) => `<span class="block text-xs text-slate-400"><b class="font-medium">${esc(k)}:</b> ${esc(v)}</span>`).join('')}
-            ${nb.props.drafted_beyond_source ? '<span class="text-[11px] text-amber-500">drafted</span>' : ''}</span></button>`).join('')}</div></div>`).join('')}</div>
+      <div class="divide-y divide-slate-100 dark:divide-slate-800">${kv('source', sourceLink(pr.source_reference))}${kv('lane', esc(pr.lane))}<div class="font-mono text-[10.5px] text-slate-400 pt-2 break-all">${esc(d.id)}</div></div>
     </div>`;
   } catch (e) { p.innerHTML = `<div class="text-sm text-rose-500">${esc(e.message)}</div>`; }
 }
 
 document.addEventListener('click', (ev) => {
-  const x = ev.target.closest('[data-expand]');
-  if (x) { ev.preventDefault(); expandNode(x.dataset.expand); return; }
   const a = ev.target.closest('[data-goto]');
   if (!a) return;
   ev.preventDefault();
@@ -504,36 +568,6 @@ document.addEventListener('click', (ev) => {
   const n = S.cyG?.getElementById(id);
   if (n && n.length) { n.addClass('focus'); focusNode(id); }
 });
-
-async function expandNode(id) {
-  const cy = S.cyG, center = cy.getElementById(id);
-  try {
-    const r = await api('/api/expand/' + encodeURIComponent(id) + '?limit=30');
-    const fresh = r.nodes.filter((n) => !cy.getElementById(n.id).length);
-    const c = center.position();
-    const add = fresh.map((n, i) => {
-      ensureType(n.cls, n.layer);
-      const ang = (2 * Math.PI * i) / Math.max(1, fresh.length), rad = 140 + 6 * fresh.length;
-      return { group: 'nodes', data: { id: n.id, label: n.name, cls: n.cls, col: -2, seq: 0, lane: n.lane },
-               position: { x: c.x + rad * Math.cos(ang), y: c.y + rad * Math.sin(ang) } };
-    });
-    const have = new Set(cy.edges().map((e) => `${e.data('source')}|${e.data('rel')}|${e.data('target')}`));
-    r.edges.forEach((e) => {
-      if (have.has(`${e.source}|${e.rel}|${e.target}`)) return;
-      ensureRel(e.rel);
-      add.push({ group: 'edges', data: { id: e.id, source: e.source, target: e.target, rel: e.rel, drafted: !!e.drafted } });
-    });
-    const added = cy.add(add);
-    const hood = center.closedNeighborhood();
-    cy.elements().removeClass('faded');
-    added.addClass('focus');
-    hood.addClass('focus');
-    cy.elements().not(hood).not(hood.parents()).addClass('faded');
-    cy.animate({ fit: { eles: hood, padding: 60 } }, { duration: 350 });
-    const more = Object.entries(r.truncated);
-    if (more.length) showError(`Showing up to 30 per relationship; more exist: ${more.map(([k, n]) => `${k} (${n})`).join(', ')}`);
-  } catch (e) { showError(e.message); }
-}
 
 async function runCQ(n) {
   const p = $('gPanel');
@@ -548,18 +582,20 @@ async function runCQ(n) {
     const edges = cy.edges().filter((e) => keys.has(`${e.data('source')}|${e.data('rel')}|${e.data('target')}`));
     nodes.addClass('cq focus'); edges.addClass('cq focus'); nodes.parents().addClass('focus');
     cy.elements().not(nodes).not(edges).not(nodes.parents()).addClass('faded');
-    if ($('layoutSel').value === 'columns') runLayout(false);
+    if (S.layout === 'layered') runLayout(false);
     setTimeout(() => cy.animate({ fit: { eles: nodes, padding: 70 } }, { duration: 400 }), 60);
-    const cols = r.rows.length ? Object.keys(r.rows[0]).filter((k) => !k.endsWith('_id') && k !== 'via') : [];
+    const rows = r.rows || [];
+    const cols = rows.length ? Object.keys(rows[0]).filter((k) => !k.endsWith('_id') && !k.endsWith('_ids') && k !== 'via_id') : [];
+    const q = CQS.find((c) => c.n === n);
     p.innerHTML = `<div class="fade-in">
-      <div class="flex items-center gap-2">${badge('Competency Q' + n, '#06b6d4')}<span class="text-xs text-slate-400">${r.rows.length} rows · ${r.path.length} edges</span></div>
+      <div class="flex items-center gap-2"><span class="rounded px-1.5 py-0.5 text-[10px] font-bold text-white" style="background:${LAYER[q.layer].c}">Q${n}</span><span class="text-xs text-slate-400">${rows.length} rows · ${r.path.length} edges highlighted</span></div>
       <h2 class="mt-2 text-[15px] font-semibold leading-snug">${esc(r.question)}</h2>
       <div class="mt-4 overflow-x-auto rounded-lg border border-slate-200 dark:border-slate-700">
         <table class="w-full text-left text-xs"><thead class="bg-slate-50 text-slate-500 dark:bg-slate-800 dark:text-slate-400"><tr>${cols.map((c) => `<th class="px-2.5 py-2 font-medium">${esc(c.replace(/_/g, ' '))}</th>`).join('')}</tr></thead>
-        <tbody class="divide-y divide-slate-100 dark:divide-slate-800">${r.rows.map((row) => `<tr>${cols.map((c) => `<td class="px-2.5 py-2 align-top">${esc(row[c])}</td>`).join('')}</tr>`).join('')}</tbody></table>
+        <tbody class="divide-y divide-slate-100 dark:divide-slate-800">${rows.map((row) => `<tr>${cols.map((c) => `<td class="px-2.5 py-1.5 align-top">${esc(Array.isArray(row[c]) ? row[c].join(', ') : row[c])}</td>`).join('')}</tr>`).join('')}</tbody></table>
       </div>
-      <h3 class="mb-1 mt-5 text-[11px] font-semibold uppercase tracking-wider text-slate-400">Answer path</h3>
-      <div class="space-y-1 font-mono text-[11px] text-slate-500 dark:text-slate-400">${r.path.map(([a, rel, b]) => `<div><span data-goto="${esc(a)}" class="cursor-pointer hover:text-indigo-500">${esc(a.split(':')[1])}</span> <span style="color:${RELS[rel]?.c}">-[${rel}]→</span> <span data-goto="${esc(b)}" class="cursor-pointer hover:text-indigo-500">${esc(b.split(':')[1])}</span></div>`).join('')}</div>
+      <details class="mt-4"><summary class="cursor-pointer text-[11px] font-semibold uppercase tracking-wider text-slate-400">Answer path (${r.path.length}) ▾</summary>
+      <div class="mt-2 space-y-1 font-mono text-[11px] text-slate-500 dark:text-slate-400">${r.path.map(([a, rel, b]) => `<div><span data-goto="${esc(a)}" class="cursor-pointer hover:text-indigo-500">${esc(S.byId[a]?.name || a)}</span> <span style="color:${RELS[rel]?.c}">-[${rel}]→</span> <span data-goto="${esc(b)}" class="cursor-pointer hover:text-indigo-500">${esc(S.byId[b]?.name || b)}</span></div>`).join('')}</div></details>
     </div>`;
   } catch (e) { p.innerHTML = `<div class="text-sm text-rose-500">${esc(e.message)}</div>`; }
 }
@@ -569,8 +605,8 @@ function setupSearch(g) {
   input.addEventListener('input', () => {
     const q = input.value.trim().toLowerCase();
     if (q.length < 2) { box.classList.add('hidden'); return; }
-    const hits = g.nodes.filter((n) => (n.name || '').toLowerCase().includes(q) || n.id.toLowerCase().includes(q)).slice(0, 30);
-    box.innerHTML = hits.length ? hits.map((n) => `<button data-goto="${esc(n.id)}" class="flex w-full items-center gap-2 px-3 py-2 text-left text-[13px] hover:bg-slate-100 dark:hover:bg-slate-700"><span class="h-2 w-2 shrink-0 rounded-full" style="background:${TYPES[n.cls]?.c || '#94a3b8'}"></span><span class="truncate">${esc(n.name)}</span><span class="ml-auto shrink-0 text-[11px] text-slate-400">${TYPES[n.cls]?.label || n.cls}</span></button>`).join('') : '<div class="px-3 py-2 text-xs text-slate-400">No matches</div>';
+    const hits = g.nodes.filter((n) => (n.name || '').toLowerCase().includes(q)).sort((a, b) => a.layer - b.layer).slice(0, 30);
+    box.innerHTML = hits.length ? hits.map((n) => `<button data-goto="${esc(n.id)}" class="flex w-full items-center gap-2 px-3 py-2 text-left text-[13px] hover:bg-slate-100 dark:hover:bg-slate-700"><span class="h-2 w-2 shrink-0 rounded-full" style="background:${TYPES[n.cls]?.c || '#94a3b8'}"></span><span class="truncate">${esc(n.name)}</span><span class="ml-auto shrink-0 text-[11px] text-slate-400">L${n.layer} ${TYPES[n.cls]?.label || n.cls}</span></button>`).join('') : '<div class="px-3 py-2 text-xs text-slate-400">No matches</div>';
     box.classList.remove('hidden');
   });
   document.addEventListener('click', (ev) => { if (!box.contains(ev.target) && ev.target !== input) box.classList.add('hidden'); });
@@ -583,46 +619,34 @@ function schemaStyle() {
     { selector: 'node', style: { 'background-color': (n) => LAYER[n.data('layer')].c, label: 'data(id)', color: fg, 'font-size': 10, 'font-family': 'Inter',
       width: (n) => 14 + Math.min(30, n.degree() * 1.6), height: (n) => 14 + Math.min(30, n.degree() * 1.6),
       'text-valign': 'bottom', 'text-margin-y': 3, 'min-zoomed-font-size': 6, 'text-outline-color': dark ? '#020617' : '#f8fafc', 'text-outline-width': 2 } },
-    { selector: 'node[?stub]', style: { 'background-opacity': 0.35, 'border-width': 2, 'border-style': 'dashed', 'border-color': (n) => LAYER[n.data('layer')].c } },
     { selector: 'node[count > 0]', style: { 'border-width': 3, 'border-color': dark ? '#f8fafc' : '#0f172a', 'border-opacity': 0.5 } },
     { selector: 'edge', style: { width: 1, 'curve-style': 'bezier', 'line-color': dark ? '#475569' : '#cbd5e1', 'target-arrow-color': dark ? '#475569' : '#cbd5e1',
       'target-arrow-shape': 'triangle', 'arrow-scale': 0.7, label: 'data(rel)', 'font-size': 7, color: dark ? '#94a3b8' : '#64748b', 'min-zoomed-font-size': 9,
       'text-rotation': 'autorotate', 'loop-direction': '-45deg', 'loop-sweep': '40deg' } },
     { selector: 'edge[?hook]', style: { 'line-color': '#a78bfa', 'target-arrow-color': '#a78bfa', width: 1.8 } },
     { selector: '.faded', style: { opacity: 0.1 } },
-    { selector: '.hl', style: { opacity: 1 } },
     { selector: 'edge.hl', style: { 'line-color': '#22d3ee', 'target-arrow-color': '#22d3ee', width: 2.4, 'font-size': 9, color: '#22d3ee', 'min-zoomed-font-size': 0, 'z-index': 99 } },
     { selector: 'node:selected', style: { 'border-width': 3, 'border-color': '#f59e0b', 'border-style': 'solid' } },
   ];
 }
 
 async function initSchema() {
-  if (!S.schema) {
-    try { S.schema = await api('/api/schema'); } catch (e) { showError(e.message); return; }
-  }
-  const sc = S.schema;
-  // scope buttons
-  [['spine', 'Spine + hooks'], ['finance', 'Finance'], ['all', 'All']].forEach(([k, label]) => {
-    const b = document.createElement('button');
-    b.className = 'rounded-md px-2 py-1.5'; b.textContent = label; b.dataset.k = k;
-    b.addEventListener('click', () => { S.scope = k; drawSchema(); });
-    $('scopeBtns').appendChild(b);
-  });
-  const perLayer = {}; Object.values(sc.classes).forEach((c) => (perLayer[c.layer] = (perLayer[c.layer] || 0) + 1));
+  if (!S.schema) { try { S.schema = await api('/api/schema'); } catch (e) { showError(e.message); return; } }
+  segmented($('scopeBtns'), [['layers', 'Populated'], ['finance', 'Finance spec'], ['all', 'All']], S.scope, (k) => { S.scope = k; drawSchema(); });
+  const perLayer = {}; Object.values(S.schema.classes).forEach((c) => (perLayer[c.layer] = (perLayer[c.layer] || 0) + 1));
   Object.entries(LAYER).forEach(([l, v]) => {
-    const c = chip(`L${l} · ${v.name}`, v.c, true, (on) => { on ? S.layers.add(+l) : S.layers.delete(+l); drawSchema(); }, perLayer[l] || 0);
-    c.classList.add('w-full', 'justify-start'); $('layerChips').appendChild(c);
+    const c = chip(`L${l} · ${v.name}`, v.c, true, (on) => { on ? S.sLayers.add(+l) : S.sLayers.delete(+l); drawSchema(); }, perLayer[l] || 0);
+    c.classList.add('w-full', 'justify-start'); $('sLayerChips').appendChild(c);
   });
   $('sSearch').addEventListener('input', () => schemaSearch($('sSearch').value.trim()));
   drawSchema();
 }
 
 function scopeClasses() {
-  const sc = S.schema, hookTargets = new Set();
-  Object.values(sc.relationships).forEach((r) => { r.pairs.forEach((p) => { if (p.hook_layer) { hookTargets.add(p.from); hookTargets.add(p.to); } }); });
+  const sc = S.schema;
   return Object.entries(sc.classes).filter(([name, c]) => {
-    if (!S.layers.has(c.layer)) return false;
-    if (S.scope === 'spine') return c.module === 'layer1_value_chain' || c.module === 'hooks' || hookTargets.has(name);
+    if (!S.sLayers.has(c.layer)) return false;
+    if (S.scope === 'layers') return (sc.instance_counts[name] || 0) > 0;
     if (S.scope === 'finance') return c.module === 'finance';
     return true;
   }).map(([n]) => n);
@@ -630,31 +654,24 @@ function scopeClasses() {
 
 function drawSchema() {
   const sc = S.schema, keep = new Set(scopeClasses());
-  document.querySelectorAll('#scopeBtns button').forEach((b) => { const on = b.dataset.k === S.scope; b.className = 'rounded-md px-2 py-1.5 ' + (on ? 'bg-white shadow-sm text-indigo-600 dark:bg-slate-700 dark:text-indigo-300' : 'text-slate-500'); });
   const els = [];
-  keep.forEach((n) => { const c = sc.classes[n]; els.push({ group: 'nodes', data: { id: n, layer: c.layer, stub: c.stub, count: sc.instance_counts[n] || 0 } }); });
+  keep.forEach((n) => { const c = sc.classes[n]; els.push({ group: 'nodes', data: { id: n, layer: c.layer, count: sc.instance_counts[n] || 0 } }); });
   let i = 0; const relsShown = {};
   Object.entries(sc.relationships).forEach(([rel, r]) => r.pairs.forEach((p) => {
     if (keep.has(p.from) && keep.has(p.to)) { els.push({ group: 'edges', data: { id: 's' + i++, source: p.from, target: p.to, rel, hook: !!p.hook_layer } }); relsShown[rel] = (relsShown[rel] || 0) + 1; }
   }));
   if (S.cyS) S.cyS.destroy();
   S.cyS = cytoscape({ container: $('cySchema'), elements: els, style: schemaStyle(), wheelSensitivity: 0.25, minZoom: 0.05 });
-  S.cyS.layout({ name: 'fcose', quality: 'proof', nodeRepulsion: 12000, idealEdgeLength: 110, animate: false, packComponents: true, padding: 30 }).run();
+  S.cyS.layout({ name: 'fcose', quality: 'proof', nodeRepulsion: 12000, idealEdgeLength: 120, animate: false, packComponents: true, padding: 30 }).run();
   S.cyS.on('tap', 'node', (ev) => classPanel(ev.target.id()));
   S.cyS.on('tap', 'edge', (ev) => relPanel(ev.target.data('rel')));
   S.cyS.on('tap', (ev) => { if (ev.target === S.cyS) S.cyS.elements().removeClass('faded hl'); });
-  $('sSummary').textContent = `${keep.size} classes · ${els.length - keep.size} relationship pairs shown`;
+  $('sSummary').textContent = `${keep.size} classes · ${els.length - keep.size} relationship pairs`;
   $('relCount').textContent = Object.keys(relsShown).length;
   $('relList').innerHTML = Object.entries(relsShown).sort().map(([rel, n]) => `<button data-rel="${rel}" class="flex w-full items-center justify-between rounded-md px-2 py-1 font-mono text-[11.5px] hover:bg-slate-100 dark:hover:bg-slate-800"><span class="truncate">${rel}${sc.relationships[rel].hook_layer ? ' <span class="text-violet-400">hook</span>' : ''}</span><span class="text-slate-400">${n}</span></button>`).join('');
   $('relList').querySelectorAll('[data-rel]').forEach((b) => b.addEventListener('click', () => relPanel(b.dataset.rel)));
 }
-
-function highlightSchema(eles) {
-  S.cyS.elements().removeClass('hl').addClass('faded');
-  eles.removeClass('faded').addClass('hl');
-  S.cyS.animate({ fit: { eles, padding: 60 } }, { duration: 350 });
-}
-
+function highlightSchema(eles) { S.cyS.elements().removeClass('hl').addClass('faded'); eles.removeClass('faded').addClass('hl'); S.cyS.animate({ fit: { eles, padding: 60 } }, { duration: 350 }); }
 function schemaSearch(q) {
   if (!q) { S.cyS.elements().removeClass('faded hl'); return; }
   const lq = q.toLowerCase();
@@ -662,13 +679,11 @@ function schemaSearch(q) {
   const e = S.cyS.edges().filter((x) => x.data('rel').toLowerCase().includes(lq));
   if (n.length || e.length) highlightSchema(n.union(e).union(e.connectedNodes()));
 }
-
 function attrTable(attrs) {
   return `<table class="w-full text-left text-xs"><thead class="text-slate-400"><tr><th class="py-1.5 font-medium">attribute</th><th class="font-medium">type</th><th class="font-medium text-right">req</th></tr></thead>
     <tbody class="divide-y divide-slate-100 dark:divide-slate-800">${Object.entries(attrs).map(([k, a]) => `<tr><td class="py-1.5 font-mono">${esc(k)}</td>
     <td>${esc(a.type)}${a.values ? `<div class="text-[10.5px] text-slate-400">${esc(a.values.join(' · '))}</div>` : ''}</td><td class="text-right">${a.required ? '<span class="text-emerald-500">●</span>' : '<span class="text-slate-300 dark:text-slate-600">○</span>'}</td></tr>`).join('')}</tbody></table>`;
 }
-
 function classPanel(name) {
   const sc = S.schema, c = sc.classes[name];
   const n = S.cyS.getElementById(name);
@@ -677,12 +692,10 @@ function classPanel(name) {
   Object.entries(sc.relationships).forEach(([rel, r]) => r.pairs.forEach((p) => { if (p.from === name) out.push([rel, p.to, p.hook_layer]); if (p.to === name) inc.push([rel, p.from, p.hook_layer]); }));
   const relRows = (list, arrow) => list.map(([rel, other, hook]) => `<button data-class="${esc(other)}" class="flex w-full items-center gap-2 rounded-md px-2 py-1 text-left text-xs hover:bg-slate-100 dark:hover:bg-slate-800"><span class="font-mono ${hook ? 'text-violet-500' : 'text-slate-500'}">${arrow} ${esc(rel)}</span><span class="ml-auto inline-flex items-center gap-1"><span class="h-2 w-2 rounded-full" style="background:${LAYER[sc.classes[other].layer].c}"></span>${esc(other)}</span></button>`).join('');
   $('sPanel').innerHTML = `<div class="fade-in">
-    <div class="flex flex-wrap items-center gap-1.5">${badge('L' + c.layer + ' · ' + LAYER[c.layer].name, LAYER[c.layer].c)}${badge(c.module, '#64748b')}${c.stub ? badge('stub', '#f59e0b') : ''}</div>
+    <div class="flex flex-wrap items-center gap-1.5">${badge('L' + c.layer + ' · ' + LAYER[c.layer].name, LAYER[c.layer].c)}${badge(c.module, '#64748b')}</div>
     <h2 class="mt-2 text-lg font-semibold">${esc(name)}</h2>
     <p class="mt-1 text-[13px] leading-relaxed text-slate-600 dark:text-slate-300">${esc(c.description)}</p>
-    <div class="mt-3 divide-y divide-slate-100 dark:divide-slate-800">
-      ${kv('instances', `<b>${sc.instance_counts[name] || 0}</b>`)}${c.source_key ? kv('spec key', `<span class="font-mono text-xs">${esc(c.source_key)}</span> → id`) : ''}${c.spec_ref ? kv('spec', sourceLink(c.spec_ref)) : ''}
-    </div>
+    <div class="mt-3 divide-y divide-slate-100 dark:divide-slate-800">${kv('nodes in graph', `<b>${sc.instance_counts[name] || 0}</b>`)}${c.spec_ref ? kv('spec', sourceLink(c.spec_ref)) : ''}</div>
     <h3 class="mb-1 mt-5 text-[11px] font-semibold uppercase tracking-wider text-slate-400">Attributes</h3>
     ${Object.keys(c.attributes).length ? attrTable(c.attributes) : '<div class="text-xs text-slate-400">Common attributes only.</div>'}
     <details class="mt-2"><summary class="cursor-pointer text-xs text-slate-400 hover:text-slate-600">+ ${Object.keys(sc.node_base).length} common provenance &amp; retrieval attributes</summary><div class="mt-2">${attrTable(sc.node_base)}</div></details>
@@ -691,7 +704,6 @@ function classPanel(name) {
   </div>`;
   $('sPanel').querySelectorAll('[data-class]').forEach((b) => b.addEventListener('click', () => classPanel(b.dataset.class)));
 }
-
 function relPanel(rel) {
   const r = S.schema.relationships[rel];
   const e = S.cyS.edges().filter((x) => x.data('rel') === rel);
@@ -701,7 +713,7 @@ function relPanel(rel) {
     <h2 class="mt-2 font-mono text-base font-semibold">${esc(rel)}</h2>
     <p class="mt-1 text-[13px] text-slate-600 dark:text-slate-300">${esc(r.description)}</p>
     <h3 class="mb-1 mt-5 text-[11px] font-semibold uppercase tracking-wider text-slate-400">Allowed pairs · ${r.pairs.length}</h3>
-    <div class="space-y-1">${r.pairs.map((p) => `<div class="rounded-md bg-slate-50 px-2 py-1.5 text-xs dark:bg-slate-800/60"><button data-class="${esc(p.from)}" class="hover:text-indigo-500">${esc(p.from)}</button> <span class="text-slate-400">→</span> <button data-class="${esc(p.to)}" class="hover:text-indigo-500">${esc(p.to)}</button>${p.cardinality ? ` <span class="text-slate-400">(${esc(p.cardinality)})</span>` : ''}${p.hook_layer ? ` <span class="text-violet-400">hook L${p.hook_layer}</span>` : ''}${p.note ? `<div class="mt-0.5 text-[11px] text-slate-400">${esc(p.note)}</div>` : ''}</div>`).join('')}</div>
+    <div class="space-y-1">${r.pairs.map((p) => `<div class="rounded-md bg-slate-50 px-2 py-1.5 text-xs dark:bg-slate-800/60"><button data-class="${esc(p.from)}" class="hover:text-indigo-500">${esc(p.from)}</button> <span class="text-slate-400">→</span> <button data-class="${esc(p.to)}" class="hover:text-indigo-500">${esc(p.to)}</button>${p.hook_layer ? ` <span class="text-violet-400">hook L${p.hook_layer}</span>` : ''}${p.note ? `<div class="mt-0.5 text-[11px] text-slate-400">${esc(p.note)}</div>` : ''}</div>`).join('')}</div>
     ${Object.keys(r.properties).length ? `<h3 class="mb-1 mt-5 text-[11px] font-semibold uppercase tracking-wider text-slate-400">Edge properties</h3>${attrTable(r.properties)}` : ''}
   </div>`;
   $('sPanel').querySelectorAll('[data-class]').forEach((b) => b.addEventListener('click', () => classPanel(b.dataset.class)));
@@ -712,43 +724,46 @@ async function renderReport() {
   const el = $('report');
   if (!S.report) { el.innerHTML = '<div class="text-sm text-slate-400">Loading…</div>'; await loadStats(); }
   const r = S.report; if (!r) return;
-  const curated = r.nodes_by_lane.curated || 0, orph = r.orphans_by_lane.curated || 0;
+  const orph = r.orphans_by_lane.curated || 0;
   const card = (label, value, sub, color) => `<div class="rounded-2xl border border-slate-200 bg-white p-5 shadow-sm dark:border-slate-800 dark:bg-slate-900">
     <div class="text-xs font-medium uppercase tracking-wider text-slate-400">${label}</div><div class="mt-2 text-3xl font-semibold tracking-tight" style="color:${color || 'inherit'}">${value}</div><div class="mt-1 text-xs text-slate-400">${sub}</div></div>`;
-  const maxC = Math.max(...Object.values(r.per_class).map((x) => x.nodes));
+  const maxL = Math.max(...Object.values(r.nodes_by_layer));
   const maxR = Math.max(...Object.values(r.edges_by_rel));
+  const bar = (pct, color) => `<div class="h-2 rounded-full bg-slate-100 dark:bg-slate-800"><div class="h-2 rounded-full" style="width:${pct.toFixed(1)}%;background:${color}"></div></div>`;
+  const hookColor = (k) => LAYER[+k.slice(1, 2)]?.c || '#94a3b8';
   el.innerHTML = `<div class="fade-in">
     <h2 class="text-xl font-semibold tracking-tight">Quality report</h2>
-    <p class="mt-1 text-sm text-slate-500 dark:text-slate-400">Same metrics as <code class="rounded bg-slate-100 px-1 font-mono text-xs dark:bg-slate-800">make report</code>, read live from the database.</p>
+    <p class="mt-1 text-sm text-slate-500 dark:text-slate-400">Same metrics as <code class="rounded bg-slate-100 px-1 font-mono text-xs dark:bg-slate-800">make report</code>, read live from the graph.</p>
     <div class="mt-6 grid grid-cols-2 gap-4 lg:grid-cols-4">
-      ${card('Curated orphans', orph, `of ${curated} curated nodes · target 0`, orph ? '#f43f5e' : '#10b981')}
+      ${card('Orphans', orph, `of ${r.nodes} nodes · target 0`, orph ? '#f43f5e' : '#10b981')}
       ${card('Graph size', `${r.nodes}<span class="text-lg text-slate-400"> / ${r.edges}</span>`, 'nodes / edges')}
-      ${card('Awaiting review', r.unreviewed_nodes, 'nodes with reviewed: false', '#f59e0b')}
-      ${card('Drafted beyond source', `${r.drafted_nodes}<span class="text-lg text-slate-400"> / ${r.drafted_edges}</span>`, 'nodes / edges for owner review', '#f59e0b')}
-    </div>
-    <div class="mt-4 grid grid-cols-2 gap-4 lg:grid-cols-4">
-      ${card('Outer layer → activity', `${r.outer[0]} / ${r.outer[1]}`, r.outer[1] ? 'outer-layer nodes with a spine path' : 'no outer-layer instances until Phase 2')}
-      ${card('Extracted orphans', r.orphans_by_lane.extracted || 0, 'target < 5% · Phase 2')}
-      ${card('Rejections', r.rejected, 'staging/rejected')}
-      ${card('Unresolved items', r.unresolved, 'staging/unresolved')}
+      ${card('Layers 2–6 linked', `${r.outer[0]}<span class="text-lg text-slate-400"> / ${r.outer[1]}</span>`, 'concepts with a path to an activity', '#10b981')}
+      ${card('Drafted, to review', `${r.drafted_nodes}<span class="text-lg text-slate-400"> / ${r.drafted_edges}</span>`, 'nodes / edges beyond the source docs', '#f59e0b')}
     </div>
     <div class="mt-6 grid gap-4 lg:grid-cols-2">
       <div class="rounded-2xl border border-slate-200 bg-white p-5 dark:border-slate-800 dark:bg-slate-900">
+        <h3 class="text-sm font-semibold">Nodes by layer</h3>
+        <div class="mt-4 space-y-3">${Object.entries(r.nodes_by_layer).map(([l, n]) => `
+          <div class="grid grid-cols-[170px_1fr_40px] items-center gap-3 text-xs"><span class="flex items-center gap-2"><span class="rounded px-1 text-[10px] font-bold text-white" style="background:${LAYER[l].c}">L${l}</span>${LAYER[l].name}</span>${bar(n / maxL * 100, LAYER[l].c)}<span class="text-right tabular-nums text-slate-500">${n}</span></div>`).join('')}</div>
+      </div>
+      <div class="rounded-2xl border border-slate-200 bg-white p-5 dark:border-slate-800 dark:bg-slate-900">
+        <h3 class="text-sm font-semibold">Hook coverage <span class="font-normal text-slate-400">· share of the ${Object.values(r.hook_coverage)[0]?.total || 0} activities linked to each layer</span></h3>
+        <div class="mt-4 space-y-3">${Object.entries(r.hook_coverage).map(([k, v]) => `
+          <div class="grid grid-cols-[150px_1fr_60px] items-center gap-3 text-xs"><span class="font-mono text-[11px]">${esc(k)}</span>${bar(v.covered / v.total * 100, hookColor(k))}<span class="text-right tabular-nums text-slate-500">${v.covered}/${v.total}</span></div>`).join('')}</div>
+      </div>
+    </div>
+    <div class="mt-4 grid gap-4 lg:grid-cols-2">
+      <div class="rounded-2xl border border-slate-200 bg-white p-5 dark:border-slate-800 dark:bg-slate-900">
         <h3 class="text-sm font-semibold">Nodes by class</h3>
-        <div class="mt-4 space-y-2.5">${Object.entries(r.per_class).sort((a, b) => b[1].nodes - a[1].nodes).map(([c, v]) => `
-          <div class="grid grid-cols-[140px_1fr_90px] items-center gap-3 text-xs"><span class="truncate">${esc(c)}</span>
-          <div class="h-2 rounded-full bg-slate-100 dark:bg-slate-800"><div class="h-2 rounded-full" style="width:${(v.nodes / maxC * 100).toFixed(1)}%;background:${TYPES[c]?.c || '#94a3b8'}"></div></div>
-          <span class="text-right tabular-nums text-slate-500">${v.nodes} · ${v.edges_per_node}/n</span></div>`).join('')}</div>
+        <div class="mt-4 space-y-2">${Object.entries(r.per_class).sort((a, b) => b[1].nodes - a[1].nodes).map(([c, v]) => `
+          <div class="grid grid-cols-[160px_1fr_80px] items-center gap-3 text-xs"><span class="truncate">${esc(TYPES[c]?.label || c)}</span>${bar(v.nodes / Math.max(...Object.values(r.per_class).map((x) => x.nodes)) * 100, TYPES[c]?.c || '#94a3b8')}<span class="text-right tabular-nums text-slate-500">${v.nodes} · ${v.edges_per_node}/n</span></div>`).join('')}</div>
       </div>
       <div class="rounded-2xl border border-slate-200 bg-white p-5 dark:border-slate-800 dark:bg-slate-900">
         <h3 class="text-sm font-semibold">Edges by relationship</h3>
-        <div class="mt-4 space-y-2.5">${Object.entries(r.edges_by_rel).sort((a, b) => b[1] - a[1]).map(([rel, n]) => `
-          <div class="grid grid-cols-[170px_1fr_40px] items-center gap-3 text-xs"><span class="truncate font-mono text-[11px]">${esc(rel)}</span>
-          <div class="h-2 rounded-full bg-slate-100 dark:bg-slate-800"><div class="h-2 rounded-full" style="width:${(n / maxR * 100).toFixed(1)}%;background:${RELS[rel]?.c || '#94a3b8'}"></div></div>
-          <span class="text-right tabular-nums text-slate-500">${n}</span></div>`).join('')}</div>
+        <div class="mt-4 space-y-2">${Object.entries(r.edges_by_rel).sort((a, b) => b[1] - a[1]).map(([rel, n]) => `
+          <div class="grid grid-cols-[170px_1fr_40px] items-center gap-3 text-xs"><span class="truncate font-mono text-[11px]">${esc(rel)}</span>${bar(n / maxR * 100, RELS[rel]?.c || '#94a3b8')}<span class="text-right tabular-nums text-slate-500">${n}</span></div>`).join('')}</div>
       </div>
     </div>
-    ${r.orphans.length ? `<div class="mt-6 rounded-2xl border border-rose-300 bg-rose-50 p-5 text-sm dark:border-rose-900 dark:bg-rose-950/40"><b>Orphans</b><ul class="mt-2 list-disc pl-5">${r.orphans.map((o) => `<li>${esc(o)}</li>`).join('')}</ul></div>` : ''}
   </div>`;
 }
 

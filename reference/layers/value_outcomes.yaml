@@ -1,0 +1,39 @@
+# Value outcomes connecting KPIs to the spine: Activity CREATES ValueOutcome MEASURED_BY KPI (D42).
+class: ValueOutcome
+defaults:
+  source_system: curated_reference
+  lane: curated
+  extraction_confidence: 1.0
+  reviewed: false
+  drafted_beyond_source: true
+  source_reference: "docs/source/cpg_value_chain_design.md#layer-5-performance-and-risk"
+rows:
+  - {id: "ValueOutcome:sell_through", name: Sell-through achieved, outcome_type: commercial,
+     edges: {MEASURED_BY: ["KPI:sell_through_rate", "KPI:secondary_sales", "KPI:sell_out_volume"]}}
+  - {id: "ValueOutcome:distribution_reach", name: Distribution reach, outcome_type: commercial,
+     edges: {MEASURED_BY: ["KPI:numeric_distribution", "KPI:weighted_distribution"]}}
+  - {id: "ValueOutcome:shelf_availability", name: On-shelf availability, outcome_type: execution,
+     edges: {MEASURED_BY: ["KPI:on_shelf_availability"]}}
+  - {id: "ValueOutcome:trade_effectiveness", name: Trade-spend effectiveness, outcome_type: financial,
+     edges: {MEASURED_BY: ["KPI:trade_spend_roi", "KPI:incremental_volume"]}}
+  - {id: "ValueOutcome:claim_control", name: Claim leakage control, outcome_type: financial,
+     edges: {MEASURED_BY: ["KPI:claim_settlement_cycle_time", "KPI:claim_approval_rate"]}}
+  - {id: "ValueOutcome:forecast_quality", name: Forecast quality, outcome_type: planning,
+     edges: {MEASURED_BY: ["KPI:forecast_accuracy"]}}
+  - {id: "ValueOutcome:gross_margin", name: Gross margin, outcome_type: financial,
+     edges: {MEASURED_BY: ["KPI:gross_margin_pct", "KPI:contribution_margin"]}}
+  - {id: "ValueOutcome:service_level", name: Customer service level, outcome_type: operational,
+     edges: {MEASURED_BY: ["KPI:otif"]}}
+  # --- added with the remaining Layer 5 KPIs (D52) ---
+  - {id: "ValueOutcome:primary_sales_volume", name: "Primary sales volume", outcome_type: commercial,
+     edges: {MEASURED_BY: ["KPI:primary_sales"]}}
+  - {id: "ValueOutcome:inventory_health", name: "Inventory health", outcome_type: operational,
+     edges: {MEASURED_BY: ["KPI:inventory_freshness"]}}
+  - {id: "ValueOutcome:manufacturing_efficiency", name: "Manufacturing efficiency", outcome_type: operational,
+     edges: {MEASURED_BY: ["KPI:yield", "KPI:waste", "KPI:oee"]}}
+  - {id: "ValueOutcome:product_quality", name: "Product quality", outcome_type: quality,
+     edges: {MEASURED_BY: ["KPI:quality_non_conformance"]}}
+  - {id: "ValueOutcome:net_revenue_realisation", name: "Net revenue realisation", outcome_type: financial,
+     edges: {MEASURED_BY: ["KPI:revenue_gross_to_net", "KPI:price_realization"]}}
+  - {id: "ValueOutcome:working_capital_efficiency", name: "Working capital efficiency", outcome_type: financial,
+     edges: {MEASURED_BY: ["KPI:working_capital"]}}

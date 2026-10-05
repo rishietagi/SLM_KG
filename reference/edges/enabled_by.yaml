@@ -44,3 +44,40 @@ rows:
   - {from: "ValueChainActivity:s09_capture_sell_out",             to: "L3ProcessEndpoint:l3_record_secondary_sales"}
   - {from: "ValueChainActivity:s09_capture_sell_out",             to: "L3ProcessEndpoint:l3_measure_distributor_performance"}
   - {from: "ValueChainActivity:s09_capture_sell_out",             to: "L3ProcessEndpoint:l3_close_trade_accruals"}
+  # --- non-finance processes (D51) ---
+  - {from: "ValueChainActivity:s03_create_product_concept", to: "L3ProcessEndpoint:l3_develop_test_concept"}
+  - {from: "ValueChainActivity:s03_test_product_performance", to: "L3ProcessEndpoint:l3_develop_test_concept"}
+  - {from: "ValueChainActivity:s02_determine_launch_priorities", to: "L3ProcessEndpoint:l3_stage_gate_launch"}
+  - {from: "ValueChainActivity:s03_approve_product_specification", to: "L3ProcessEndpoint:l3_stage_gate_launch"}
+  - {from: "ValueChainActivity:s06_baseline_forecast", to: "L3ProcessEndpoint:l3_generate_baseline_forecast"}
+  - {from: "ValueChainActivity:s06_consensus_forecast", to: "L3ProcessEndpoint:l3_run_consensus_review"}
+  - {from: "ValueChainActivity:s06_sop_ibp_review", to: "L3ProcessEndpoint:l3_run_consensus_review"}
+  - {from: "ValueChainActivity:s06_supply_plan", to: "L3ProcessEndpoint:l3_build_supply_plan"}
+  - {from: "ValueChainActivity:s06_allocate_constrained_supply", to: "L3ProcessEndpoint:l3_build_supply_plan"}
+  - {from: "ValueChainActivity:s04_qualify_suppliers", to: "L3ProcessEndpoint:l3_qualify_supplier"}
+  - {from: "ValueChainActivity:s04_assess_supplier_capacity", to: "L3ProcessEndpoint:l3_qualify_supplier"}
+  - {from: "ValueChainActivity:s04_conduct_sourcing_event", to: "L3ProcessEndpoint:l3_award_sourcing_contract"}
+  - {from: "ValueChainActivity:s04_negotiate_contract", to: "L3ProcessEndpoint:l3_award_sourcing_contract"}
+  - {from: "ValueChainActivity:s05_create_production_plan", to: "L3ProcessEndpoint:l3_schedule_production"}
+  - {from: "ValueChainActivity:s05_issue_production_order", to: "L3ProcessEndpoint:l3_schedule_production"}
+  - {from: "ValueChainActivity:s05_process_fill_form", to: "L3ProcessEndpoint:l3_confirm_production_order"}
+  - {from: "ValueChainActivity:s05_record_yield_loss_downtime", to: "L3ProcessEndpoint:l3_confirm_production_order"}
+  - {from: "ValueChainActivity:s05_in_process_quality_checks", to: "L3ProcessEndpoint:l3_test_product_quality"}
+  - {from: "ValueChainActivity:s05_finished_product_testing", to: "L3ProcessEndpoint:l3_test_product_quality"}
+  - {from: "ValueChainActivity:s05_release_quarantine_batch", to: "L3ProcessEndpoint:l3_release_batch"}
+  - {from: "ValueChainActivity:s07_pick_pack", to: "L3ProcessEndpoint:l3_pick_pack_dispatch"}
+  - {from: "ValueChainActivity:s07_dispatch_shipment", to: "L3ProcessEndpoint:l3_pick_pack_dispatch"}
+  - {from: "ValueChainActivity:s07_plan_transport", to: "L3ProcessEndpoint:l3_plan_execute_transport"}
+  - {from: "ValueChainActivity:s07_deliver", to: "L3ProcessEndpoint:l3_plan_execute_transport"}
+  - {from: "ValueChainActivity:s09_activate_promotion", to: "L3ProcessEndpoint:l3_plan_consumer_campaign"}
+  - {from: "ValueChainActivity:s10_discover_product", to: "L3ProcessEndpoint:l3_plan_consumer_campaign"}
+  - {from: "ValueChainActivity:s10_purchase_product", to: "L3ProcessEndpoint:l3_measure_campaign_conversion"}
+  - {from: "ValueChainActivity:s01_analyze_shopper_behaviour", to: "L3ProcessEndpoint:l3_measure_campaign_conversion"}
+  - {from: "ValueChainActivity:s09_plan_sales_beat", to: "L3ProcessEndpoint:l3_onboard_sales_reps"}
+  - {from: "ValueChainActivity:s08_set_sales_target", to: "L3ProcessEndpoint:l3_manage_sales_incentives"}
+  - {from: "ValueChainActivity:s09_visit_outlet", to: "L3ProcessEndpoint:l3_manage_sales_incentives"}
+  - {from: "ValueChainActivity:s03_regulatory_review", to: "L3ProcessEndpoint:l3_manage_regulatory_compliance"}
+  - {from: "ValueChainActivity:s05_package_label", to: "L3ProcessEndpoint:l3_manage_regulatory_compliance"}
+  - {from: "ValueChainActivity:s11_recall_batch", to: "L3ProcessEndpoint:l3_manage_product_recall"}
+  - {from: "ValueChainActivity:s01_monitor_trends", to: "L3ProcessEndpoint:l3_analyse_market_panel_data"}
+  - {from: "ValueChainActivity:s01_estimate_category_opportunity", to: "L3ProcessEndpoint:l3_analyse_market_panel_data"}

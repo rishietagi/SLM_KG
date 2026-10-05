@@ -1,6 +1,6 @@
 {
   "additionalProperties": false,
-  "description": "Executable Finance process beginning with a trigger and producing a defined output. (layer 2)",
+  "description": "Executable L3 process beginning with a trigger and producing a defined output (finance and other functional processes). (layer 2)",
   "properties": {
     "id": {
       "title": "Id",

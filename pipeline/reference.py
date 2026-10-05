@@ -34,7 +34,7 @@ def class_of(node_id: str) -> str:
 
 def load_reference(directory: Path = REFERENCE_DIR) -> ReferenceData:
     data = ReferenceData()
-    for path in sorted(directory.glob("*.yaml")) + sorted((directory / "finance").glob("*.yaml")):
+    for path in sorted(directory.glob("*.yaml")) + sorted((directory / "layers").glob("*.yaml")):
         _load_node_file(path, data)
     for path in sorted((directory / "edges").glob("*.yaml")):
         _load_edge_file(path, data)

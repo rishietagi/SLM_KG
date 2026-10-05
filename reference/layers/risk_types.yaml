@@ -1,0 +1,55 @@
+# Layer 5 risk types. Supplier, regulatory and sustainability risk are named in the design notes' Layer 5 list;
+# the others are drafted. AFFECTS (activity) and THREATENS (concept) links are drafted.
+class: RiskType
+defaults:
+  source_system: curated_reference
+  lane: curated
+  extraction_confidence: 1.0
+  reviewed: false
+  drafted_beyond_source: false
+  source_reference: "docs/source/cpg_value_chain_design.md#layer-5-performance-and-risk"
+edge_defaults:
+  AFFECTS: {drafted_beyond_source: true}
+  THREATENS: {drafted_beyond_source: true}
+rows:
+  - id: "RiskType:supplier_risk"
+    name: "Supplier risk"
+    risk_category: supply
+    edges:
+      AFFECTS: ["ValueChainActivity:s04_monitor_supply_risk", "ValueChainActivity:s04_assess_supplier_capacity", "ValueChainActivity:s05_receive_release_materials"]
+      THREATENS: ["ProductAssetConcept:ingredient", "ProductAssetConcept:packaging_specification"]
+  - id: "RiskType:regulatory_risk"
+    name: "Regulatory risk"
+    risk_category: regulatory
+    edges:
+      AFFECTS: ["ValueChainActivity:s03_regulatory_review", "ValueChainActivity:s03_define_product_claims", "ValueChainActivity:s05_package_label"]
+      THREATENS: ["ProductAssetConcept:product_claim"]
+  - id: "RiskType:sustainability_risk"
+    name: "Sustainability risk"
+    risk_category: sustainability
+    edges:
+      AFFECTS: ["ValueChainActivity:s04_approve_ingredients_packaging", "ValueChainActivity:s11_recover_packaging", "ValueChainActivity:s11_trace_sustainability"]
+      THREATENS: ["ProductAssetConcept:packaging_specification"]
+  - id: "RiskType:demand_volatility_risk"
+    name: "Demand volatility risk"
+    risk_category: demand
+    drafted_beyond_source: true
+    review_note: "Not in the Layer 5 list; drafted."
+    edges:
+      AFFECTS: ["ValueChainActivity:s06_baseline_forecast", "ValueChainActivity:s06_consensus_forecast", "ValueChainActivity:s09_check_osa"]
+  - id: "RiskType:commodity_price_risk"
+    name: "Commodity price risk"
+    risk_category: market
+    drafted_beyond_source: true
+    review_note: "Not in the Layer 5 list; drafted."
+    edges:
+      AFFECTS: ["ValueChainActivity:s04_evaluate_commodity_exposure", "ValueChainActivity:s08_set_pricing_terms"]
+      THREATENS: ["ProductAssetConcept:ingredient"]
+  - id: "RiskType:quality_recall_risk"
+    name: "Quality and recall risk"
+    risk_category: quality
+    drafted_beyond_source: true
+    review_note: "Not in the Layer 5 list; drafted."
+    edges:
+      AFFECTS: ["ValueChainActivity:s05_release_quarantine_batch", "ValueChainActivity:s10_submit_complaint", "ValueChainActivity:s11_recall_batch"]
+      THREATENS: ["ProductAssetConcept:batch"]

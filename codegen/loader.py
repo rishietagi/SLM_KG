@@ -7,11 +7,11 @@ from pathlib import Path
 
 import yaml
 
-from codegen.meta import Attribute, ClassDef, CommonFile, ModuleFile, Pair, RelDef, RelMapFile, SliceFile
+from codegen.meta import Attribute, ClassDef, CommonFile, ModuleFile, Pair, RelDef, RelMapFile
 
 ROOT = Path(__file__).resolve().parent.parent
 ONTOLOGY_DIR = ROOT / "ontology"
-SPECIAL = {"common.yaml", "rel_name_map.yaml", "slices.yaml"}
+SPECIAL = {"common.yaml", "rel_name_map.yaml"}
 # Spine first, so its relationship descriptions win when a name is reused by later modules.
 PRIORITY = ["layer1_value_chain.yaml", "hooks.yaml"]
 
@@ -26,7 +26,6 @@ class Ontology:
     classes: dict[str, ClassDef] = field(default_factory=dict)
     relationships: dict[str, RelDef] = field(default_factory=dict)
     rel_map: RelMapFile | None = None
-    slices: SliceFile | None = None
     modules: list[str] = field(default_factory=list)
     hash: str = ""
 
@@ -65,9 +64,6 @@ def load_ontology(directory: Path = ONTOLOGY_DIR) -> Ontology:
     map_path = directory / "rel_name_map.yaml"
     if map_path.exists():
         onto.rel_map = RelMapFile.model_validate(_read(map_path))
-    slice_path = directory / "slices.yaml"
-    if slice_path.exists():
-        onto.slices = SliceFile.model_validate(_read(slice_path))
 
     for path in sorted(directory.glob("*.yaml"), key=_module_order):
         if path.name in SPECIAL:
